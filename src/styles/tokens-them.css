@@ -1,6 +1,13 @@
 /* Token bổ sung cho giá trị frame dùng ngoài tokens.css (đề xuất 1.2). Thêm dần theo phase; mỗi token ghi frame nguồn.
    Cùng mẫu selector với tokens.css: Sáng ở :root, Tối ở [data-theme="dark"] và ở "Theo hệ thống" khi máy để tối. */
 :root {
+  /* §5.2, D17: cỡ chữ mobile (< 768px) — h1 24/34, h2 20/30, thân bài 16/26. */
+  --fs-h1-m: 24px;
+  --lh-h1-m: 34px;
+  --fs-h2-m: 20px;
+  --lh-h2-m: 30px;
+  --fs-body-m: 16px;
+  --lh-body-m: 26px;
   /* F01 (Main.dc.html, ô "bo 14"): nền dialog, sheet, panel. Sáng = surface; Tối = surface-2 (như F27). */
   --surface-dialog: #ffffff;
   /* F01 (Main.dc.html, mục 3): ô màu mẫu của Bỏ qua. Trên UI, Bỏ qua luôn vẽ bằng sọc --st-skip-stripe. */

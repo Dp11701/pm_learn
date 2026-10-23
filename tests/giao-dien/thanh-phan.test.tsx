@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThanhPhan from '../../src/dev/ThanhPhan'
 import { datGiaoDien } from '../../src/app/giao-dien'
 import { mauF01 } from '../../fixtures/mau/thanh-phan'
-import { expectNoAxeViolations } from './axe'
+import { expectNoAxeViolations } from '../ho-tro/axe'
 import { dungLocalStorageJsdom } from './moi-truong'
 
 dungLocalStorageJsdom()

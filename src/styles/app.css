@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import './tokens.css';
 @import './tokens-them.css';
+@import './tokens-trang-thai.css';
+@import './tokens-khung.css';
+@import './tokens-he-thong.css';
+@import './tokens-phim-tat.css';
 
 /* Ánh xạ token sang tiện ích Tailwind (bg-surface, text-muted, border-input…). */
 @theme inline {

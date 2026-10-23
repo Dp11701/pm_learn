@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import ChonGiaoDien from '../../src/components/ChonGiaoDien'
 import { KHOA_GIAO_DIEN, datGiaoDien } from '../../src/app/giao-dien'
-import { expectNoAxeViolations } from './axe'
+import { expectNoAxeViolations } from '../ho-tro/axe'
 import { dungLocalStorageJsdom } from './moi-truong'
 
 dungLocalStorageJsdom()
