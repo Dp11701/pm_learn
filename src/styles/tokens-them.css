@@ -12,16 +12,98 @@
   --surface-dialog: #ffffff;
   /* F01 (Main.dc.html, mục 3): ô màu mẫu của Bỏ qua. Trên UI, Bỏ qua luôn vẽ bằng sọc --st-skip-stripe. */
   --st-skip-solid: #d6d3d1;
+
+  /* C32 — lớp phủ sau dialog, sheet, drawer. Sáng: F19, F13, F28 rgba(15,23,42,.48); Tối: F27. */
+  --scrim: rgba(15, 23, 42, 0.48);
+  /* C32 — viền dialog, sheet. Sáng: F19 không viền (tách lớp bằng shadow-3); Tối: F27 #334155. */
+  --border-dialog: transparent;
+  /* C32 — bóng bottom sheet đổ lên trên (F13). Tối không dùng bóng (§5.2). */
+  --shadow-sheet: 0 -8px 24px rgba(15, 23, 42, 0.12);
+  /* C32 — thanh kéo của bottom sheet 36×4 (F13). Tối: F02b-toi (C3, bottom sheet) #64748B. */
+  --sheet-handle: #cbd5e1;
+  /* C32 — bề rộng panel trượt bên phải ở trang bài < 1280 (đề xuất 4.4, §5.2). */
+  --panel-truot-w: 360px;
+  /* C38 — thanh skeleton (F26 "Skeleton · Tổng quan đang tải", F02b C38). Tối: F02b-toi C38 #1E293B. */
+  --skeleton-bg: #f1f5f9;
+  /* D18 — hàng full-width: vòng focus 2px nằm bên trong, cách mép 2px (offset −(2 + 2)) để không bị cắt. */
+  --focus-offset-trong: -4px;
 }
 
 :root[data-theme='dark'] {
   --surface-dialog: #1e293b;
   --st-skip-solid: #57534e;
+  --scrim: rgba(2, 6, 23, 0.72);
+  --border-dialog: #334155;
+  --shadow-sheet: none;
+  --sheet-handle: #64748b;
+  --skeleton-bg: #1e293b;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --surface-dialog: #1e293b;
     --st-skip-solid: #57534e;
+    --scrim: rgba(2, 6, 23, 0.72);
+    --border-dialog: #334155;
+    --shadow-sheet: none;
+    --sheet-handle: #64748b;
+    --skeleton-bg: #1e293b;
+  }
+}
+
+/* --- Tiện ích dùng chung (phase 1, component lõi) --- */
+
+/* D18: hàng full-width (C9, hàng bảng, mục menu sát mép) dùng class này thay cho vòng focus ngoài. */
+.focus-trong:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset-trong);
+}
+
+/* Chuyển động 150–250ms (§5.2). Component chỉ gọi các keyframe trượt trong motion-safe; với
+   prefers-reduced-motion chỉ dùng hien-dan / an-dan (cross-fade). */
+@keyframes hien-dan {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes an-dan {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vao-tu-phai {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ra-phai {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes vao-tu-trai {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes ra-trai {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes vao-tu-duoi {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes ra-duoi {
+  to {
+    transform: translateY(100%);
+  }
+}
+/* Skeleton nhấp nháy nhẹ; reduced-motion thì đứng yên (F26). */
+@keyframes nhap-nhay {
+  50% {
+    opacity: 0.55;
   }
 }

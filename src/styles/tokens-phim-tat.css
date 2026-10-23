@@ -1,1 +1,35 @@
-/* Token thêm của phase 1 (phim-tat) — gộp vào tokens-them.css khi tích hợp. */
+/* Token thêm của phase 1 (phim-tat) — gộp vào tokens-them.css khi tích hợp.
+   Cùng mẫu selector với tokens.css: Sáng ở :root, Tối ở [data-theme="dark"] và ở "Theo hệ thống". */
+:root {
+  /* F27 — nền phím (kbd) và ô ghi chú cuối bảng phím tắt: một bậc "lõm" so với nền dialog.
+     Tối: F27 #111827. Sáng: frame chỉ vẽ Tối — tự đặt #F8FAFC như chân popover C28. */
+  --phim-tat-nen: #f8fafc;
+  /* F27 — vạch dưới mỗi dòng phím tắt. Tối: F27 #334155. Sáng: tự đặt = border #E2E8F0. */
+  --phim-tat-vach: #e2e8f0;
+  /* C28 — viền popover tìm kiếm, vạch dưới ô tìm, vạch trên chân, khung phím Esc.
+     Sáng: C28 #E2E8F0. Tối: frame không vẽ — theo viền dialog Tối F27 #334155. */
+  --tim-kiem-vien: #e2e8f0;
+  /* C28 — nền kết quả đang chọn / hover. Sáng: C28 #F1F5F9. Tối: tự đặt #111827, vì nền dialog
+     Tối đã là surface-2 (F27). */
+  --tim-kiem-chon: #f1f5f9;
+  /* C28 — nền chân popover (gợi ý phím). Sáng: C28 #F8FAFC. Tối: tự đặt #111827 như --phim-tat-nen. */
+  --tim-kiem-chan: #f8fafc;
+}
+
+:root[data-theme='dark'] {
+  --phim-tat-nen: #111827;
+  --phim-tat-vach: #334155;
+  --tim-kiem-vien: #334155;
+  --tim-kiem-chon: #111827;
+  --tim-kiem-chan: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --phim-tat-nen: #111827;
+    --phim-tat-vach: #334155;
+    --tim-kiem-vien: #334155;
+    --tim-kiem-chon: #111827;
+    --tim-kiem-chan: #111827;
+  }
+}
