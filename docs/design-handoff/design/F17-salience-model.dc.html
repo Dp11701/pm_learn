@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Salience Model · Học PM A–Z</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F8FAFC}
+a{color:#0F172A}a:hover{color:#334155}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-label="Điều hướng chính" style="flex: 0 0 264px; background: #FFFFFF; border-right: 1px solid #E2E8F0">
+    <dc-import name="C34-sidebar" active="lo-trinh" min-height="1900px" hint-size="264px,1900px"></dc-import>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 24px 40px 48px; display: flex; flex-direction: column; gap: 32px">
+    <nav aria-label="Breadcrumb" style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 13px; line-height: 20px; color: #475569">
+      <span lang="en" style="padding: 0 6px; color: #0F172A">Project Management ▾</span><span aria-hidden="true">›</span>
+      <span lang="en" style="padding: 0 6px; color: #0F172A">Stakeholder and Communication Management ▾</span><span aria-hidden="true">›</span>
+      <span aria-current="page" lang="en" style="padding: 0 6px; font-weight: 600; color: #0F172A">Salience Model</span>
+    </nav>
+
+    <header style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid #E2E8F0">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+        <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #0F172A; background: #FDE7C7; color: #1C1917; font-size: 12px; line-height: 18px; font-weight: 600">Chủ đề</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px dashed #8492A6; color: #475569; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg>Chưa có nội dung</span>
+        <span style="font-size: 13px; line-height: 20px; color: #475569">Chưa bấm giờ</span>
+      </div>
+      <h1 tabindex="-1" lang="en" style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">Salience Model</h1>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+        <div role="radiogroup" aria-label="Trạng thái học" style="display: inline-flex; padding: 3px; gap: 2px; border: 1px solid #8492A6; border-radius: 8px; background: #FFFFFF">
+          <button type="button" role="radio" aria-checked="true" style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: #F1F5F9; color: #475569; box-shadow: inset 0 0 0 1.5px #8492A6; font: 600 15px/24px 'Be Vietnam Pro', sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg>Chưa học</button>
+          <button type="button" role="radio" aria-checked="false" style="height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Đang học</button>
+          <button type="button" role="radio" aria-checked="false" style="height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Đã xong</button>
+          <button type="button" role="radio" aria-checked="false" style="height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Bỏ qua</button>
+        </div>
+        <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Xem trên bản đồ</a>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px">
+        <nav aria-label="Các mục trong Stakeholder and Communication Management" style="display: flex; align-items: center; gap: 2px">
+          <sc-for list="{{dots}}" as="d" hint-placeholder-count="9">
+            <a href="#" aria-label="{{d.aria}}" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: {{d.color}}">
+              <sc-if value="{{d.ns}}" hint-placeholder-val="{{true}}"><svg width="{{d.size}}" height="{{d.size}}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle></svg></sc-if>
+              <sc-if value="{{d.lr}}" hint-placeholder-val="{{false}}"><svg width="{{d.size}}" height="{{d.size}}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path></svg></sc-if>
+            </a>
+          </sc-for>
+        </nav>
+        <span style="font-size: 13px; line-height: 20px; color: #475569">Mục 2/9 · <span lang="en">Stakeholder and Communication Management</span></span>
+      </div>
+    </header>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 48px">
+      <div style="flex: 1 1 560px; max-width: 720px; min-width: 0; display: flex; flex-direction: column; gap: 32px">
+        <section aria-labelledby="h-empty" style="display: flex; flex-direction: column; gap: 16px; padding: 24px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <div style="display: flex; gap: 16px; align-items: flex-start">
+            <span style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; color: #475569"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg></span>
+            <div style="display: flex; flex-direction: column; gap: 4px"><h2 id="h-empty" style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600">Mục này chưa có nội dung.</h2><p style="margin: 0; color: #475569">Roadmap gốc chỉ có tên mục — bài học do bạn soạn hoặc duyệt. Bạn vẫn đổi trạng thái, bấm giờ và ghi chú được.</p></div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-left: 56px">
+            <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 6px; background: #0F172A; color: #FFFFFF; text-decoration: none; font-weight: 600">Soạn bài</a>
+            <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Nhập file .md</a>
+            <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Sao chép prompt soạn bài</a>
+          </div>
+        </section>
+
+        <section aria-labelledby="h-khung" style="display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 id="h-khung" style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600">Khung bài · mẫu Chủ đề</h2><span style="font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums">0/9 khối bắt buộc</span></div>
+          <sc-for list="{{blocks}}" as="b" hint-placeholder-count="11">
+            <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 16px; box-sizing: border-box; border: 1.5px dashed #8492A6; border-radius: 10px">
+              <span style="flex: 1; font-weight: 600">{{b.title}}<span style="font-weight: 400; color: #475569">{{b.req}}</span></span>
+              <span style="font-size: 13px; line-height: 20px; color: #475569">Chưa có</span>
+            </div>
+          </sc-for>
+        </section>
+
+        <nav aria-label="Mục trước và tiếp" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; padding-top: 24px; border-top: 1px solid #E2E8F0">
+          <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px 20px; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; color: #0F172A; text-decoration: none"><span style="font-size: 13px; line-height: 20px; color: #475569">‹ Trước</span><span lang="en" style="font-weight: 600">Power/Interest Grid</span><span style="align-self: flex-start; display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid #E2E8F0; background: #F1F5F9; font-size: 12px; line-height: 18px; font-weight: 600">Bản nháp · AI</span></a>
+          <a href="#" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding: 16px 20px; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; color: #0F172A; text-decoration: none"><span style="font-size: 13px; line-height: 20px; color: #475569">Tiếp ›</span><span lang="en" style="font-weight: 600">Expectations Management</span><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px dashed #8492A6; color: #475569; font-size: 12px; line-height: 18px; font-weight: 600">Chưa có nội dung</span></a>
+        </nav>
+      </div>
+
+      <aside aria-label="Công cụ của bài" style="flex: 0 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+        <section style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <h2 style="margin: 0; font-size: 15px; line-height: 24px; font-weight: 600">Đồng hồ của mục</h2>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; line-height: 32px; color: #475569">00:00:00</span>
+          <p style="margin: 0; font-size: 13px; line-height: 20px; color: #475569">Đồng hồ đang chạy cho <span lang="en">Risk Register</span>.</p>
+          <button type="button" style="height: 36px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Chuyển sang mục này</button>
+        </section>
+        <section style="display: flex; flex-direction: column; gap: 8px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <label for="sm-gc" style="font-size: 15px; line-height: 24px; font-weight: 600">Ghi chú</label>
+          <textarea id="sm-gc" rows="5" placeholder="Ghi chú vẫn dùng được khi mục chưa có nội dung" style="box-sizing: border-box; padding: 8px 12px; border: 1px solid #8492A6; border-radius: 6px; font: 400 15px/24px 'Be Vietnam Pro', sans-serif"></textarea>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var names = ['Power/Interest Grid', 'Salience Model', 'Expectations Management', 'Communication Channels Matrix', 'Communication Channels Calculation', 'Stakeholder Engagement Assessment Matrix', 'Communication Management Plan', 'Stakeholder Register', 'RACI Matrix'];
+    var dots = names.map(function (n, i) {
+      var lr = i === 0, cur = i === 1;
+      return { aria: 'Mục ' + (i + 1) + '/9: ' + n + ', ' + (lr ? 'Đang học' : 'Chưa học') + (cur ? ', đang mở' : ''), ns: !lr, lr: lr, color: cur ? '#0F172A' : (lr ? '#7E22CE' : '#8492A6'), size: cur ? 22 : 14 };
+    });
+    var blocks = [['Tóm tắt', 1], ['Vì sao PM cần biết', 1], ['Khái niệm cốt lõi', 1], ['Ví dụ thực tế', 1], ['Cách áp dụng', 1], ['Góc dev lead → PM', 1], ['So sánh · Thuật ngữ · Thực hành công cụ', 0], ['Thực hành trên dự án thật', 1], ['Tự kiểm tra', 1], ['Mục liên quan', 0], ['Tham khảo', 1]]
+      .map(function (b) { return { title: b[0], req: b[1] ? ' ★' : ' · tuỳ chọn' }; });
+    return { dots: dots, blocks: blocks };
+  }
+}
+</script>
+</body>
+</html>

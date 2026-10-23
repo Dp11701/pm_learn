@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Scope Creep · mobile · sheet trạng thái</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 375px; height: 900px; overflow: hidden; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 16px; line-height: 26px">
+  <header style="height: 56px; box-sizing: border-box; padding: 0 4px; display: flex; align-items: center; gap: 2px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0">
+    <a href="#" style="display: flex; align-items: center; gap: 2px; height: 44px; padding: 0 8px; color: #0F172A; text-decoration: none; font-size: 13px; line-height: 20px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><span lang="en">Scope Management</span></a>
+    <span style="flex: 1"></span>
+    <button type="button" aria-label="Tìm kiếm" style="width: 44px; height: 44px; border: 0; background: transparent; color: #0F172A; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
+    <button type="button" aria-label="Mở menu" style="width: 44px; height: 44px; border: 0; background: transparent; color: #0F172A; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg></button>
+  </header>
+
+  <main aria-hidden="true" style="padding: 16px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #0F172A; background: #FDE7C7; color: #1C1917; font-size: 12px; line-height: 18px; font-weight: 600">Chủ đề</span>
+      <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid #E2E8F0; background: #FFFFFF; font-size: 12px; line-height: 18px; font-weight: 600">Đã duyệt · 18/10/2026</span>
+    </div>
+    <h1 style="margin: 0; font-size: 24px; line-height: 34px; font-weight: 700"><span lang="en">Scope Creep</span><span style="font-weight: 500; color: #475569"> — phình phạm vi</span></h1>
+    <button type="button" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1.5px solid #0F172A; border-radius: 6px; background: #F3E8FF; color: #6B21A8; font: 600 15px/24px 'Be Vietnam Pro', sans-serif">Đang học ▾</button>
+    <div style="display: flex; gap: 3px"><span style="flex: 1; height: 6px; border-radius: 2px; background: #0F172A"></span><span style="flex: 1; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1.5px solid #0F172A; background-image: linear-gradient(90deg, #0F172A 50%, transparent 50%)"></span><span style="flex: 1; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1px solid #8492A6"></span><span style="flex: 1; height: 6px; border-radius: 2px; background: #0F172A"></span></div>
+    <span style="font-size: 13px; line-height: 20px; color: #475569">Tiếp: Áp dụng · Mục 3/16 · <span lang="en">Scope Management</span></span>
+    <section style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 20px; line-height: 30px; font-weight: 600">Tóm tắt</h2>
+      <p style="margin: 0">Scope Creep là khi phạm vi dự án lớn dần vì yêu cầu mới không qua kiểm soát thay đổi.</p>
+    </section>
+  </main>
+
+  <div style="position: absolute; inset: 0; background: rgba(15,23,42,.48)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="sh-t" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 8px 16px 24px; background: #FFFFFF; border-radius: 14px 14px 0 0; box-shadow: 0 -8px 24px rgba(15,23,42,.12); display: flex; flex-direction: column; gap: 8px">
+    <span aria-hidden="true" style="align-self: center; width: 36px; height: 4px; border-radius: 2px; background: #CBD5E1; margin-bottom: 8px"></span>
+    <div style="display: flex; justify-content: space-between; align-items: center"><h2 id="sh-t" style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600">Trạng thái học</h2><span lang="en" style="font-size: 13px; color: #475569">Scope Creep</span></div>
+    <div role="radiogroup" aria-labelledby="sh-t" style="display: flex; flex-direction: column; gap: 4px">
+      <sc-for list="{{opts}}" as="o" hint-placeholder-count="4">
+        <button type="button" role="radio" aria-checked="{{o.checked}}" style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; border: {{o.bd}}; border-radius: 10px; background: {{o.bg}}; color: {{o.fg}}; font: {{o.font}}; text-align: left">
+          <span style="display: flex">
+            <sc-if value="{{o.ns}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg></sc-if>
+            <sc-if value="{{o.lr}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path></svg></sc-if>
+            <sc-if value="{{o.dn}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+            <sc-if value="{{o.sk}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></sc-if>
+          </span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span>{{o.label}}</span><span style="font-size: 13px; line-height: 20px; font-weight: 400; color: #475569">{{o.hint}}</span></span>
+          <sc-if value="{{o.isOn}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <button type="button" style="height: 48px; margin-top: 4px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Đóng</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":375,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    function o(label, key, hint, on) {
+      var r = { label: label, hint: hint, checked: on ? 'true' : 'false', isOn: on,
+        bd: on ? '1.5px solid #7E22CE' : '1px solid #E2E8F0', bg: on ? '#F3E8FF' : '#FFFFFF', fg: on ? '#6B21A8' : '#0F172A',
+        font: on ? "600 15px/24px 'Be Vietnam Pro', sans-serif" : "500 15px/24px 'Be Vietnam Pro', sans-serif" };
+      r[key] = true; return r;
+    }
+    return { opts: [
+      o('Chưa học', 'ns', '', false),
+      o('Đang học', 'lr', 'Đang chọn', true),
+      o('Đã xong', 'dn', 'Còn thiếu Áp dụng, Kiểm tra — sẽ hỏi lại', false),
+      o('Bỏ qua', 'sk', 'Có thể ghi lý do', false)
+    ] };
+  }
+}
+</script>
+</body>
+</html>

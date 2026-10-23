@@ -1,0 +1,20 @@
+/* Token bổ sung cho giá trị frame dùng ngoài tokens.css (đề xuất 1.2). Thêm dần theo phase; mỗi token ghi frame nguồn.
+   Cùng mẫu selector với tokens.css: Sáng ở :root, Tối ở [data-theme="dark"] và ở "Theo hệ thống" khi máy để tối. */
+:root {
+  /* F01 (Main.dc.html, ô "bo 14"): nền dialog, sheet, panel. Sáng = surface; Tối = surface-2 (như F27). */
+  --surface-dialog: #ffffff;
+  /* F01 (Main.dc.html, mục 3): ô màu mẫu của Bỏ qua. Trên UI, Bỏ qua luôn vẽ bằng sọc --st-skip-stripe. */
+  --st-skip-solid: #d6d3d1;
+}
+
+:root[data-theme='dark'] {
+  --surface-dialog: #1e293b;
+  --st-skip-solid: #57534e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --surface-dialog: #1e293b;
+    --st-skip-solid: #57534e;
+  }
+}

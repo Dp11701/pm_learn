@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Tổng quan · Học PM A–Z</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F8FAFC}
+a{color:#0F172A}a:hover{color:#334155}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-label="Điều hướng chính" style="flex: 0 0 264px; background: #FFFFFF; border-right: 1px solid #E2E8F0">
+    <dc-import name="C34-sidebar" active="tong-quan" first-run="{{firstRun}}" min-height="960px" hint-size="264px,960px"></dc-import>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 48px; display: flex; flex-direction: column; gap: 24px">
+    <header style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px">
+      <h1 tabindex="-1" style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">Tổng quan</h1>
+      <span style="font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums">{{dateLine}}</span>
+    </header>
+
+    <sc-if value="{{normal}}" hint-placeholder-val="{{true}}">
+      <div role="status" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid #8492A6; border-radius: 10px; background: #F1F5F9">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+        <strong style="flex: 1 1 320px; font-weight: 600">Lộ trình gợi ý: Đề xuất — chờ bạn duyệt</strong>
+        <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Xem đề xuất</a>
+      </div>
+    </sc-if>
+    <sc-if value="{{firstRun}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid #8492A6; border-radius: 10px; background: #F1F5F9">
+        <div style="display: flex; gap: 12px; align-items: flex-start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+          <div style="display: flex; flex-direction: column; gap: 4px"><strong style="font-size: 17px; line-height: 28px; font-weight: 600">Roadmap có 199 mục, hiện 0/199 mục có nội dung. Bắt đầu từ đâu?</strong><span style="font-size: 13px; line-height: 20px; color: #475569">Roadmap gốc chỉ có tên mục — bài học do bạn soạn hoặc duyệt.</span></div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-left: 32px">
+          <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 6px; background: #0F172A; color: #FFFFFF; text-decoration: none; font-weight: 600">Thiết lập lần đầu</a>
+          <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Xem lộ trình</a>
+          <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">Soạn bài đầu tiên</a>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px">
+      <div style="flex: 1 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 24px">
+          <section aria-labelledby="h-tiep" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(15,23,42,.06)">
+            <h2 id="h-tiep" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Tiếp tục học</h2>
+            <sc-if value="{{normal}}" hint-placeholder-val="{{true}}">
+              <div style="display: flex; flex-direction: column; gap: 10px">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                  <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #0F172A; background: #BFDBFE; color: #172554; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>Tài liệu</span>
+                  <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid #E2E8F0; background: #F1F5F9; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp · AI</span>
+                </div>
+                <h3 lang="en" style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">Risk Register</h3>
+                <span style="font-size: 13px; line-height: 20px; color: #475569" lang="en">Project Management › Risk Management</span>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; line-height: 20px">
+                  <span role="img" aria-label="Hiểu xong, Áp dụng đang làm, Kiểm tra chưa làm, Ghi nhớ chưa làm" style="display: flex; gap: 3px"><span style="width: 14px; height: 6px; border-radius: 2px; background: #0F172A"></span><span style="width: 14px; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1.5px solid #0F172A; background-image: linear-gradient(90deg, #0F172A 50%, transparent 50%)"></span><span style="width: 14px; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1px solid #8492A6"></span><span style="width: 14px; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1px solid #8492A6"></span></span>
+                  <span style="font-weight: 600">Tiếp: Áp dụng</span>
+                  <span style="color: #475569">Đã học 1 giờ 05 phút</span>
+                </div>
+              </div>
+              <a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 6px; background: #0F172A; color: #FFFFFF; text-decoration: none; font-weight: 600">Học tiếp<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></a>
+              <ul style="list-style: none; margin: 0; padding: 12px 0 0; border-top: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 4px">
+                <li><a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 32px; text-decoration: none; color: #0F172A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B21A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Đang học"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="#6B21A8"></path></svg><span lang="en">Scope Creep</span><span style="margin-left: auto; font-size: 13px; color: #475569">Đang học</span></a></li>
+                <li><a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 32px; text-decoration: none; color: #0F172A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B21A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Đang học"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="#6B21A8"></path></svg><span lang="en">Power/Interest Grid</span><span style="margin-left: auto; font-size: 13px; color: #475569">Đang học</span></a></li>
+              </ul>
+            </sc-if>
+            <sc-if value="{{firstRun}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; flex-direction: column; gap: 10px">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                  <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #0F172A; background: #FDE7C7; color: #1C1917; font-size: 12px; line-height: 18px; font-weight: 600">Chủ đề</span>
+                  <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px dashed #8492A6; color: #475569; font-size: 12px; line-height: 18px; font-weight: 600">Chưa có nội dung</span>
+                </div>
+                <h3 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">Học tiếp: <span lang="en">OPA</span></h3>
+                <span style="font-size: 13px; line-height: 20px; color: #475569">Mục đầu tiên trong cây · <span lang="en">Project Management › PM Framework / Approach</span></span>
+              </div>
+              <a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 6px; background: #0F172A; color: #FFFFFF; text-decoration: none; font-weight: 600">Mở OPA</a>
+            </sc-if>
+          </section>
+
+          <section aria-labelledby="h-tien-do" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(15,23,42,.06)">
+            <h2 id="h-tien-do" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Tiến độ</h2>
+            <div style="display: flex; align-items: center; gap: 20px">
+              <div style="position: relative; width: 136px; height: 136px; flex: none">
+                <svg width="136" height="136" viewBox="0 0 136 136" role="img" aria-label="{{ring.aria}}">
+                  <defs><pattern id="f03skip" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#F5F5F4"></rect><rect width="2" height="6" fill="#57534E"></rect></pattern></defs>
+                  <circle cx="68" cy="68" r="52" fill="none" stroke="#E2E8F0" stroke-width="14"></circle>
+                  <circle cx="68" cy="68" r="52" fill="none" stroke="#15803D" stroke-width="14" stroke-dasharray="{{ring.d1}}" stroke-dashoffset="0" transform="rotate(-90 68 68)"></circle>
+                  <circle cx="68" cy="68" r="52" fill="none" stroke="#7E22CE" stroke-width="14" stroke-dasharray="{{ring.d2}}" stroke-dashoffset="-60.75" transform="rotate(-90 68 68)"></circle>
+                  <circle cx="68" cy="68" r="52" fill="none" stroke="url(#f03skip)" stroke-width="14" stroke-dasharray="{{ring.d3}}" stroke-dashoffset="-70.6" transform="rotate(-90 68 68)"></circle>
+                </svg>
+                <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-variant-numeric: tabular-nums">
+                  <span style="font-size: 22px; line-height: 32px; font-weight: 700">{{ring.pct}}</span>
+                  <span style="font-size: 13px; line-height: 20px">{{ring.frac}}</span>
+                  <span style="font-size: 12px; line-height: 18px; color: #475569">{{ring.skip}}</span>
+                </div>
+              </div>
+              <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums">
+                <li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #15803D"></span>Đã xong {{ring.dn}}</li>
+                <li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #7E22CE"></span>Đang học {{ring.lr}}</li>
+                <li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; box-sizing: border-box; border-radius: 2px; border: 1px solid #8492A6; background-color: #F5F5F4; background-image: repeating-linear-gradient(45deg, rgba(87,83,78,.35) 0 2px, transparent 2px 5px)"></span>Bỏ qua {{ring.sk}}</li>
+                <li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; box-sizing: border-box; border-radius: 2px; border: 1px solid #8492A6; background: #E2E8F0"></span>Chưa học {{ring.ns}}</li>
+              </ul>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px 16px; padding-top: 12px; border-top: 1px solid #E2E8F0; font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums">
+              <span>{{depth.a}}</span><span>{{depth.b}}</span><span>{{depth.c}}</span>
+            </div>
+          </section>
+        </div>
+
+        <section aria-labelledby="h-phan" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <h2 id="h-phan" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Theo phần</h2>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
+            <sc-for list="{{parts}}" as="p" hint-placeholder-count="5">
+              <li><a href="#" style="display: grid; grid-template-columns: 24px minmax(0, 220px) minmax(0, 1fr) 150px; align-items: center; gap: 12px; color: #0F172A; text-decoration: none">
+                <span style="display: flex; color: #475569">
+                  <sc-if value="{{p.i0}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg></sc-if>
+                  <sc-if value="{{p.i1}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></sc-if>
+                  <sc-if value="{{p.i2}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"></rect><rect width="6" height="6" x="9" y="9" rx="1"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path></svg></sc-if>
+                  <sc-if value="{{p.i3}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg></sc-if>
+                  <sc-if value="{{p.i4}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg></sc-if>
+                </span>
+                <span lang="en" style="font-weight: 500">{{p.name}}</span>
+                <span style="height: 8px; border-radius: 4px; background: #F1F5F9; border: 1px solid #E2E8F0; overflow: hidden; display: flex"><span style="width: {{p.w}}; background: #15803D"></span><span style="margin-left: auto; width: {{p.sw}}; background-color: #F5F5F4; background-image: repeating-linear-gradient(45deg, rgba(87,83,78,.35) 0 2px, transparent 2px 6px)"></span></span>
+                <span style="text-align: right; font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums">{{p.frac}}</span>
+              </a></li>
+            </sc-for>
+          </ul>
+        </section>
+
+        <section aria-labelledby="h-lv" style="display: flex; flex-direction: column; gap: 12px">
+          <h2 id="h-lv" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">11 lĩnh vực · <span lang="en">Project Management</span></h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 16px">
+            <sc-for list="{{areas}}" as="a" hint-placeholder-count="11">
+              <a href="#" style="display: flex; flex-direction: column; gap: 10px; padding: 16px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; color: #0F172A; text-decoration: none">
+                <span style="display: flex; align-items: flex-start; gap: 10px">
+                  <span style="flex: none; width: 24px; height: 24px; border-radius: 6px; border: 1px solid #0F172A; box-sizing: border-box; background: #FDE047; color: #1C1917; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg></span>
+                  <span lang="en" style="font-weight: 600; min-height: 48px">{{a.name}}</span>
+                </span>
+                <span style="display: flex; justify-content: space-between; font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums"><span>{{a.frac}}</span><span>{{a.skip}}</span></span>
+                <span style="height: 6px; border-radius: 3px; background: #F1F5F9; border: 1px solid #E2E8F0; overflow: hidden; display: flex"><span style="width: {{a.w}}; background: #15803D"></span><span style="margin-left: auto; width: {{a.sw}}; background-color: #F5F5F4; background-image: repeating-linear-gradient(45deg, rgba(87,83,78,.35) 0 2px, transparent 2px 6px)"></span></span>
+              </a>
+            </sc-for>
+          </div>
+        </section>
+      </div>
+
+      <div style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+        <section aria-labelledby="h-on" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(15,23,42,.06)">
+          <h2 id="h-on" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Ôn tập hôm nay</h2>
+          <sc-if value="{{normal}}" hint-placeholder-val="{{true}}">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+              <span style="font-size: 22px; line-height: 32px; font-weight: 700; font-variant-numeric: tabular-nums">12 thẻ <span style="font-size: 15px; font-weight: 400; color: #475569">đến hạn</span></span>
+              <a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 6px; background: #0F172A; color: #FFFFFF; text-decoration: none; font-weight: 600">Ôn ngay</a>
+            </div>
+            <span style="font-size: 13px; line-height: 20px; font-weight: 600">Cần ôn lại (3)</span>
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+              <sc-for list="{{review}}" as="r" hint-placeholder-count="3">
+                <li><a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 32px; color: #0F172A; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Cần ôn lại"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg><span lang="en">{{r.name}}</span><span style="margin-left: auto; font-size: 13px; color: #475569">{{r.area}}</span></a></li>
+              </sc-for>
+            </ul>
+          </sc-if>
+          <sc-if value="{{firstRun}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
+              <span style="width: 40px; height: 40px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; color: #475569"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></span>
+              <span>Chưa có flashcard</span>
+              <span style="font-size: 13px; line-height: 20px; color: #475569">Thẻ được tạo từ khối Tự kiểm tra trong mỗi bài.</span>
+            </div>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="h-gio" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <h2 id="h-gio" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Giờ học</h2>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; font-variant-numeric: tabular-nums"><span>Tuần này</span><span style="font-weight: 600">{{hours.week}}</span></div>
+            <span style="height: 8px; border-radius: 4px; background: #F1F5F9; border: 1px solid #E2E8F0; overflow: hidden; display: flex"><span style="width: {{hours.w}}; background: #0F172A"></span></span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums"><span>{{hours.total}}</span><span>{{hours.streak}}</span></div>
+          <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+            <div role="img" aria-label="Heatmap giờ học 12 tuần, tuần 32 đến 43" style="display: grid; grid-template-columns: repeat(12, 16px); grid-template-rows: repeat(7, 16px); grid-auto-flow: column; gap: 3px">
+              <sc-for list="{{heat}}" as="h" hint-placeholder-count="84">
+                <span style="width: 16px; height: 16px; box-sizing: border-box; border-radius: 3px; background: {{h.bg}}; border: {{h.bd}}"></span>
+              </sc-for>
+            </div>
+            <figcaption style="display: flex; justify-content: space-between; width: 225px; font-size: 12px; line-height: 18px; color: #475569; font-variant-numeric: tabular-nums"><span>Tuần 32</span><span>Tuần 43</span></figcaption>
+            <span style="font-size: 12px; line-height: 18px; color: #475569">Ô viền rỗng: trước ngày bắt đầu 17/09/2026</span>
+            <a href="#" style="font-size: 13px; line-height: 20px">Xem dạng bảng</a>
+          </figure>
+        </section>
+
+        <section aria-labelledby="h-nd" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px">
+          <h2 id="h-nd" style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #475569">Nội dung</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-variant-numeric: tabular-nums">
+            <div style="display: flex; flex-direction: column"><span style="font-size: 22px; line-height: 32px; font-weight: 700">{{content.ok}}</span><span style="display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 18px; color: #475569"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="m9 15 2 2 4-4"></path></svg>Đã duyệt</span></div>
+            <div style="display: flex; flex-direction: column"><span style="font-size: 22px; line-height: 32px; font-weight: 700">{{content.draft}}</span><span style="display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 18px; color: #475569"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp</span></div>
+            <div style="display: flex; flex-direction: column"><span style="font-size: 22px; line-height: 32px; font-weight: 700">{{content.none}}</span><span style="display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 18px; color: #475569"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg>Chưa có</span></div>
+          </div>
+          <span role="img" aria-label="{{content.aria}}" style="height: 8px; border-radius: 4px; border: 1px dashed #8492A6; overflow: hidden; display: flex"><span style="width: {{content.wOk}}; background: #0F172A"></span><span style="width: {{content.wDraft}}; background: #94A3B8"></span></span>
+          <a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; text-decoration: none; font-weight: 500">{{content.cta}}</a>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"firstRun":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var fr = !!this.props.firstRun;
+    function pct(n, d) { return d ? (n / d * 100).toFixed(2) + '%' : '0%'; }
+    var partsRaw = fr
+      ? [['Project Management', 0, 144, 0], ['Business Acumen', 0, 17, 0], ['Technical Acumen', 0, 16, 0], ['Tools', 0, 12, 0], ['Certifications', 0, 10, 0]]
+      : [['Project Management', 28, 144, 2], ['Business Acumen', 3, 17, 0], ['Technical Acumen', 5, 16, 0], ['Tools', 1, 12, 2], ['Certifications', 0, 10, 0]];
+    var parts = partsRaw.map(function (p, i) {
+      var o = { name: p[0], w: pct(p[1], p[2]), sw: pct(p[3], p[2]), frac: (p[1] + '/' + (p[2] - p[3])) + (p[3] ? ' · ' + p[3] + ' bỏ qua' : '') };
+      o['i' + i] = true; return o;
+    });
+    var areasRaw = [['PM Framework / Approach', 12, 22, 0], ['Project Governance', 6, 18, 0], ['Scope Management', 5, 16, 0], ['Change Management', 2, 8, 0], ['Schedule Management', 3, 16, 2],
+      ['Risk Management', 0, 10, 0], ['Cost Management', 0, 10, 0], ['Quality Management', 0, 10, 0], ['People Management', 0, 14, 0], ['Stakeholder and Communication Management', 0, 9, 0], ['Procurement Management', 0, 11, 0]];
+    var areas = areasRaw.map(function (a) {
+      var dn = fr ? 0 : a[1], sk = fr ? 0 : a[3];
+      return { name: a[0], frac: dn + '/' + (a[2] - sk), skip: sk ? sk + ' bỏ qua' : '', w: pct(dn, a[2]), sw: pct(sk, a[2]) };
+    });
+    var heat = [];
+    var seed = 7;
+    for (var w = 0; w < 12; w++) {
+      for (var d = 0; d < 7; d++) {
+        var before = w < 6 || (w === 6 && d < 3);
+        var future = w === 11 && d > 3;
+        var cell;
+        if (future) { cell = { bg: 'transparent', bd: '0' }; }
+        else if (before || fr) { cell = { bg: '#FFFFFF', bd: '1px solid #E2E8F0' }; }
+        else {
+          seed = (seed * 37 + 11) % 101;
+          var lv = d === 6 ? seed % 2 : (seed % 5);
+          var bgs = ['#F1F5F9', '#CBD5E1', '#94A3B8', '#475569', '#0F172A'];
+          cell = { bg: bgs[lv], bd: lv === 0 ? '1px solid #E2E8F0' : '0' };
+        }
+        heat.push(cell);
+      }
+    }
+    return {
+      firstRun: fr, normal: !fr,
+      dateLine: fr ? 'Thứ Năm, 22/10/2026' : 'Thứ Năm, 22/10/2026 · tuần học thứ 6',
+      ring: fr ? { aria: 'Tiến độ 0%, 0 trên 199 mục, 0 bỏ qua', pct: '0%', frac: '0/199', skip: '0 bỏ qua', dn: 0, lr: 0, sk: 0, ns: 199, d1: '0 326.73', d2: '0 326.73', d3: '0 326.73' }
+               : { aria: 'Tiến độ 19%, 37 trên 195 mục, 4 bỏ qua', pct: '19%', frac: '37/195', skip: '4 bỏ qua', dn: 37, lr: 6, sk: 4, ns: 152, d1: '60.75 326.73', d2: '9.85 326.73', d3: '6.57 326.73' },
+      depth: fr ? { a: '0 bài thực hành', b: '0/15 tài liệu', c: 'Chưa có tỉ lệ nhớ' } : { a: '7 bài thực hành', b: '1/15 tài liệu', c: 'Nhớ 81% · 30 ngày' },
+      parts: parts, areas: areas,
+      review: [{ name: 'Scrum', area: 'PM Framework' }, { name: 'MoSCoW', area: 'Scope' }, { name: 'Definition of Done', area: 'Scope' }],
+      hours: fr ? { week: '0 phút / 6 giờ', w: '0%', total: 'Tổng 0 phút', streak: 'Streak 0 ngày' }
+                : { week: '4 giờ 35 phút / 6 giờ', w: '76.4%', total: 'Tổng 38 giờ 10 phút', streak: 'Streak 5 ngày · kỷ lục 12' },
+      heat: heat,
+      content: fr ? { ok: 0, draft: 0, none: 199, wOk: '0%', wDraft: '0%', cta: 'Nhập file .md', aria: '0 đã duyệt, 0 bản nháp, 199 chưa có' }
+                  : { ok: 41, draft: 9, none: 149, wOk: '20.6%', wDraft: '4.5%', cta: 'Duyệt 9 bản nháp', aria: '41 đã duyệt, 9 bản nháp, 149 chưa có' }
+    };
+  }
+}
+</script>
+</body>
+</html>

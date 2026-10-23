@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>C34 Sidebar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="box-sizing: border-box; min-height: {{minH}}; padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; background: {{t.surface}}; color: {{t.text}}; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+    <a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: {{t.text}}">
+      <span style="width: 32px; height: 32px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; display: flex; align-items: center; justify-content: center; font-size: 12px; line-height: 18px; font-weight: 700">A–Z</span>
+      <span style="font-size: 17px; line-height: 28px; font-weight: 700">Học PM A–Z</span>
+    </a>
+    <sc-if value="{{mobile}}" hint-placeholder-val="{{false}}">
+      <button type="button" aria-label="Đóng menu" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+    </sc-if>
+  </div>
+
+  <button type="button" style="display: flex; align-items: center; gap: 8px; height: {{rowH}}; padding: 0 10px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.muted}}; font: 400 15px/24px 'Be Vietnam Pro', sans-serif; text-align: left">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    <span style="flex: 1">Tìm mục…</span>
+    <kbd style="font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 18px; padding: 0 6px; border: 1px solid {{t.border}}; border-radius: 4px; color: {{t.muted}}">/</kbd>
+  </button>
+
+  <nav aria-label="Menu">
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="10">
+        <li><a href="#" aria-current="{{n.current}}" style="display: flex; align-items: center; gap: 10px; height: {{rowH}}; padding: 0 10px; border-radius: 6px; background: {{n.bg}}; color: {{n.fg}}; text-decoration: none; font-weight: {{n.weight}}">
+          <sc-if value="{{n.i0}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg></sc-if>
+          <sc-if value="{{n.i1}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg></sc-if>
+          <sc-if value="{{n.i2}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></sc-if>
+          <sc-if value="{{n.i3}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg></sc-if>
+          <sc-if value="{{n.i4}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></sc-if>
+          <sc-if value="{{n.i5}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M20 7h-3a2 2 0 0 1-2-2V2"></path><path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z"></path><path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8"></path></svg></sc-if>
+          <sc-if value="{{n.i6}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg></sc-if>
+          <sc-if value="{{n.i7}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path><path d="m8 13 4-7 4 7"></path><path d="M9.1 11h5.7"></path></svg></sc-if>
+          <sc-if value="{{n.i8}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"></path><path d="M15 3v4a2 2 0 0 0 2 2h4"></path></svg></sc-if>
+          <sc-if value="{{n.i9}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg></sc-if>
+          <span style="flex: 1">{{n.label}}</span>
+          <sc-if value="{{n.solidBadge}}" hint-placeholder-val="{{false}}"><span aria-label="{{n.badgeAria}}" style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: {{n.badgeBg}}; color: {{n.badgeFg}}; font-size: 12px; line-height: 20px; font-weight: 600; text-align: center">{{n.badge}}</span></sc-if>
+          <sc-if value="{{n.lineBadge}}" hint-placeholder-val="{{false}}"><span aria-label="{{n.badgeAria}}" style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; border: 1px solid {{n.lineBd}}; color: {{n.fg}}; font-size: 12px; line-height: 18px; font-weight: 600; text-align: center">{{n.badge}}</span></sc-if>
+        </a></li>
+      </sc-for>
+    </ul>
+  </nav>
+
+  <section aria-label="Đang học" style="display: flex; flex-direction: column; gap: 4px; padding-top: 16px; border-top: 1px solid {{t.border}}">
+    <h2 style="margin: 0 0 4px; padding: 0 10px; font-size: 13px; line-height: 20px; font-weight: 600; color: {{t.muted}}">Đang học</h2>
+    <sc-if value="{{firstRun}}" hint-placeholder-val="{{false}}">
+      <p style="margin: 0; padding: 4px 10px; font-size: 13px; line-height: 20px; color: {{t.muted}}">Chưa có mục đang học</p>
+    </sc-if>
+    <sc-if value="{{hasLearning}}" hint-placeholder-val="{{true}}">
+      <sc-for list="{{learning}}" as="it" hint-placeholder-count="3">
+        <a href="#" style="display: flex; align-items: center; gap: 8px; min-height: {{rowH}}; padding: 6px 10px; box-sizing: border-box; border-radius: 6px; color: {{t.text}}; text-decoration: none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{t.lrIc}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="{{t.lrIc}}"></path></svg>
+          <span lang="en" style="flex: 1; min-width: 0">{{it.name}}</span>
+          <sc-if value="{{it.doc}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.muted}}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Tài liệu" style="flex: none"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></sc-if>
+        </a>
+      </sc-for>
+      <a href="#" style="padding: 4px 10px; font-size: 13px; line-height: 20px; color: {{t.text}}">Xem tất cả (6)</a>
+    </sc-if>
+  </section>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 16px; border-top: 1px solid {{t.border}}">
+    <div aria-live="polite" style="display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.s2}}">
+      <sc-if value="{{hasLearning}}" hint-placeholder-val="{{true}}">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 20px; color: {{t.muted}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"></line><line x1="12" x2="15" y1="14" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg>Đang bấm giờ · <span lang="en">Risk Register</span></span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; line-height: 32px; font-weight: 500; font-variant-numeric: tabular-nums">00:24:17</span>
+          <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect width="14" height="14" x="5" y="5" rx="1"></rect></svg>Dừng</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{firstRun}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+          <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Chưa bấm giờ</span>
+          <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>Bắt đầu</button>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <button type="button" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: {{rowH}}; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>Giao diện: {{t.mode}}</button>
+      <button type="button" aria-label="Bảng phím tắt" style="width: {{rowH}}; height: {{rowH}}; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 600 15px/24px 'JetBrains Mono', monospace">?</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"active":{"editor":"enum","options":["tong-quan","lo-trinh","on-tap","noi-dung","thong-ke","ho-so","chung-chi","thuat-ngu","ghi-chu","cai-dat"],"default":"tong-quan"},"firstRun":{"editor":"boolean","default":false},"mobile":{"editor":"boolean","default":false},"minHeight":{"editor":null,"default":"960px"},"$preview":{"width":264,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var dark = this.props.theme === 'dark';
+    var t = dark ? {
+      mode: 'Tối', surface: '#111827', s2: '#1E293B', border: '#1F2937', input: '#64748B', text: '#E2E8F0', muted: '#94A3B8', primary: '#E2E8F0', onPrimary: '#0B1120', lrIc: '#D8B4FE'
+    } : {
+      mode: 'Sáng', surface: '#FFFFFF', s2: '#F1F5F9', border: '#E2E8F0', input: '#8492A6', text: '#0F172A', muted: '#475569', primary: '#0F172A', onPrimary: '#FFFFFF', lrIc: '#6B21A8'
+    };
+    var firstRun = !!this.props.firstRun;
+    var active = this.props.active || 'tong-quan';
+    var keys = [
+      ['tong-quan', 'Tổng quan'], ['lo-trinh', 'Lộ trình'], ['on-tap', 'Ôn tập'], ['noi-dung', 'Nội dung'], ['thong-ke', 'Thống kê'],
+      ['ho-so', 'Bộ hồ sơ dự án'], ['chung-chi', 'Chứng chỉ'], ['thuat-ngu', 'Thuật ngữ'], ['ghi-chu', 'Ghi chú'], ['cai-dat', 'Cài đặt']
+    ];
+    var nav = keys.map(function (k, i) {
+      var on = k[0] === active;
+      var n = { label: k[1], current: on ? 'page' : 'false', bg: on ? t.primary : 'transparent', fg: on ? t.onPrimary : t.text, weight: on ? 600 : 400,
+        badgeBg: on ? t.onPrimary : t.primary, badgeFg: on ? t.primary : t.onPrimary, lineBd: on ? t.onPrimary : t.input };
+      n['i' + i] = true;
+      if (k[0] === 'on-tap' && !firstRun) { n.solidBadge = true; n.badge = '12'; n.badgeAria = '12 thẻ đến hạn'; }
+      if (k[0] === 'noi-dung' && !firstRun) { n.lineBadge = true; n.badge = '9'; n.badgeAria = '9 bản nháp'; }
+      return n;
+    });
+    var mobile = !!this.props.mobile;
+    return {
+      t: t, nav: nav, firstRun: firstRun, hasLearning: !firstRun, mobile: mobile,
+      rowH: mobile ? '44px' : '36px', minH: this.props.minHeight || '960px',
+      learning: [{ name: 'Risk Register', doc: true }, { name: 'Scope Creep' }, { name: 'Power/Interest Grid' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

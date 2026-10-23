@@ -1,0 +1,94 @@
+# Cụm cấm cho chống gõ cứng nội dung học (đề xuất mục 6, luật (c)).
+#
+# Dùng ở 2 nơi:
+#   - scripts/kiem-go-cung.ts: chuỗi, template literal, chữ JSX trong src/, server/, shared/ không được
+#     chứa cụm nào dưới đây;
+#   - scripts/kiem-bundle.ts: bundle production (dist/) không được chứa cụm nào dưới đây.
+# So khớp: chuỗi con, không phân biệt hoa/thường, sau khi chuẩn hoá NFC và gộp khoảng trắng.
+# Mỗi dòng một cụm; dòng trống và dòng bắt đầu bằng # bị bỏ qua.
+#
+# Chỉ ghi chữ MẪU: dữ liệu mẫu của đặc tả (§7, §8, §9 P1, §13 quy tắc 6) và renderVals() / chữ trong
+# các frame design-handoff. Không ghi chữ UI thật mà app phải dùng, vd. "Chưa có nội dung", "Bản nháp",
+# "Đã duyệt", "Đang theo dõi", tên khối của 3 mẫu ("Tóm tắt", "Mẫu điền sẵn"…), câu mô tả khối mà
+# khung bài / prompt soạn bài có thể dùng ("Một câu hành động bắt đầu bằng động từ"…).
+# Tên mục, tên gốc, id nút KHÔNG ghi ở đây: luật (a), (b), (d) đọc thẳng từ docs/roadmap-tree.json.
+#
+# Quyết định:
+#   - "Nội dung mẫu" (chữ của tag C27) cấm cả khi đứng riêng: C27 chỉ là chú thích thiết kế, không bao
+#     giờ vào app. Gallery /_dev/thanh-phan và trang so frame lấy chữ này (và mọi chữ mẫu khác) từ
+#     fixtures/mau/ bằng import động khi import.meta.env.DEV, nên không cần ngoại lệ cho src/dev/.
+#   - "[Nội dung mẫu" vẫn ghi riêng cho rõ: đó là câu giữ chỗ của thân bài mẫu (§13 quy tắc 6).
+#   - Ngày, giờ, con số của dữ liệu mẫu (§7) chỉ được tính lúc chạy, nên cấm dạng hiển thị của chúng.
+#     Không cấm dạng ISO như 2026-10-22 vì cây roadmap (được bundle) có fetchedAt đó.
+#   - Không cấm số phiên bản mẫu (v0.2, v1.0): thư viện trong bundle có thể chứa chuỗi tương tự.
+#   - Nếu UI thật cần một ví dụ (placeholder), chọn câu khác với dữ liệu mẫu.
+
+# Tag chú thích thiết kế C27 và các biến thể (README "Lớp chú thích hồng")
+Nội dung mẫu
+[Nội dung mẫu
+liên kết mẫu
+nhãn mẫu
+Đề xuất mẫu
+· Dữ liệu mẫu
+
+# Câu giữ chỗ trong ngoặc vuông của frame
+[Rủi ro mẫu
+[Chiến lược mẫu
+[Tiêu chí mẫu
+[Khái niệm mẫu
+[Bước mẫu
+[Phần mẫu
+[Chi tiết lỗi mẫu
+Nguồn mẫu
+[vai trò của bạn]
+[lý do của bạn]
+[câu hỏi đang gõ]
+[id nút roadmap.sh]
+
+# Chữ mẫu bài Chủ đề (§3 G3, §4, §8.5)
+phình phạm vi
+phạm vi dự án lớn dần
+xin thêm nút xuất Excel
+
+# Bảng Mẫu điền sẵn của bài Tài liệu (§8.6)
+R-01
+R-02
+R-03
+Mô tả rủi ro
+Chiến lược phản hồi
+
+# Mẫu bài Chứng chỉ (§8.6b): nhãn domain mẫu
+Domain 1
+Domain 2
+Domain 3
+
+# Dữ liệu mẫu §7: dự án, lý do Bỏ qua, giờ học, tiến độ
+Cổng đặt lịch nội bộ
+Không dùng trong công việc
+00:24:17
+1 giờ 05 phút
+4 giờ 35 phút
+38 giờ 10 phút
+37/195
+6,25 mục/tuần
+
+# Ngày của dữ liệu mẫu (§7, §8, frame)
+17/09/2026
+18/10/2026
+21/10/2026
+22/10/2026
+23/10/2026
+24/10/2026
+15/06/2027
+17/04/2027
+
+# Chữ mẫu thang chữ F01 (Main.dc.html)
+Ước lượng chi phí
+Quản lý rủi ro định lượng
+Nghiệm thu sản phẩm bàn giao
+
+# Truy vấn, đường dẫn, tên file mẫu (F22, F25b, F26, F38b)
+kiểm thử tự động
+scope-creap
+risk-registr.md
+~/hoc-pm/noi-dung

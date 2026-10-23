@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Lộ trình · Bản đồ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; overflow: hidden; display: flex; background: {{t.bg}}; color: {{t.text}}; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-label="Điều hướng chính" style="flex: 0 0 264px; height: 1000px; overflow: hidden; background: {{t.surface}}; border-right: 1px solid {{t.border}}">
+    <dc-import name="C34-sidebar" active="lo-trinh" theme="{{theme}}" min-height="1000px" hint-size="264px,1000px"></dc-import>
+  </aside>
+
+  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+    <div style="flex: none; display: flex; flex-direction: column; gap: 10px; padding: 12px 20px; background: {{t.surface}}; border-bottom: 1px solid {{t.border}}">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <h1 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 700">Lộ trình</h1>
+        <div role="tablist" aria-label="Cách xem" style="display: inline-flex; padding: 3px; gap: 2px; border: 1px solid {{t.input}}; border-radius: 8px; background: {{t.surface}}">
+          <button type="button" role="tab" aria-selected="true" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; font: 600 13px/20px 'Be Vietnam Pro', sans-serif">Bản đồ</button>
+          <button type="button" role="tab" aria-selected="false" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Danh sách</button>
+          <kbd style="align-self: center; margin: 0 6px 0 2px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">M</kbd>
+        </div>
+        <div role="radiogroup" aria-label="Lớp phủ" style="display: inline-flex; padding: 3px; gap: 2px; border: 1px solid {{t.input}}; border-radius: 8px; background: {{t.surface}}">
+          <button type="button" role="radio" aria-checked="{{ov.progressOn}}" style="height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: {{ov.progressBg}}; color: {{ov.progressFg}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Tiến độ học</button>
+          <button type="button" role="radio" aria-checked="{{ov.contentOn}}" style="height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: {{ov.contentBg}}; color: {{ov.contentFg}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Độ phủ nội dung</button>
+        </div>
+        <span style="flex: 1"></span>
+        <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>Đi tới…</button>
+        <button type="button" aria-expanded="true" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.s2}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>Chú giải</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 20px">
+        <sc-for list="{{chips}}" as="c" hint-placeholder-count="6">
+          <button type="button" style="display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">{{c}}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+        </sc-for>
+        <button type="button" disabled style="height: 28px; padding: 0 8px; border: 0; background: transparent; color: {{t.muted}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Xoá bộ lọc</button>
+        <span style="color: {{t.muted}}; font-variant-numeric: tabular-nums">Đang hiển thị 199/199 mục</span>
+        <span style="flex: 1"></span>
+        <sc-if value="{{isContent}}" hint-placeholder-val="{{false}}">
+          <span style="display: inline-flex; align-items: center; gap: 8px; padding: 0 10px; height: 28px; border-radius: 6px; background: {{t.s2}}; font-variant-numeric: tabular-nums"><span style="display: inline-flex; width: 80px; height: 6px; border-radius: 3px; border: 1px dashed {{t.input}}; overflow: hidden"><span style="width: 20.6%; background: {{t.text}}"></span><span style="width: 4.5%; background: {{t.muted}}"></span></span>41 duyệt · 9 nháp · 149 chưa có</span>
+        </sc-if>
+        <span style="color: {{t.muted}}">Theo roadmap.sh · cập nhật 22/08/2026</span>
+      </div>
+    </div>
+
+    <div style="flex: 1; min-height: 0; display: flex">
+      <div role="application" aria-label="Bản đồ roadmap, dùng mũi tên để di chuyển, Enter để mở panel" style="position: relative; flex: 1; min-width: 0; overflow: hidden; background-color: {{t.bg}}; background-image: radial-gradient(circle, {{t.border}} 1px, transparent 1.4px); background-size: 24px 24px">
+        <div style="position: absolute; left: {{offsetX}}; top: 0; width: 796px; height: 900px">
+          <div style="position: absolute; left: 339px; top: 0; width: 2px; height: 900px; background: {{t.spine}}"></div>
+          <div style="position: absolute; left: 460px; top: 227px; width: 16px; height: 2px; background: {{t.spine}}"></div>
+          <div style="position: absolute; left: 212px; top: 839px; width: 8px; height: 2px; background: {{t.spine}}"></div>
+
+          <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+            <div style="position: absolute; left: {{g.x}}; top: {{g.y}}; width: {{g.w}}; height: {{g.h}}; box-sizing: border-box; border: 1.5px solid {{t.grBd}}; border-radius: 8px; background: {{t.groupFill}}">
+              <button type="button" aria-label="{{g.aria}}" style="width: 100%; height: 34px; display: flex; align-items: center; justify-content: {{g.justify}}; gap: 8px; padding: 0 12px; border: 0; border-radius: 6px 6px 0 0; background: {{t.grBg}}; color: {{t.grFg}}; font: 600 13px/20px 'Be Vietnam Pro', sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span lang="en">{{g.name}}</span></button>
+            </div>
+          </sc-for>
+
+          <sc-for list="{{areas}}" as="a" hint-placeholder-count="2">
+            <button type="button" aria-label="{{a.aria}}" style="position: absolute; left: 220px; top: {{a.y}}; width: 240px; height: 56px; box-sizing: border-box; border: {{a.bw}} solid {{a.bd}}; border-radius: 6px; background: {{t.kaBg}}; color: {{t.kaFg}}; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; font: 600 13px/20px 'Be Vietnam Pro', sans-serif; outline: {{a.outline}}; outline-offset: 2px"><span lang="en">{{a.name}}</span><span style="font-variant-numeric: tabular-nums">{{a.frac}}</span></button>
+          </sc-for>
+
+          <sc-for list="{{nodes}}" as="n" hint-placeholder-count="30">
+            <button type="button" aria-label="{{n.aria}}" tabindex="{{n.tab}}" style="position: absolute; left: {{n.x}}; top: {{n.y}}; width: 200px; min-height: 44px; box-sizing: border-box; border: {{n.bw}} solid {{n.bd}}; border-left: {{n.bl}}; border-radius: 6px; background-color: {{n.bg}}; background-image: {{n.img}}; color: {{n.fg}}; display: flex; align-items: center; gap: 8px; padding: 6px 10px; text-align: left; font: 600 13px/20px 'Be Vietnam Pro', sans-serif">
+              <span style="display: flex; flex: none; color: {{n.ic}}">
+                <sc-if value="{{n.sNs}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg></sc-if>
+                <sc-if value="{{n.sLr}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path></svg></sc-if>
+                <sc-if value="{{n.sDn}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+                <sc-if value="{{n.cX}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg></sc-if>
+                <sc-if value="{{n.cP}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg></sc-if>
+                <sc-if value="{{n.cC}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m9 15 2 2 4-4"></path></svg></sc-if>
+              </span>
+              <span lang="en" style="flex: 1; min-width: 0">{{n.label}}</span>
+              <sc-if value="{{n.tDoc}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></sc-if>
+              <sc-if value="{{n.review}}" hint-placeholder-val="{{false}}"><span style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; background: {{t.surface}}; border: 1px solid {{t.border}}; display: flex; align-items: center; justify-content: center; color: {{t.rvSolid}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="position: absolute; left: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+          <div style="width: 248px; box-sizing: border-box; padding: 12px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px; box-shadow: {{t.sh2}}; display: flex; flex-direction: column; gap: 8px; font-size: 12px; line-height: 18px">
+            <div style="display: flex; justify-content: space-between; align-items: center"><strong style="font-size: 13px; line-height: 20px; font-weight: 600">Chú giải</strong><button type="button" aria-label="Thu gọn chú giải" style="width: 24px; height: 24px; border: 0; background: transparent; color: {{t.muted}}; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button></div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1px solid {{t.kaBd}}; background: {{t.kaBg}}"></span>Lĩnh vực</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1px solid {{t.tpBd}}; background: {{t.tpBg}}"></span>Chủ đề</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1px solid {{t.dcBd}}; background: {{t.dcBg}}"></span>Tài liệu</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; background: {{t.grBg}}; border: 1px solid {{t.grBd}}"></span>Nhóm</span>
+            </div>
+            <div style="height: 1px; background: {{t.border}}"></div>
+            <sc-if value="{{isProgress}}" hint-placeholder-val="{{true}}">
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.muted}}" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg>Chưa học</span>
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.lrIc}}" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="{{t.lrIc}}"></path></svg>Đang học</span>
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.dnIc}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Đã xong</span>
+                <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1px solid {{t.input}}; background-image: {{t.stripe}}"></span>Bỏ qua</span>
+                <span style="display: flex; align-items: center; gap: 6px; grid-column: 1 / -1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.rvSolid}}" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Cần ôn lại · vạch trái = trạng thái</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{isContent}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg>Chưa có nội dung</span>
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp</span>
+                <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="m9 15 2 2 4-4"></path></svg>Đã duyệt</span>
+              </div>
+            </sc-if>
+          </div>
+          <div role="group" aria-label="Thu phóng" style="display: flex; align-items: center; background: {{t.surface}}; border: 1px solid {{t.input}}; border-radius: 6px; overflow: hidden">
+            <button type="button" aria-label="Thu nhỏ" style="width: 36px; height: 36px; border: 0; background: transparent; color: {{t.text}}; font: 500 17px/24px 'Be Vietnam Pro', sans-serif">−</button>
+            <span style="padding: 0 8px; border-left: 1px solid {{t.border}}; border-right: 1px solid {{t.border}}; font-size: 13px; line-height: 36px; font-variant-numeric: tabular-nums">100%</span>
+            <button type="button" aria-label="Phóng to" style="width: 36px; height: 36px; border: 0; background: transparent; color: {{t.text}}; font: 500 17px/24px 'Be Vietnam Pro', sans-serif">+</button>
+            <button type="button" style="height: 36px; padding: 0 10px; border: 0; border-left: 1px solid {{t.border}}; background: transparent; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Vừa màn hình</button>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{panelTopic}}" hint-placeholder-val="{{true}}">
+        <aside aria-label="Chi tiết mục Scope Creep" style="flex: 0 0 380px; box-sizing: border-box; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: {{t.surface}}; border-left: 1px solid {{t.border}}; box-shadow: {{t.sh2}}; overflow: hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between">
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid {{t.tpBd}}; background: {{t.tpBg}}; color: {{t.tpFg}}; font-size: 12px; line-height: 18px; font-weight: 600">Chủ đề</span>
+            <div style="display: flex; gap: 4px">
+              <button type="button" aria-label="Mục trước: WBS + WBS dictionary" style="width: 32px; height: 32px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+              <button type="button" aria-label="Mục tiếp: Scope Statement" style="width: 32px; height: 32px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+              <button type="button" aria-label="Đóng panel" style="width: 32px; height: 32px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+            </div>
+          </div>
+          <div style="position: relative; display: flex; flex-direction: column; gap: 4px">
+            <h2 style="margin: 0; padding-right: 96px; font-size: 22px; line-height: 32px; font-weight: 700"><span lang="en">Scope Creep</span><span style="font-weight: 500; color: {{t.muted}}"> — phình phạm vi</span></h2>
+            <span style="position: absolute; top: 6px; right: 0; font-size: 12px; line-height: 18px; font-weight: 600; color: {{t.pink}}; border: 1px solid {{t.pink}}; border-radius: 4px; padding: 0 6px">Nội dung mẫu</span>
+            <span lang="en" style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Project Management › Scope Management</span>
+          </div>
+          <div role="radiogroup" aria-label="Trạng thái học, phím 1 đến 4" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 3px; border: 1px solid {{t.input}}; border-radius: 8px">
+            <button type="button" role="radio" aria-checked="false" style="height: 32px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Chưa học</button>
+            <button type="button" role="radio" aria-checked="true" style="height: 32px; border: 0; border-radius: 6px; background: {{t.lrBg}}; color: {{t.lrFg}}; box-shadow: inset 0 0 0 1.5px {{t.lrSolid}}; font: 600 13px/20px 'Be Vietnam Pro', sans-serif">Đang học</button>
+            <button type="button" role="radio" aria-checked="false" style="height: 32px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Đã xong</button>
+            <button type="button" role="radio" aria-checked="false" style="height: 32px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Bỏ qua</button>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; line-height: 20px">
+            <span role="img" aria-label="Hiểu xong, Áp dụng đang làm, Kiểm tra chưa làm, Ghi nhớ xong" style="display: flex; gap: 3px"><span style="width: 14px; height: 6px; border-radius: 2px; background: {{t.primary}}"></span><span style="width: 14px; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1.5px solid {{t.primary}}; background-image: linear-gradient(90deg, {{t.primary}} 50%, transparent 50%)"></span><span style="width: 14px; height: 6px; box-sizing: border-box; border-radius: 2px; border: 1px solid {{t.input}}"></span><span style="width: 14px; height: 6px; border-radius: 2px; background: {{t.primary}}"></span></span>
+            <span>Tiếp: Áp dụng</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.border}}; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="m9 15 2 2 4-4"></path></svg>Đã duyệt · 18/10/2026</span>
+          </div>
+          <div style="position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.s2}}">
+            <span style="position: absolute; top: 10px; right: 10px; font-size: 12px; line-height: 18px; font-weight: 600; color: {{t.pink}}; border: 1px solid {{t.pink}}; border-radius: 4px; padding: 0 6px">Nội dung mẫu</span>
+            <strong style="font-size: 13px; line-height: 20px; font-weight: 600">Tóm tắt</strong>
+            <p style="margin: 0; font-size: 15px; line-height: 24px">Scope Creep là khi phạm vi dự án lớn dần vì yêu cầu mới không qua kiểm soát thay đổi.</p>
+          </div>
+          <div style="position: relative; display: flex; flex-direction: column; gap: 4px">
+            <div style="display: flex; justify-content: space-between; align-items: center"><strong style="font-size: 13px; line-height: 20px; font-weight: 600">Mục liên quan</strong><span style="font-size: 12px; line-height: 18px; font-weight: 600; color: {{t.pink}}; border: 1px solid {{t.pink}}; border-radius: 4px; padding: 0 6px">liên kết mẫu</span></div>
+            <sc-for list="{{related}}" as="r" hint-placeholder-count="3">
+              <a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 32px; color: {{t.text}}; font-size: 13px; line-height: 20px">
+                <span style="display: flex; color: {{r.ic}}">
+                  <sc-if value="{{r.dn}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Đã xong"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+                  <sc-if value="{{r.ns}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" role="img" aria-label="Chưa học"><circle cx="12" cy="12" r="10"></circle></svg></sc-if>
+                </span>
+                <span lang="en">{{r.name}}</span>
+              </a>
+            </sc-for>
+          </div>
+          <span style="flex: 1"></span>
+          <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; text-decoration: none; font-weight: 600">Mở bài học<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></a>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; line-height: 18px; color: {{t.muted}}"><span>‹ <span lang="en">WBS + WBS dictionary</span></span><span><span lang="en">Scope Statement</span> ›</span></div>
+        </aside>
+      </sc-if>
+
+      <sc-if value="{{panelArea}}" hint-placeholder-val="{{false}}">
+        <aside aria-label="Chi tiết lĩnh vực Scope Management" style="flex: 0 0 380px; box-sizing: border-box; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: {{t.surface}}; border-left: 1px solid {{t.border}}; box-shadow: {{t.sh2}}">
+          <div style="display: flex; align-items: center; justify-content: space-between">
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid {{t.kaBd}}; background: {{t.kaBg}}; color: {{t.kaFg}}; font-size: 12px; line-height: 18px; font-weight: 600">Lĩnh vực</span>
+            <button type="button" aria-label="Đóng panel" style="width: 32px; height: 32px; border: 0; border-radius: 6px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <h2 lang="en" style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 700">Scope Management</h2>
+            <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Phần <span lang="en">Project Management</span> · 16 mục · 13 chủ đề · 3 tài liệu</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; line-height: 20px"><strong style="font-weight: 600">Tiến độ</strong><span style="font-variant-numeric: tabular-nums">5/16 · Đang học 1 · Chưa học 10</span></div>
+            <span style="height: 8px; border-radius: 4px; background: {{t.s2}}; border: 1px solid {{t.border}}; overflow: hidden; display: flex"><span style="width: 31.25%; background: {{t.dnSolid}}"></span><span style="width: 6.25%; background: {{t.lrSolid}}"></span></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; line-height: 20px"><strong style="font-weight: 600">Nội dung</strong><span style="font-variant-numeric: tabular-nums">6 duyệt · 1 nháp · 9 chưa có</span></div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <strong style="font-size: 13px; line-height: 20px; font-weight: 600">Nhóm</strong>
+            <button type="button" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 15px/24px 'Be Vietnam Pro', sans-serif; text-align: left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span lang="en" style="flex: 1">Types of Requirements</span><span style="font-size: 13px; color: {{t.muted}}; font-variant-numeric: tabular-nums">2/3</span></button>
+            <button type="button" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; font: 500 15px/24px 'Be Vietnam Pro', sans-serif; text-align: left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span lang="en" style="flex: 1">Prioritization Techniques</span><span style="font-size: 13px; color: {{t.muted}}; font-variant-numeric: tabular-nums">1/6</span></button>
+            <span style="font-size: 12px; line-height: 18px; color: {{t.muted}}">Bấm tên nhóm để zoom vừa khung nhóm.</span>
+          </div>
+          <span style="flex: 1"></span>
+          <a href="#" style="display: flex; align-items: center; justify-content: center; height: 40px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; text-decoration: none; font-weight: 600">Mở trang lĩnh vực</a>
+          <a href="#" style="display: flex; align-items: center; justify-content: center; height: 40px; border: 1px solid {{t.input}}; border-radius: 6px; background: {{t.surface}}; color: {{t.text}}; text-decoration: none; font-weight: 500">Học tiếp trong lĩnh vực: <span lang="en" style="margin-left: 4px">Scope Creep</span></a>
+        </aside>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"overlay":{"editor":"enum","options":["progress","content"],"default":"progress"},"panel":{"editor":"enum","options":["topic","area","none"],"default":"topic"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var dark = this.props.theme === 'dark';
+    var overlay = this.props.overlay || 'progress';
+    var panel = this.props.panel || 'topic';
+    var content = overlay === 'content';
+    var t = dark ? {
+      bg: '#0B1120', surface: '#111827', s2: '#1E293B', border: '#1F2937', input: '#64748B', text: '#E2E8F0', muted: '#94A3B8', primary: '#E2E8F0', onPrimary: '#0B1120',
+      kaBg: '#713F12', kaFg: '#FEF9C3', kaBd: '#EAB308', tpBg: '#3B2A16', tpFg: '#FDE7C7', tpBd: '#B45309', dcBg: '#1E3A8A', dcFg: '#DBEAFE', dcBd: '#3B82F6',
+      grBg: '#1E293B', grFg: '#F8FAFC', grBd: '#64748B', groupFill: 'rgba(30,41,59,.35)', spine: '#64748B',
+      lrSolid: '#C084FC', lrIc: '#D8B4FE', lrBg: '#3B0764', lrFg: '#E9D5FF', dnSolid: '#4ADE80', dnIc: '#86EFAC', rvSolid: '#2DD4BF',
+      stripe: 'repeating-linear-gradient(45deg, rgba(214,211,209,.2) 0 2px, transparent 2px 8px)', pink: '#F472B6', sh2: 'none'
+    } : {
+      bg: '#F8FAFC', surface: '#FFFFFF', s2: '#F1F5F9', border: '#E2E8F0', input: '#8492A6', text: '#0F172A', muted: '#475569', primary: '#0F172A', onPrimary: '#FFFFFF',
+      kaBg: '#FDE047', kaFg: '#1C1917', kaBd: '#0F172A', tpBg: '#FDE7C7', tpFg: '#1C1917', tpBd: '#0F172A', dcBg: '#BFDBFE', dcFg: '#172554', dcBd: '#0F172A',
+      grBg: '#0F172A', grFg: '#FFFFFF', grBd: '#0F172A', groupFill: 'rgba(255,255,255,.6)', spine: '#0F172A',
+      lrSolid: '#7E22CE', lrIc: '#6B21A8', lrBg: '#F3E8FF', lrFg: '#6B21A8', dnSolid: '#15803D', dnIc: '#166534', rvSolid: '#0F766E',
+      stripe: 'repeating-linear-gradient(45deg, rgba(87,83,78,.2) 0 2px, transparent 2px 8px)', pink: '#BE185D', sh2: '0 8px 24px rgba(15,23,42,.12)'
+    };
+    var L = 12, R0 = 476, R1 = 684, Lo = -196, RH = 52;
+    var stNames = { ns: 'Chưa học', lr: 'Đang học', dn: 'Đã xong' };
+    var ctNames = { x: 'chưa có nội dung', p: 'bản nháp', c: 'đã có nội dung' };
+    function node(label, type, st, ct, x, y, area, opts) {
+      var doc = type === 'doc';
+      var ty = doc ? { bg: t.dcBg, fg: t.dcFg, bd: t.dcBd } : { bg: t.tpBg, fg: t.tpFg, bd: t.tpBd };
+      var n = { label: label, x: x + 'px', y: y + 'px', bg: ty.bg, fg: ty.fg, bd: ty.bd, bw: '1.5px', bl: '1.5px solid ' + ty.bd, img: 'none', ic: ty.fg, tDoc: doc, tab: '-1' };
+      opts = opts || {};
+      if (content) {
+        n['c' + ct.toUpperCase()] = true;
+      } else {
+        if (st === 'ns') n.sNs = true;
+        if (st === 'lr') { n.sLr = true; n.bl = '4px solid ' + t.lrSolid; n.ic = t.lrIc; }
+        if (st === 'dn') { n.sDn = true; n.bl = '4px solid ' + t.dnSolid; n.ic = t.dnIc; }
+        n.review = !!opts.review;
+      }
+      if (opts.selected && panel === 'topic') { n.bw = '3px'; n.bd = t.primary; if (content) n.bl = '3px solid ' + t.primary; n.tab = '0'; }
+      n.aria = label + ', ' + (doc ? 'tài liệu' : 'chủ đề') + ', ' + area + ', ' + stNames[st] + (opts.review ? ', cần ôn lại' : '') + ', ' + ctNames[ct];
+      return n;
+    }
+    var SM = 'Scope Management', PG = 'Project Governance', CM = 'Change Management';
+    var y0 = 200;
+    var nodes = [
+      node('Initiation', 'topic', 'dn', 'c', L, -20, PG), node('Planning', 'topic', 'dn', 'c', Lo, -20, PG),
+      node('Execution', 'topic', 'dn', 'c', L, 32, PG), node('Monitoring and Control', 'topic', 'ns', 'x', Lo, 32, PG),
+      node('Closure', 'topic', 'ns', 'x', L, 84, PG),
+      node('Definition of Ready', 'topic', 'dn', 'c', R0, y0, SM), node('WBS + WBS dictionary', 'doc', 'ns', 'p', R1, y0, SM),
+      node('Scope Creep', 'topic', 'lr', 'c', R0, y0 + RH, SM, { selected: true }), node('Scope Statement', 'doc', 'ns', 'x', R1, y0 + RH, SM),
+      node('Definition of Done', 'topic', 'dn', 'c', R0, y0 + 2 * RH, SM, { review: true }), node('Acceptance of deliverables', 'topic', 'ns', 'x', R1, y0 + 2 * RH, SM),
+      node('Scope Baseline', 'doc', 'ns', 'x', R0, y0 + 3 * RH, SM),
+      node('Functional Requirements', 'topic', 'dn', 'c', R0, 458, SM), node('Transition Requirements', 'topic', 'ns', 'x', R1, 458, SM),
+      node('Non-Functional Requirements', 'topic', 'dn', 'c', R0, 510, SM),
+      node('MoSCoW', 'topic', 'dn', 'c', R0, 622, SM, { review: true }), node('RICE Score', 'topic', 'ns', 'x', R1, 622, SM),
+      node('ICE Score', 'topic', 'ns', 'x', R0, 674, SM), node('Value/Effort Matrix', 'topic', 'ns', 'x', R1, 674, SM),
+      node('100 Dollar Test', 'topic', 'ns', 'x', R0, 726, SM), node('Eisenhower Matrix', 'topic', 'ns', 'x', R1, 726, SM),
+      node('Change Control Board (CCB)', 'topic', 'dn', 'c', L, 812, CM), node('Traceability Matrix', 'doc', 'ns', 'x', Lo, 812, CM),
+      node('Change Request (CR)', 'doc', 'dn', 'c', L, 864, CM), node('Change log', 'doc', 'ns', 'p', Lo, 864, CM)
+    ];
+    var groups = [
+      { name: 'Project Process Groups', aria: 'Nhóm Project Process Groups, zoom vừa khung', x: '-204px', y: '-62px', w: '424px', h: '198px', justify: 'flex-end' },
+      { name: 'Types of Requirements', aria: 'Nhóm Types of Requirements, zoom vừa khung', x: '468px', y: '416px', w: '424px', h: '154px', justify: 'flex-start' },
+      { name: 'Prioritization Techniques', aria: 'Nhóm Prioritization Techniques, zoom vừa khung', x: '468px', y: '580px', w: '424px', h: '206px', justify: 'flex-start' }
+    ];
+    var areaSel = panel === 'area';
+    var areas = [
+      { name: 'Scope Management', y: '200px', frac: content ? '6 duyệt · 1 nháp' : '5/16', bw: areaSel ? '3px' : '1.5px', bd: areaSel ? t.primary : t.kaBd, outline: areaSel ? '2px solid ' + t.primary : 'none', aria: 'Scope Management, lĩnh vực, 5 trên 16 đã xong, 6 duyệt 1 nháp 9 chưa có' },
+      { name: 'Change Management', y: '812px', frac: content ? '2 duyệt · 1 nháp' : '2/8', bw: '1.5px', bd: t.kaBd, outline: 'none', aria: 'Change Management, lĩnh vực, 2 trên 8 đã xong' }
+    ];
+    var hasPanel = panel !== 'none';
+    var related = [
+      { name: 'Change Request (CR)', dn: true, ic: t.dnIc },
+      { name: 'Change Control Board (CCB)', dn: true, ic: t.dnIc },
+      { name: 'Scope Baseline', ns: true, ic: t.muted }
+    ];
+    return {
+      t: t, theme: dark ? 'dark' : 'light', nodes: nodes, groups: groups, areas: areas, related: related,
+      isContent: content, isProgress: !content, panelTopic: panel === 'topic', panelArea: areaSel,
+      offsetX: hasPanel ? '0px' : '190px',
+      chips: ['Trạng thái', 'Loại', 'Phần', 'Lĩnh vực', 'Nội dung', 'Có ghi chú'],
+      ov: {
+        progressOn: content ? 'false' : 'true', contentOn: content ? 'true' : 'false',
+        progressBg: content ? 'transparent' : t.primary, progressFg: content ? t.text : t.onPrimary,
+        contentBg: content ? t.primary : 'transparent', contentFg: content ? t.onPrimary : t.text
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

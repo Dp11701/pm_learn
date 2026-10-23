@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Nội dung · Học PM A–Z</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: {{h}}; overflow: hidden; display: flex; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-label="Điều hướng chính" style="flex: 0 0 264px; background: #FFFFFF; border-right: 1px solid #E2E8F0">
+    <dc-import name="C34-sidebar" active="noi-dung" min-height="{{h}}" hint-size="264px,1200px"></dc-import>
+  </aside>
+  <main style="flex: 1; min-width: 0; box-sizing: border-box; padding: 32px 40px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px">
+      <h1 tabindex="-1" style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">Nội dung</h1>
+      <span style="font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums">41 Đã duyệt · 9 Bản nháp · 149 Chưa có · 199 mục</span>
+    </div>
+    <div role="tablist" aria-label="Nội dung" style="display: flex; gap: 4px; border-bottom: 1px solid #E2E8F0">
+      <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="3">
+        <button type="button" role="tab" aria-selected="{{tb.sel}}" style="height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid {{tb.bd}}; margin-bottom: -1px; background: transparent; color: {{tb.fg}}; font: {{tb.font}}">{{tb.label}}</button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{isCov}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; line-height: 20px">
+        <sc-for list="{{covChips}}" as="c" hint-placeholder-count="4"><button type="button" style="height: 32px; padding: 0 12px; border: {{c.bd}}; border-radius: 6px; background: {{c.bg}}; color: #0F172A; font: {{c.font}}">{{c.label}}</button></sc-for>
+        <span style="flex: 1"></span>
+        <span style="display: flex; align-items: center; gap: 8px; height: 32px; width: 260px; padding: 0 10px; box-sizing: border-box; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #475569">⌕ Lọc theo tên mục…</span>
+      </div>
+      <div style="border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; overflow: hidden">
+        <div style="display: grid; grid-template-columns: minmax(0, 2.4fr) 110px 190px 110px 110px 120px; gap: 12px; padding: 0 16px; height: 44px; align-items: center; background: #F1F5F9; font-size: 13px; line-height: 20px; font-weight: 600"><span>Mục</span><span>Loại</span><span>Trạng thái nội dung</span><span>Đủ khối</span><span>Nguồn</span><span></span></div>
+        <sc-for list="{{cov}}" as="r" hint-placeholder-count="14">
+          <div style="display: grid; grid-template-columns: minmax(0, 2.4fr) 110px 190px 110px 110px 120px; gap: 12px; padding: 0 16px; min-height: 44px; align-items: center; border-top: 1px solid #E2E8F0; font-size: 13px; line-height: 20px">
+            <span style="display: flex; flex-direction: column; padding: 4px 0"><span lang="en" style="font-size: 15px; font-weight: 500">{{r.name}}</span><span lang="en" style="color: #475569">{{r.crumb}}</span></span>
+            <span>{{r.type}}</span>
+            <span><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; border: {{r.cBd}}; background: {{r.cBg}}; color: {{r.cFg}}; font-size: 12px; line-height: 18px; font-weight: 600">{{r.content}}</span></span>
+            <span style="font-variant-numeric: tabular-nums">{{r.blocks}}</span>
+            <span style="color: #475569">{{r.src}}</span>
+            <a href="#" style="color: #0F172A">{{r.action}}</a>
+          </div>
+        </sc-for>
+        <div style="display: flex; justify-content: space-between; align-items: center; height: 48px; padding: 0 16px; border-top: 1px solid #E2E8F0; font-size: 13px; color: #475569"><span>1–14 trên 199 mục · theo thứ tự cây</span><span style="display: flex; gap: 8px"><button type="button" disabled style="height: 32px; padding: 0 10px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F1F5F9; color: #475569; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">‹ Trước</button><button type="button" style="height: 32px; padding: 0 10px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Tiếp ›</button></span></div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: #475569">Đủ khối tính theo mẫu: x/9 cho Chủ đề, x/8 cho Tài liệu, x/7 cho Chứng chỉ.</span>
+    </sc-if>
+
+    <sc-if value="{{isQueue}}" hint-placeholder-val="{{false}}">
+      <div style="border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; overflow: hidden">
+        <div style="display: grid; grid-template-columns: minmax(0, 2.6fr) 100px 100px 120px 100px 110px; gap: 12px; padding: 0 16px; height: 44px; align-items: center; background: #F1F5F9; font-size: 13px; line-height: 20px; font-weight: 600"><span>Bản nháp</span><span>Loại</span><span>Nguồn</span><span>Ngày nhập</span><span>Đủ khối</span><span></span></div>
+        <sc-for list="{{queue}}" as="r" hint-placeholder-count="9">
+          <div style="display: grid; grid-template-columns: minmax(0, 2.6fr) 100px 100px 120px 100px 110px; gap: 12px; padding: 0 16px; min-height: 56px; align-items: center; border-top: 1px solid #E2E8F0; font-size: 13px; line-height: 20px">
+            <span style="display: flex; flex-direction: column; padding: 6px 0"><span lang="en" style="font-size: 15px; font-weight: 500">{{r.name}}</span><span lang="en" style="color: #475569">{{r.crumb}}</span></span>
+            <span>{{r.type}}</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px">{{r.src}}</span>
+            <span style="font-variant-numeric: tabular-nums">{{r.date}}</span>
+            <span style="font-variant-numeric: tabular-nums; color: {{r.bc}}">{{r.blocks}}</span>
+            <a href="#" style="display: inline-flex; align-items: center; justify-content: center; height: 32px; border: 1px solid #8492A6; border-radius: 6px; color: #0F172A; text-decoration: none; font-weight: 500">Duyệt</a>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px; padding: 16px; border: 1.5px dashed #8492A6; border-radius: 10px; color: #475569; font-size: 13px; line-height: 20px">
+        <span style="font-weight: 600; color: #0F172A">Trạng thái trống:</span>"Không có bản nháp nào chờ duyệt" <span style="padding: 2px 10px; border: 1px solid #8492A6; border-radius: 6px; color: #0F172A">Nhập file .md</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isImport}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; gap: 16px; align-items: stretch">
+        <div style="flex: 1; display: flex; align-items: center; gap: 16px; padding: 20px; border: 1.5px dashed #8492A6; border-radius: 10px; background: #FFFFFF">
+          <span style="width: 40px; height: 40px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; color: #475569"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8"></path><path d="m8 17 4-4 4 4"></path><path d="M20 16.7A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path></svg></span>
+          <div style="flex: 1; display: flex; flex-direction: column"><strong style="font-weight: 600">Kéo thả file hoặc thư mục .md vào đây</strong><span style="font-size: 13px; color: #475569">Nội dung nhập vào luôn là Bản nháp. Không ghi đè bản Đã duyệt khi chưa xác nhận.</span></div>
+          <button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Chọn file…</button>
+        </div>
+        <button type="button" style="display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border: 1px solid #8492A6; border-radius: 10px; background: #FFFFFF; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">⟳ Quét lại thư mục</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600">Kiểm tra trước khi nhập · 15 file</h2><span style="font-size: 13px; color: #475569">Khớp theo id trong frontmatter; không có id thì khớp theo tên file</span></div>
+      <div style="border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; overflow: hidden">
+        <div style="display: grid; grid-template-columns: 300px 220px 90px minmax(0, 1fr); gap: 12px; padding: 0 16px; height: 40px; align-items: center; background: #F1F5F9; font-size: 13px; line-height: 20px; font-weight: 600"><span>File</span><span>Mục</span><span>Khớp theo</span><span>Kết quả</span></div>
+        <sc-for list="{{imports}}" as="r" hint-placeholder-count="15">
+          <div style="display: grid; grid-template-columns: 300px 220px 90px minmax(0, 1fr); gap: 12px; padding: 0 16px; min-height: {{r.h}}; align-items: center; border-top: 1px solid #E2E8F0; background: {{r.bg}}; font-size: 13px; line-height: 20px">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px">{{r.file}}</span>
+            <span lang="en">{{r.item}}</span>
+            <span style="color: #475569">{{r.by}}</span>
+            <span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0">
+              <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: {{r.c}}"><span aria-hidden="true" style="font-family: 'JetBrains Mono', monospace">{{r.icon}}</span>{{r.label}}</span>
+              <span style="color: #475569">{{r.detail}}</span>
+              <sc-if value="{{r.assign}}" hint-placeholder-val="{{false}}"><button type="button" style="height: 28px; padding: 0 10px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 13px/20px 'Be Vietnam Pro', sans-serif">Gán cho mục…</button></sc-if>
+              <sc-if value="{{r.dup}}" hint-placeholder-val="{{false}}"><span role="radiogroup" aria-label="Xử lý file trùng" style="display: inline-flex; padding: 2px; gap: 2px; border: 1px solid #8492A6; border-radius: 6px"><span role="radio" aria-checked="true" style="padding: 0 10px; line-height: 24px; border-radius: 4px; background: #0F172A; color: #FFFFFF; font-weight: 600">Giữ bản cũ</span><span role="radio" aria-checked="false" style="padding: 0 10px; line-height: 24px">Nhập thành bản sửa</span></span></sc-if>
+              <sc-if value="{{r.open}}" hint-placeholder-val="{{false}}"><a href="#" style="color: #0F172A">Mở trong trình soạn</a></sc-if>
+            </span>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-top: 1px solid #E2E8F0; background: #F8FAFC">
+          <span style="flex: 1; font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums"><strong>11 hợp lệ</strong> · 2 cảnh báo · 1 trùng · 1 lỗi</span>
+          <span style="font-size: 13px; color: #475569">File trùng chỉ nhập khi chọn "Nhập thành bản sửa"</span>
+          <button type="button" style="height: 40px; padding: 0 18px; border: 0; border-radius: 6px; background: #0F172A; color: #FFFFFF; font: 600 15px/24px 'Be Vietnam Pro', sans-serif">Nhập 13 file</button>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tab":{"editor":"enum","options":["do-phu","cho-duyet","nhap"],"default":"do-phu"},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var tab = this.props.tab || 'do-phu';
+    var tabs = [['do-phu', 'Độ phủ'], ['cho-duyet', 'Chờ duyệt (9)'], ['nhap', 'Nhập']].map(function (x) {
+      var on = x[0] === tab;
+      return { label: x[1], sel: on ? 'true' : 'false', bd: on ? '#0F172A' : 'transparent', fg: on ? '#0F172A' : '#475569', font: on ? "600 15px/24px 'Be Vietnam Pro', sans-serif" : "500 15px/24px 'Be Vietnam Pro', sans-serif" };
+    });
+    var C = { ok: ['Đã duyệt', '1px solid #E2E8F0', '#FFFFFF', '#0F172A'], none: ['Chưa có nội dung', '1px dashed #8492A6', 'transparent', '#475569'] };
+    var fw = 'Project Management › PM Framework / Approach';
+    var covRaw = [['OPA', 'none'], ['PMIS', 'none'], ['SDLC', 'ok'], ['PDLC', 'ok'], ['EEF', 'none'], ['Scrum', 'ok'], ['Kanban', 'ok'], ['Waterfall', 'ok'], ['Iterative approach', 'ok'], ['Incremental approach', 'ok'], ['Agile', 'ok'], ['Lean Principles', 'ok'], ['V-model', 'ok'], ['Discovery Phase', 'none']];
+    var cov = covRaw.map(function (r) {
+      var c = C[r[1]];
+      return { name: r[0], crumb: fw, type: 'Chủ đề', content: c[0], cBd: c[1], cBg: c[2], cFg: c[3], blocks: r[1] === 'ok' ? '9/9' : '0/9', src: r[1] === 'ok' ? 'xem file' : '—', action: r[1] === 'ok' ? 'Mở' : 'Soạn bài' };
+    });
+    var covChips = [['Tất cả 199', 1], ['Đã duyệt 41', 0], ['Bản nháp 9', 0], ['Chưa có 149', 0]].map(function (c) {
+      return { label: c[0], bd: c[1] ? '1.5px solid #0F172A' : '1px solid #8492A6', bg: c[1] ? '#F1F5F9' : '#FFFFFF', font: c[1] ? "600 13px/20px 'Be Vietnam Pro', sans-serif" : "500 13px/20px 'Be Vietnam Pro', sans-serif" };
+    });
+    var queue = [
+      ['WBS + WBS dictionary', 'Project Management › Scope Management', 'Tài liệu', 'AI', '25/09/2026', '7/8'],
+      ['Project Charter', 'Project Management › Project Governance', 'Tài liệu', 'Tự viết', '19/09/2026', '6/8'],
+      ['Change log', 'Project Management › Change Management', 'Tài liệu', 'Tự viết', '02/10/2026', '5/8'],
+      ['Schedule creation (milestones, phases, critical path)', 'Project Management › Schedule Management', 'Chủ đề', 'AI', '08/10/2026', '9/9'],
+      ['Earned Value Management', 'Project Management › Schedule Management', 'Chủ đề', 'AI', '10/10/2026', '9/9'],
+      ['Three-Point Estimation', 'Project Management › Schedule Management › Estimation approaches', 'Chủ đề', 'AI', '12/10/2026', '8/9'],
+      ['Risk Register', 'Project Management › Risk Management', 'Tài liệu', 'AI', '15/10/2026', '8/8'],
+      ['Qualitative Risk Assessment', 'Project Management › Risk Management', 'Chủ đề', 'AI', '17/10/2026', '9/9'],
+      ['Power/Interest Grid', 'Project Management › Stakeholder and Communication Management', 'Chủ đề', 'AI', '20/10/2026', '9/9']
+    ].map(function (r) {
+      var parts = r[5].split('/');
+      return { name: r[0], crumb: r[1], type: r[2], src: r[3], date: r[4], blocks: r[5], bc: parts[0] === parts[1] ? '#0F172A' : '#475569' };
+    });
+    function ok(file, item) { return { file: file, item: item, by: 'id', icon: '✓', label: 'Hợp lệ', c: '#166534', detail: '', h: '40px', bg: '#FFFFFF' }; }
+    var imports = [
+      ok('pestle.md', 'PESTLE'), ok('quantitative-risk-assessment.md', 'Quantitative Risk Assessment'), ok('risk-identification-process.md', 'Risk Identification Process'),
+      ok('risk-and-opportunity-response-strategies.md', 'Risk and Opportunity Response Strategies'), ok('contingency-management-reserve-allocation.md', 'Contingency / Management Reserve Allocation'),
+      ok('bani.md', 'BANI'), ok('cost-baseline.md', 'Cost Baseline'), ok('gross-profit-margin-gpm.md', 'Gross Profit Margin (GPM)'), ok('purchase-order-invoice.md', 'Purchase Order / Invoice'),
+      ok('capex-opex.md', 'CAPEX / OPEX'), ok('ebit-ebitda.md', 'EBIT / EBITDA'),
+      { file: 'risk-appetite.md', item: 'Risk Appetite', by: 'id', icon: '⚠', label: 'Thiếu khối bắt buộc', c: '#0F172A', detail: 'Thiếu: Tự kiểm tra, Tham khảo · vẫn nhập được', h: '44px', bg: '#F8FAFC' },
+      { file: 'risk-registr.md', item: '—', by: 'tên file', icon: '⚠', label: 'Không khớp mục', c: '#0F172A', detail: 'Gợi ý: Risk Register', assign: true, h: '48px', bg: '#F8FAFC' },
+      { file: 'scope-creep.md', item: 'Scope Creep', by: 'id', icon: '⟳', label: 'Trùng bản đã duyệt', c: '#0F172A', detail: 'Bản hiện tại duyệt 18/10/2026', dup: true, h: '48px', bg: '#F8FAFC' },
+      { file: 'vuca.md', item: 'VUCA', by: 'tên file', icon: '✕', label: 'Lỗi frontmatter', c: '#B91C1C', detail: 'Dòng 3: thiếu dấu ":" sau loai', open: true, h: '44px', bg: '#FFFFFF' }
+    ];
+    var hMap = { 'do-phu': '1100px', 'cho-duyet': '1100px', 'nhap': '1200px' };
+    return { tabs: tabs, isCov: tab === 'do-phu', isQueue: tab === 'cho-duyet', isImport: tab === 'nhap', cov: cov, covChips: covChips, queue: queue, imports: imports, h: hMap[tab] };
+  }
+}
+</script>
+</body>
+</html>

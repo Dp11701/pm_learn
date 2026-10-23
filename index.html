@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Học PM A–Z</title>
+    <script>
+      // Đặt giao diện trước khi React chạy để không nháy màu (đề xuất 1.2).
+      try {
+        var g = localStorage.getItem('hoc-pm:giao-dien')
+        if (g === 'sang') document.documentElement.dataset.theme = 'light'
+        else if (g === 'toi') document.documentElement.dataset.theme = 'dark'
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

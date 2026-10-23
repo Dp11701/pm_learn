@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Soạn bài · Salience Model</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; overflow: hidden; display: flex; flex-direction: column; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <header style="flex: none; height: 64px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; gap: 16px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0">
+    <a href="#" style="display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 8px; color: #0F172A; text-decoration: none; font-size: 13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><span lang="en">Salience Model</span></a>
+    <h1 style="margin: 0; font-size: 20px; line-height: 30px; font-weight: 700">Soạn bài</h1>
+    <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px dashed #8492A6; color: #475569; font-size: 12px; line-height: 18px; font-weight: 600">Chưa có nội dung</span>
+    <span style="flex: 1"></span>
+    <span aria-live="polite" style="font-size: 13px; line-height: 20px; color: #475569">Đang lưu…</span>
+    <button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; color: #0F172A; font: 500 15px/24px 'Be Vietnam Pro', sans-serif">Xem bài</button>
+    <button type="button" style="height: 36px; padding: 0 16px; border: 0; border-radius: 6px; background: #0F172A; color: #FFFFFF; font: 600 15px/24px 'Be Vietnam Pro', sans-serif">Lưu bản nháp</button>
+  </header>
+
+  <div style="flex: none; display: grid; grid-template-columns: 1.2fr 1.4fr 0.8fr 1.4fr 0.9fr 1.6fr; gap: 12px; padding: 12px 24px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; font-size: 13px; line-height: 20px">
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">id (chỉ đọc)<input value="[id nút roadmap.sh]" disabled style="height: 32px; padding: 0 10px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F1F5F9; color: #475569; font: 400 13px/20px 'JetBrains Mono', monospace"></label>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">Tên gốc (chỉ đọc)<input value="Salience Model" disabled style="height: 32px; padding: 0 10px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F1F5F9; color: #475569; font: 400 13px/20px 'Be Vietnam Pro', sans-serif"></label>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">Loại<input value="Chủ đề" disabled style="height: 32px; padding: 0 10px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F1F5F9; color: #475569; font: 400 13px/20px 'Be Vietnam Pro', sans-serif"></label>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">Giải nghĩa<input placeholder="Vd. cụm tiếng Việt ngắn" style="height: 32px; padding: 0 10px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; font: 400 13px/20px 'Be Vietnam Pro', sans-serif"></label>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">Nguồn<select style="height: 32px; padding: 0 8px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; font: 400 13px/20px 'Be Vietnam Pro', sans-serif"><option>Tự viết</option><option>AI</option></select></label>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-weight: 600">Liên quan<span style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 6px; border: 1px solid #8492A6; border-radius: 6px; background: #FFFFFF; font-weight: 400"><span lang="en" style="padding: 0 6px; border-radius: 4px; background: #F1F5F9">Power/Interest Grid ✕</span><span style="color: #475569">Thêm mục…</span></span></label>
+  </div>
+
+  <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr); gap: 0">
+    <aside aria-label="Khung bài" style="display: flex; flex-direction: column; gap: 16px; padding: 16px 20px; background: #FFFFFF; border-right: 1px solid #E2E8F0; overflow: hidden">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 15px; line-height: 24px; font-weight: 600">Khung bài</h2><span style="font-size: 13px; color: #475569; font-variant-numeric: tabular-nums">0/9 khối bắt buộc</span></div>
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 20px">
+        <sc-for list="{{blocks}}" as="b" hint-placeholder-count="11">
+          <li><a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 4px 8px; border-radius: 6px; background: {{b.bg}}; color: #0F172A; text-decoration: none"><span style="width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 1.5px {{b.ring}} {{b.ringC}}"></span><span style="flex: 1">{{b.title}}</span><span style="color: {{b.metaC}}">{{b.meta}}</span></a></li>
+        </sc-for>
+      </ol>
+      <details open style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 20px">
+        <summary style="font-weight: 600; cursor: pointer">Cú pháp</summary>
+        <dl style="margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px">
+          <div><dt style="font-family: 'JetBrains Mono', monospace">## Tóm tắt</dt><dd style="margin: 0; color: #475569">Giữ đúng tên khối của mẫu</dd></div>
+          <div><dt style="font-family: 'JetBrains Mono', monospace">- H: … | Đ: …</dt><dd style="margin: 0; color: #475569">Câu hỏi và flashcard</dd></div>
+          <div><dt style="font-family: 'JetBrains Mono', monospace">lien_quan: [slug]</dt><dd style="margin: 0; color: #475569">Mục liên quan, theo slug</dd></div>
+        </dl>
+      </details>
+    </aside>
+
+    <section aria-label="Markdown" style="display: flex; flex-direction: column; min-width: 0; border-right: 1px solid #E2E8F0; background: #FFFFFF">
+      <div style="height: 36px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; font-family: 'JetBrains Mono', monospace">noi-dung/project-management/stakeholder-and-communication-management/salience-model.md</div>
+      <div style="flex: 1; display: grid; grid-template-columns: 44px 1fr; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 22px; overflow: hidden">
+        <div aria-hidden="true" style="padding: 10px 8px; text-align: right; color: #8492A6; background: #F8FAFC; border-right: 1px solid #E2E8F0; display: flex; flex-direction: column">
+          <sc-for list="{{lines}}" as="l" hint-placeholder-count="27"><span style="color: {{l.numC}}; font-weight: {{l.numW}}">{{l.n}}</span></sc-for>
+        </div>
+        <div style="padding: 10px 12px; display: flex; flex-direction: column">
+          <sc-for list="{{lines}}" as="l" hint-placeholder-count="27"><span style="white-space: pre; min-height: 22px; color: {{l.c}}; background: {{l.bg}}; text-decoration: {{l.deco}}; outline: {{l.outline}}">{{l.text}}</span></sc-for>
+        </div>
+      </div>
+      <div role="alert" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1.5px solid #B91C1C; background: #FFFFFF; color: #B91C1C; font-size: 13px; line-height: 20px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg><span>Dòng 25: câu hỏi thiếu " | Đ: "</span><u style="margin-left: auto; color: #0F172A">Đi tới dòng</u></div>
+    </section>
+
+    <section aria-label="Xem trước" style="display: flex; flex-direction: column; gap: 16px; padding: 16px 24px; overflow: hidden; font-size: 15px; line-height: 24px">
+      <span style="font-size: 13px; color: #475569">Xem trước</span>
+      <h2 lang="en" style="margin: 0; font-size: 24px; line-height: 34px; font-weight: 700">Salience Model</h2>
+      <sc-for list="{{preview}}" as="p" hint-placeholder-count="6">
+        <div style="display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 14px; border: 1.5px {{p.style}} {{p.bc}}; border-radius: 10px; color: {{p.fg}}"><strong style="font-weight: 600">{{p.title}}</strong><span style="font-size: 13px">{{p.note}}</span></div>
+      </sc-for>
+      <span style="font-size: 13px; color: #475569">Khối tuỳ chọn còn trống sẽ ẩn khi đọc bài.</span>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var src = ['---', 'id: [id nút roadmap.sh]', 'loai: chu-de', 'giai_nghia:', 'trang_thai_noi_dung: ban-nhap', 'nguon: tu-viet', 'lien_quan: [power-interest-grid]', '---', '',
+      '## Tóm tắt', '', '## Vì sao PM cần biết', '', '## Khái niệm cốt lõi', '', '## Ví dụ thực tế', '', '## Cách áp dụng', '', '## Góc dev lead → PM', '',
+      '## Thực hành trên dự án thật', '', '## Tự kiểm tra', '- H: [câu hỏi đang gõ]', '', '## Tham khảo'];
+    var lines = src.map(function (s, i) {
+      var err = i === 24, head = s.indexOf('##') === 0, fm = i < 8;
+      return { n: i + 1, text: s || ' ', c: err ? '#B91C1C' : (head ? '#0F172A' : (fm ? '#475569' : '#0F172A')), bg: err ? '#FEF2F2' : 'transparent',
+        deco: err ? 'underline wavy #B91C1C' : 'none', outline: 'none', numC: err ? '#B91C1C' : '#8492A6', numW: err ? 700 : 400 };
+    });
+    var blocks = [['Tóm tắt ★', '', 0], ['Vì sao PM cần biết ★', '', 0], ['Khái niệm cốt lõi ★', '', 0], ['Ví dụ thực tế ★', '', 0], ['Cách áp dụng ★', '', 0], ['Góc dev lead → PM ★', '', 0],
+      ['So sánh · tuỳ chọn', 'ẩn', 0], ['Thực hành trên dự án thật ★', '', 0], ['Tự kiểm tra ★', '1 lỗi', 2], ['Mục liên quan', '1 liên kết', 1], ['Tham khảo ★', '', 0]].map(function (b) {
+      return { title: b[0], meta: b[1] || 'trống', metaC: b[2] === 2 ? '#B91C1C' : '#475569', ring: b[2] === 1 ? 'solid' : 'dashed', ringC: b[2] === 2 ? '#B91C1C' : '#8492A6', bg: b[2] === 2 ? '#F1F5F9' : 'transparent' };
+    });
+    var preview = [
+      { title: 'Tóm tắt', note: 'Chưa có', style: 'dashed', bc: '#8492A6', fg: '#475569' },
+      { title: 'Vì sao PM cần biết', note: 'Chưa có', style: 'dashed', bc: '#8492A6', fg: '#475569' },
+      { title: 'Khái niệm cốt lõi', note: 'Chưa có', style: 'dashed', bc: '#8492A6', fg: '#475569' },
+      { title: 'Tự kiểm tra', note: 'Câu hỏi thiếu đáp án', style: 'solid', bc: '#B91C1C', fg: '#B91C1C' },
+      { title: 'Mục liên quan', note: 'Power/Interest Grid', style: 'solid', bc: '#E2E8F0', fg: '#0F172A' },
+      { title: 'Tham khảo', note: 'Chưa có', style: 'dashed', bc: '#8492A6', fg: '#475569' }
+    ];
+    return { lines: lines, blocks: blocks, preview: preview };
+  }
+}
+</script>
+</body>
+</html>

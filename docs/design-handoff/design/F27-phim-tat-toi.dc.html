@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Bảng phím tắt · Tối</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 960px; overflow: hidden; display: flex; background: #0B1120; color: #E2E8F0; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-hidden="true" style="flex: 0 0 264px; background: #111827; border-right: 1px solid #1F2937">
+    <dc-import name="C34-sidebar" theme="dark" active="tong-quan" min-height="960px" hint-size="264px,960px"></dc-import>
+  </aside>
+  <div aria-hidden="true" style="flex: 1; padding: 32px 40px; display: flex; flex-direction: column; gap: 24px">
+    <span style="font-size: 28px; line-height: 40px; font-weight: 700">Tổng quan</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+      <div style="height: 260px; border-radius: 10px; background: #111827; border: 1px solid #1F2937"></div>
+      <div style="height: 260px; border-radius: 10px; background: #111827; border: 1px solid #1F2937"></div>
+      <div style="height: 200px; border-radius: 10px; background: #111827; border: 1px solid #1F2937; grid-column: 1 / -1"></div>
+    </div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(2,6,23,.72)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="pt-title" style="position: absolute; left: 50%; top: 72px; transform: translateX(-50%); width: 720px; box-sizing: border-box; padding: 24px; display: flex; flex-direction: column; gap: 20px; background: #1E293B; border: 1px solid #334155; border-radius: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h2 id="pt-title" style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">Phím tắt</h2>
+      <button type="button" aria-label="Đóng (Esc)" style="display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border: 1px solid #64748B; border-radius: 6px; background: transparent; color: #E2E8F0; outline: 2px solid #E2E8F0; outline-offset: 2px; font: 500 13px/20px 'Be Vietnam Pro', sans-serif"><kbd style="font-family: 'JetBrains Mono', monospace; font-size: 12px">Esc</kbd>Đóng</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 32px">
+      <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+        <section style="display: flex; flex-direction: column; gap: 4px">
+          <h3 style="margin: 0 0 4px; font-size: 13px; line-height: 20px; font-weight: 600; color: #94A3B8">{{g.title}}</h3>
+          <dl style="margin: 0; display: flex; flex-direction: column">
+            <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; border-bottom: 1px solid #334155">
+                <dt style="font-size: 15px; line-height: 24px">{{r.label}}</dt>
+                <dd style="margin: 0; display: flex; gap: 4px">
+                  <sc-for list="{{r.keys}}" as="k" hint-placeholder-count="2"><kbd style="min-width: 24px; height: 24px; box-sizing: border-box; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #64748B; border-bottom-width: 2px; border-radius: 4px; background: #111827; color: #E2E8F0; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 18px">{{k}}</kbd></sc-for>
+                </dd>
+              </div>
+            </sc-for>
+          </dl>
+        </section>
+      </sc-for>
+    </div>
+    <div style="display: flex; gap: 10px; padding: 12px 14px; border: 1px solid #64748B; border-radius: 10px; background: #111827; font-size: 13px; line-height: 20px; color: #94A3B8">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E2E8F0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+      <span>Phím tắt không chạy khi bạn đang gõ, kể cả lúc Telex/VNI đang ghép chữ. Phím được nhận theo vị trí vật lý trên bàn phím.</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { groups: [
+      { title: 'Toàn app', rows: [{ label: 'Bảng phím tắt', keys: ['?'] }, { label: 'Tìm kiếm', keys: ['/'] }, { label: 'Đóng', keys: ['Esc'] }] },
+      { title: 'Bài học · panel bản đồ', rows: [{ label: 'Mục trước / sau', keys: ['[', ']'] }, { label: 'Chưa học · Đang học · Đã xong · Bỏ qua', keys: ['1', '2', '3', '4'] }, { label: 'Đồng hồ', keys: ['T'] }, { label: 'Soạn', keys: ['E'] }] },
+      { title: 'Lộ trình', rows: [{ label: 'Bản đồ ↔ Danh sách', keys: ['M'] }, { label: 'Di chuyển giữa mục', keys: ['←', '↑', '↓', '→'] }, { label: 'Mở panel', keys: ['Enter'] }] },
+      { title: 'Chỉ trong phiên ôn', rows: [{ label: 'Lật thẻ', keys: ['Space'] }, { label: 'Quên', keys: ['1'] }, { label: 'Nhớ', keys: ['2'] }] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-23T03:00:00Z"
+  },
+  "title": "Học PM A–Z",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 3000,
+      "title": "F01 Design system · Sáng"
+    },
+    "F01-toi.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 3000,
+      "title": "F01 Design system · Tối"
+    },
+    "F02-sang.dc.html": {
+      "x": 0,
+      "y": 3120,
+      "w": 1440,
+      "h": 3600,
+      "title": "F02 Component (phần 1) · Sáng"
+    },
+    "F02-toi.dc.html": {
+      "x": 1520,
+      "y": 3120,
+      "w": 1440,
+      "h": 3600,
+      "title": "F02 Component (phần 1) · Tối"
+    },
+    "F11-scope-creep.dc.html": {
+      "x": 0,
+      "y": 6840,
+      "w": 1440,
+      "h": 3900,
+      "title": "F11 Bài học Scope Creep · Dữ liệu mẫu",
+      "expand": "fill"
+    },
+    "F03-tong-quan.dc.html": {
+      "x": 0,
+      "y": 11280,
+      "w": 1440,
+      "h": 1560,
+      "title": "F03 Tổng quan · Dữ liệu mẫu",
+      "expand": "fill"
+    },
+    "F05-lan-dau.dc.html": {
+      "x": 1520,
+      "y": 11280,
+      "w": 1440,
+      "h": 1560,
+      "title": "F05 Tổng quan · Lần đầu"
+    },
+    "F04-tong-quan-375.dc.html": {
+      "x": 3040,
+      "y": 11280,
+      "w": 375,
+      "h": 2400,
+      "title": "F04 Tổng quan 375 · Dữ liệu mẫu"
+    },
+    "F06-ban-do.dc.html": {
+      "x": 0,
+      "y": 13800,
+      "w": 1440,
+      "h": 1000,
+      "title": "F06 Bản đồ · Scope Creep đang chọn · Dữ liệu mẫu"
+    },
+    "F06b-ban-do-linh-vuc.dc.html": {
+      "x": 1520,
+      "y": 13800,
+      "w": 1440,
+      "h": 1000,
+      "title": "F06 Bản đồ · panel lĩnh vực Scope Management · Dữ liệu mẫu"
+    },
+    "F07-ban-do-do-phu-toi.dc.html": {
+      "x": 3040,
+      "y": 13800,
+      "w": 1440,
+      "h": 1000,
+      "title": "F07 Bản đồ · Độ phủ nội dung · Tối · Dữ liệu mẫu"
+    },
+    "F08-danh-sach.dc.html": {
+      "x": 0,
+      "y": 14920,
+      "w": 1440,
+      "h": 1400,
+      "title": "F08 Danh sách · lọc 9 mục, chọn nhiều · Dữ liệu mẫu",
+      "expand": "fill"
+    },
+    "F09-danh-sach-375.dc.html": {
+      "x": 1520,
+      "y": 14920,
+      "w": 375,
+      "h": 1800,
+      "title": "F09 Danh sách 375 · Dữ liệu mẫu"
+    },
+    "F10-linh-vuc.dc.html": {
+      "x": 1975,
+      "y": 14920,
+      "w": 1440,
+      "h": 1800,
+      "title": "F10 Lĩnh vực Scope Management · Dữ liệu mẫu",
+      "expand": "fill"
+    },
+    "F27-phim-tat-toi.dc.html": {
+      "x": 0,
+      "y": 16840,
+      "w": 1440,
+      "h": 960,
+      "title": "F27 Bảng phím tắt · Tối"
+    },
+    "F28-drawer-375.dc.html": {
+      "x": 1520,
+      "y": 16840,
+      "w": 375,
+      "h": 960,
+      "title": "F28 Drawer 375 · Dữ liệu mẫu"
+    },
+    "C34-sidebar.dc.html": {
+      "x": 1975,
+      "y": 16840,
+      "w": 264,
+      "h": 960,
+      "title": "C34 Sidebar (component dùng chung)"
+    },
+    "F12-scope-creep-ban-sua.dc.html": {
+      "x": 0,
+      "y": 18340,
+      "w": 1440,
+      "h": 3960,
+      "title": "F12 Scope Creep · Đã duyệt có bản sửa + thiếu Tự kiểm tra"
+    },
+    "F15-risk-register.dc.html": {
+      "x": 1520,
+      "y": 18340,
+      "w": 1440,
+      "h": 3700,
+      "title": "F15 Bài Tài liệu · Risk Register · Dữ liệu mẫu",
+      "expand": "fill"
+    },
+    "F14-evm-duyet.dc.html": {
+      "x": 3040,
+      "y": 18340,
+      "w": 1440,
+      "h": 3000,
+      "title": "F14 Earned Value Management · chế độ duyệt",
+      "expand": "fill"
+    },
+    "F17-salience-model.dc.html": {
+      "x": 0,
+      "y": 22420,
+      "w": 1440,
+      "h": 1900,
+      "title": "F17 Salience Model · chưa có nội dung",
+      "expand": "fill"
+    },
+    "F19-dialog.dc.html": {
+      "x": 1520,
+      "y": 22420,
+      "w": 1440,
+      "h": 960,
+      "title": "F19 Dialog · Sao chép prompt soạn bài / Đã xong khi còn thiếu bước"
+    },
+    "F13-scope-creep-375.dc.html": {
+      "x": 3040,
+      "y": 22420,
+      "w": 375,
+      "h": 900,
+      "title": "F13 Scope Creep 375 · sheet trạng thái"
+    },
+    "F16-risk-register-375.dc.html": {
+      "x": 3495,
+      "y": 22420,
+      "w": 375,
+      "h": 1500,
+      "title": "F16 Risk Register 375 · bảng cuộn ngang"
+    },
+    "F18-salience-375-toi.dc.html": {
+      "x": 3950,
+      "y": 22420,
+      "w": 375,
+      "h": 1500,
+      "title": "F18 Salience Model 375 · Tối"
+    },
+    "F02b-sang.dc.html": {
+      "x": 0,
+      "y": 24880,
+      "w": 1440,
+      "h": 4400,
+      "title": "F02 Component (phần 2) · Sáng"
+    },
+    "F02b-toi.dc.html": {
+      "x": 1520,
+      "y": 24880,
+      "w": 1440,
+      "h": 4400,
+      "title": "F02 Component (phần 2) · Tối"
+    },
+    "F20-trinh-soan.dc.html": {
+      "x": 0,
+      "y": 29400,
+      "w": 1440,
+      "h": 1000,
+      "title": "F20 Trình soạn · Salience Model"
+    },
+    "F21-noi-dung-do-phu.dc.html": {
+      "x": 1520,
+      "y": 29400,
+      "w": 1440,
+      "h": 1100,
+      "title": "F21 Nội dung · tab Độ phủ · Dữ liệu mẫu"
+    },
+    "F21b-noi-dung-cho-duyet.dc.html": {
+      "x": 3040,
+      "y": 29400,
+      "w": 1440,
+      "h": 1100,
+      "title": "F21 Nội dung · tab Chờ duyệt · Dữ liệu mẫu"
+    },
+    "F22-nhap.dc.html": {
+      "x": 0,
+      "y": 30620,
+      "w": 1440,
+      "h": 1200,
+      "title": "F22 Nội dung · Nhập · 5 kết quả kiểm tra"
+    },
+    "F23-phien-on.dc.html": {
+      "x": 1520,
+      "y": 30620,
+      "w": 1440,
+      "h": 900,
+      "title": "F23 Phiên ôn · mặt sau · Dữ liệu mẫu"
+    },
+    "F23b-phien-on-cuoi.dc.html": {
+      "x": 3040,
+      "y": 30620,
+      "w": 1440,
+      "h": 900,
+      "title": "F23 Phiên ôn · cuối phiên / không còn thẻ"
+    },
+    "F24-phien-on-375-toi.dc.html": {
+      "x": 4560,
+      "y": 30620,
+      "w": 375,
+      "h": 812,
+      "title": "F24 Phiên ôn 375 · Tối"
+    },
+    "F25-tim-kiem.dc.html": {
+      "x": 0,
+      "y": 31940,
+      "w": 1440,
+      "h": 1000,
+      "title": "F25 Tìm kiếm “risk” · Dữ liệu mẫu"
+    },
+    "F25b-tim-kiem-khac.dc.html": {
+      "x": 1520,
+      "y": 31940,
+      "w": 1440,
+      "h": 720,
+      "title": "F25 Tìm kiếm “comittee” và “safe”"
+    },
+    "F26-he-thong.dc.html": {
+      "x": 3040,
+      "y": 31940,
+      "w": 1440,
+      "h": 1500,
+      "title": "F26 Trạng thái hệ thống"
+    },
+    "F26b-404-375.dc.html": {
+      "x": 4560,
+      "y": 31940,
+      "w": 375,
+      "h": 812,
+      "title": "F26 404 · 375"
+    },
+    "C28-tim-kiem.dc.html": {
+      "x": 6115,
+      "y": 31940,
+      "w": 560,
+      "h": 760,
+      "title": "C28 Tìm kiếm (component dùng chung)"
+    },
+    "F29-phan-business-acumen.dc.html": {
+      "x": 0,
+      "y": 34000,
+      "w": 1440,
+      "h": 1500,
+      "title": "F29 Phần Business Acumen · Dữ liệu mẫu"
+    },
+    "F30-lo-trinh-goi-y.dc.html": {
+      "x": 1520,
+      "y": 34000,
+      "w": 1440,
+      "h": 1300,
+      "title": "F30 Lộ trình gợi ý · Đề xuất mẫu"
+    },
+    "F31-on-tap.dc.html": {
+      "x": 3040,
+      "y": 34000,
+      "w": 1440,
+      "h": 1100,
+      "title": "F31 Ôn tập · Dữ liệu mẫu"
+    },
+    "F32-thong-ke.dc.html": {
+      "x": 4560,
+      "y": 34000,
+      "w": 1440,
+      "h": 1400,
+      "title": "F32 Thống kê · Sáng · Dữ liệu mẫu"
+    },
+    "F33-bo-ho-so.dc.html": {
+      "x": 0,
+      "y": 35620,
+      "w": 1440,
+      "h": 1400,
+      "title": "F33 Bộ hồ sơ · lưới 15 tài liệu · Dữ liệu mẫu"
+    },
+    "F34-chung-chi.dc.html": {
+      "x": 1520,
+      "y": 35620,
+      "w": 1440,
+      "h": 1000,
+      "title": "F34 Chứng chỉ · danh sách 10"
+    },
+    "F34b-pmp.dc.html": {
+      "x": 3040,
+      "y": 35620,
+      "w": 1440,
+      "h": 2200,
+      "title": "F34 Chứng chỉ · trang PMP · Dữ liệu mẫu"
+    },
+    "F35-pmp-375.dc.html": {
+      "x": 4560,
+      "y": 35620,
+      "w": 375,
+      "h": 1600,
+      "title": "F35 PMP 375"
+    },
+    "F36-tu-danh-gia.dc.html": {
+      "x": 0,
+      "y": 37940,
+      "w": 1440,
+      "h": 1700,
+      "title": "F36 Thiết lập · Tự đánh giá đầu vào"
+    },
+    "F37-thuat-ngu.dc.html": {
+      "x": 1520,
+      "y": 37940,
+      "w": 1440,
+      "h": 1400,
+      "title": "F37 Thuật ngữ · tab Viết tắt"
+    },
+    "F38-ghi-chu.dc.html": {
+      "x": 3040,
+      "y": 37940,
+      "w": 1440,
+      "h": 1150,
+      "title": "F38 Ghi chú"
+    },
+    "F38b-cai-dat.dc.html": {
+      "x": 4560,
+      "y": 37940,
+      "w": 1440,
+      "h": 1500,
+      "title": "F38 Cài đặt"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "F01-toi.dc.html",
+    "F02-sang.dc.html",
+    "F02-toi.dc.html",
+    "F11-scope-creep.dc.html",
+    "F03-tong-quan.dc.html",
+    "F05-lan-dau.dc.html",
+    "F04-tong-quan-375.dc.html",
+    "F06-ban-do.dc.html",
+    "F06b-ban-do-linh-vuc.dc.html",
+    "F07-ban-do-do-phu-toi.dc.html",
+    "F08-danh-sach.dc.html",
+    "F09-danh-sach-375.dc.html",
+    "F10-linh-vuc.dc.html",
+    "F27-phim-tat-toi.dc.html",
+    "F28-drawer-375.dc.html",
+    "C34-sidebar.dc.html",
+    "F12-scope-creep-ban-sua.dc.html",
+    "F15-risk-register.dc.html",
+    "F14-evm-duyet.dc.html",
+    "F17-salience-model.dc.html",
+    "F19-dialog.dc.html",
+    "F13-scope-creep-375.dc.html",
+    "F16-risk-register-375.dc.html",
+    "F18-salience-375-toi.dc.html",
+    "F02b-sang.dc.html",
+    "F02b-toi.dc.html",
+    "F20-trinh-soan.dc.html",
+    "F21-noi-dung-do-phu.dc.html",
+    "F21b-noi-dung-cho-duyet.dc.html",
+    "F22-nhap.dc.html",
+    "F23-phien-on.dc.html",
+    "F23b-phien-on-cuoi.dc.html",
+    "F24-phien-on-375-toi.dc.html",
+    "F25-tim-kiem.dc.html",
+    "F25b-tim-kiem-khac.dc.html",
+    "F26-he-thong.dc.html",
+    "F26b-404-375.dc.html",
+    "C28-tim-kiem.dc.html",
+    "F29-phan-business-acumen.dc.html",
+    "F30-lo-trinh-goi-y.dc.html",
+    "F31-on-tap.dc.html",
+    "F32-thong-ke.dc.html",
+    "F33-bo-ho-so.dc.html",
+    "F34-chung-chi.dc.html",
+    "F34b-pmp.dc.html",
+    "F35-pmp-375.dc.html",
+    "F36-tu-danh-gia.dc.html",
+    "F37-thuat-ngu.dc.html",
+    "F38-ghi-chu.dc.html",
+    "F38b-cai-dat.dc.html"
+  ],
+  "notes": {
+    "luot1": {
+      "x": 0,
+      "y": -320,
+      "text": "Lượt 1 · Nền — design system, component, bài học kiểm chứng",
+      "kind": "title1",
+      "maxW": 2960
+    },
+    "luot2": {
+      "x": 0,
+      "y": 10960,
+      "text": "Lượt 2 · Khung và lộ trình",
+      "kind": "title1",
+      "maxW": 3415
+    },
+    "luot3": {
+      "x": 0,
+      "y": 18060,
+      "text": "Lượt 3 · Bài học",
+      "kind": "title1",
+      "maxW": 4480
+    },
+    "luot4": {
+      "x": 0,
+      "y": 24600,
+      "text": "Lượt 4 · Nội dung, ôn tập, hệ thống",
+      "kind": "title1",
+      "maxW": 4935
+    },
+    "luot5": {
+      "x": 0,
+      "y": 33720,
+      "text": "Lượt 5 · Màn P1",
+      "kind": "title1",
+      "maxW": 6000
+    }
+  },
+  "designSystems": []
+}

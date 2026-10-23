@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>F01 Design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 3000px; overflow: hidden; box-sizing: border-box; padding: 64px 80px; background: {{t.bg}}; color: {{t.text}}; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px; display: flex; flex-direction: column; gap: 48px">
+
+  <header style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding-bottom: 32px; border-bottom: 1px solid {{t.border}}">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 20px; color: {{t.muted}}">F01 · Design system · {{t.mode}}</span>
+      <h1 style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">Học PM A–Z</h1>
+      <p style="margin: 0; color: {{t.muted}}; max-width: 720px">Sổ tay kỹ thuật cho người tự học Project Management: phẳng, viền mảnh, không minh hoạ, không emoji. Mỗi kênh thị giác chỉ mang một nghĩa; màu không bao giờ là tín hiệu duy nhất.</p>
+    </div>
+    <div style="display: flex; gap: 8px; font-size: 13px; line-height: 20px; color: {{t.muted}}">
+      <span style="padding: 4px 10px; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.surface}}">Be Vietnam Pro · JetBrains Mono</span>
+      <span style="padding: 4px 10px; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.surface}}">Icon Lucide 1.75</span>
+    </div>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">1. Token màu</h2>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px">
+      <sc-for list="{{tokens}}" as="tk" hint-placeholder-count="10">
+        <div style="background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px; overflow: hidden; box-shadow: {{t.sh1}}">
+          <div style="height: 56px; background: {{tk.hex}}; border-bottom: 1px solid {{t.border}}"></div>
+          <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 20px; font-weight: 500">{{tk.name}}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 20px; color: {{t.muted}}">{{tk.hex}}</span>
+            <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">{{tk.note}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px">
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">2. Legend loại nút</h2>
+      <p style="margin: 0; color: {{t.muted}}">Nền vàng / be / đen / xanh dương chỉ báo loại nút. Viền mực 1,5px như roadmap.sh. Bốn hue này không dùng cho trạng thái, banner hay callout.</p>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 16px">
+          <div style="width: 240px; height: 56px; box-sizing: border-box; border: 1.5px solid {{t.kaBd}}; border-radius: 6px; background: {{t.kaBg}}; color: {{t.kaFg}}; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 13px; line-height: 20px; font-weight: 600">
+            <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg><span lang="en">Scope Management</span></span>
+            <span style="font-variant-numeric: tabular-nums">5/16</span>
+          </div>
+          <div style="display: flex; flex-direction: column"><span style="font-weight: 600">Lĩnh vực</span><span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">layers · {{t.kaC}}</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px">
+          <div style="width: 240px; min-height: 40px; box-sizing: border-box; border: 1.5px solid {{t.tpBd}}; border-radius: 6px; background: {{t.tpBg}}; color: {{t.tpFg}}; display: flex; align-items: center; padding: 8px 12px; font-size: 13px; line-height: 20px; font-weight: 600"><span lang="en">Scope Creep</span></div>
+          <div style="display: flex; flex-direction: column"><span style="font-weight: 600">Chủ đề</span><span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">book-open (chỉ ở chip) · {{t.tpC}}</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px">
+          <div style="width: 240px; min-height: 40px; box-sizing: border-box; border: 1.5px solid {{t.dcBd}}; border-radius: 6px; background: {{t.dcBg}}; color: {{t.dcFg}}; display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; line-height: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span lang="en">Risk Register</span></div>
+          <div style="display: flex; flex-direction: column"><span style="font-weight: 600">Tài liệu</span><span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">file-text · {{t.dcC}}</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px">
+          <div style="width: 240px; min-height: 40px; box-sizing: border-box; border: 1.5px solid {{t.tpBd}}; border-radius: 6px; background: {{t.tpBg}}; color: {{t.tpFg}}; display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; line-height: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg><span lang="en">Project Management Professional (PMP)</span></div>
+          <div style="display: flex; flex-direction: column"><span style="font-weight: 600">Chứng chỉ</span><span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">màu Chủ đề + award</span></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="height: 40px; box-sizing: border-box; border: 1.5px solid {{t.grBd}}; border-radius: 6px; background: {{t.grBg}}; color: {{t.grFg}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 13px; line-height: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span lang="en">Prioritization Techniques</span></div>
+          <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}"><strong style="color: {{t.text}}">Nhóm</strong> · thanh tiêu đề full-width + folder · {{t.grC}}. Ở giao diện Sáng trùng màu mực với nút chính — phân biệt bằng hình dạng.</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">3. Trạng thái học</h2>
+      <p style="margin: 0; color: {{t.muted}}">Icon + vạch trái 4px + chữ. Hue tách khỏi legend và khỏi màu mực. Chưa học không có vạch.</p>
+      <div style="display: flex; flex-direction: column; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}; overflow: hidden">
+        <sc-for list="{{statuses}}" as="st" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: 172px 1fr 120px; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid {{t.border}}">
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; background: {{st.bg}}; color: {{st.fg}}; font-size: 12px; line-height: 18px; font-weight: 600; justify-self: start">
+              <sc-if value="{{st.isNs}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg></sc-if>
+              <sc-if value="{{st.isLr}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path></svg></sc-if>
+              <sc-if value="{{st.isDn}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+              <sc-if value="{{st.isSk}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></sc-if>
+              <sc-if value="{{st.isRv}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></sc-if>
+              {{st.label}}
+            </span>
+            <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">{{st.desc}}</span>
+            <span style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 18px; color: {{t.muted}}"><span style="width: 20px; height: 20px; border-radius: 4px; background: {{st.solid}}; border: 1px solid {{t.border}}"></span>{{st.solidHex}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: center">
+        <div style="width: 240px; min-height: 40px; box-sizing: border-box; border: 1.5px solid {{t.tpBd}}; border-radius: 6px; background-color: {{t.tpBg}}; background-image: {{t.stripe}}; color: {{t.tpFg}}; display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; line-height: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg><span lang="en">Use Case Points</span></div>
+        <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Bỏ qua = sọc 45°, nét 2px cách 6px, {{t.stripeLabel}} chồng lên nền loại. Không giảm opacity, không gạch ngang chữ.</span>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: center">
+        <div style="position: relative; width: 240px; min-height: 40px; box-sizing: border-box; border: 1.5px solid {{t.tpBd}}; border-left: 4px solid {{t.dnSolid}}; border-radius: 6px; background: {{t.tpBg}}; color: {{t.tpFg}}; display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; line-height: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{t.dnSolid}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span lang="en">MoSCoW</span>
+          <span style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; border-radius: 50%; background: {{t.surface}}; border: 1px solid {{t.border}}; display: flex; align-items: center; justify-content: center; color: {{t.rvSolid}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></span>
+        </div>
+        <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Cần ôn lại = glyph ↺ ở góc phải trên, vòng 16px nền surface. Là cờ suy ra, không phải trạng thái thứ 5.</span>
+      </div>
+    </section>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px">
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">4. Trạng thái nội dung</h2>
+      <p style="margin: 0; color: {{t.muted}}">Màu trung tính, icon + chữ. Nét đứt chỉ có nghĩa "chưa có / chờ điền".</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px">
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px dashed {{t.input}}; color: {{t.muted}}; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg>Chưa có nội dung</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.border}}; background: {{t.s2}}; color: {{t.text}}; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp · AI</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.border}}; background: {{t.s2}}; color: {{t.text}}; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp · Tự viết</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.border}}; background: {{t.surface}}; color: {{t.text}}; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m9 15 2 2 4-4"></path></svg>Đã duyệt · 18/10/2026</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.border}}; background: {{t.surface}}; color: {{t.text}}; font-size: 12px; line-height: 18px; font-weight: 600"><span style="position: relative; display: inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m9 15 2 2 4-4"></path></svg><span style="position: absolute; top: -2px; right: -3px; width: 6px; height: 6px; border-radius: 50%; background: {{t.text}}"></span></span>Đã duyệt · có bản sửa chưa duyệt</span>
+      </div>
+
+      <h2 style="margin: 24px 0 0; font-size: 22px; line-height: 32px; font-weight: 600">5. Chữ</h2>
+      <div style="display: flex; flex-direction: column; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}">
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">h1 28/40 · 700</span><span style="font-size: 28px; line-height: 40px; font-weight: 700">Ước lượng chi phí</span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">h2 22/32 · 600</span><span style="font-size: 22px; line-height: 32px; font-weight: 600">Quản lý rủi ro định lượng</span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">thân bài 17/28</span><span style="font-size: 17px; line-height: 28px">Nghiệm thu sản phẩm bàn giao — <span lang="en">Acceptance of deliverables</span></span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">UI 15/24</span><span style="font-size: 15px; line-height: 24px">Đặt trạng thái · Học tiếp trong lĩnh vực</span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">meta 13/20</span><span style="font-size: 13px; line-height: 20px; color: {{t.muted}}; font-variant-numeric: tabular-nums">19% · 37/195 · 4 bỏ qua · 22/10/2026 21:42</span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid {{t.border}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">chip 12/18 · 600</span><span style="font-size: 12px; line-height: 18px; font-weight: 600">Bản nháp · Tự viết</span></div>
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 12px 16px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">mono 13/20</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 20px">noi-dung/project-management/scope-management/scope-creep.md</span></div>
+      </div>
+      <ul style="margin: 0; padding-left: 20px; color: {{t.muted}}; font-size: 13px; line-height: 20px; display: flex; flex-direction: column; gap: 4px">
+        <li>Line-height: thân bài ≥ 1,6 · UI ≥ 1,5 · tiêu đề ≥ 1,4 — đủ chỗ cho dấu chồng.</li>
+        <li>Không viết hoa toàn bộ chữ tiếng Việt. Số dùng tabular-nums.</li>
+        <li>Thuật ngữ tiếng Anh gắn lang="en"; giải nghĩa sau " — ", màu text-muted.</li>
+      </ul>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">6. Bảng kênh — mỗi kênh một nghĩa</h2>
+      <div style="display: flex; flex-direction: column; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}; overflow: hidden">
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 10px 16px; background: {{t.s2}}; font-size: 13px; line-height: 20px; font-weight: 600"><span>Kênh</span><span>Nghĩa duy nhất · quy tắc</span></div>
+        <sc-for list="{{channels}}" as="ch" hint-placeholder-count="9">
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 10px 16px; border-top: 1px solid {{t.border}}; font-size: 13px; line-height: 20px">
+            <span style="font-weight: 600">{{ch.k}}</span>
+            <span style="color: {{t.muted}}">{{ch.v}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px">
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">7. Khoảng cách, kích thước, hình</h2>
+      <div style="display: flex; align-items: flex-end; gap: 20px; padding: 20px; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}">
+        <sc-for list="{{spaces}}" as="sp" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+            <div style="width: {{sp.px}}; height: {{sp.px}}; background: {{t.lrSolid}}; opacity: 1"></div>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">{{sp.n}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}; font-size: 13px; line-height: 20px">
+        <sc-for list="{{sizes}}" as="sz" hint-placeholder-count="8">
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid {{t.border}}"><span style="color: {{t.muted}}">{{sz.k}}</span><span style="font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums">{{sz.v}}</span></div>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 24px">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; align-items: center"><div style="width: 100%; height: 64px; border-radius: 6px; border: 1px solid {{t.input}}; background: {{t.surface}}"></div><span style="font-size: 13px; color: {{t.muted}}">bo 6 · ô nhập, chip, nút bản đồ</span></div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; align-items: center"><div style="width: 100%; height: 64px; border-radius: 10px; border: 1px solid {{t.border}}; background: {{t.surface}}; box-shadow: {{t.sh1}}"></div><span style="font-size: 13px; color: {{t.muted}}">bo 10 · card</span></div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; align-items: center"><div style="width: 100%; height: 64px; border-radius: 14px; border: 1px solid {{t.border}}; background: {{t.dlg}}; box-shadow: {{t.sh3}}"></div><span style="font-size: 13px; color: {{t.muted}}">bo 14 · dialog, sheet, panel</span></div>
+      </div>
+      <p style="margin: 0; font-size: 13px; line-height: 20px; color: {{t.muted}}">{{t.shadowNote}}</p>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 22px; line-height: 32px; font-weight: 600">8. Chú thích thiết kế</h2>
+      <div style="border: 1px solid {{t.pink}}; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 18px; color: {{t.pink}}">Lớp "Chú thích" · ẩn được · không thuộc UI app</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.pink}}">C27</span></div>
+        <div style="position: relative; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px; padding: 20px">
+          <span style="position: absolute; top: 12px; right: 12px; font-size: 12px; line-height: 18px; font-weight: 600; color: {{t.pink}}; border: 1px solid {{t.pink}}; border-radius: 4px; padding: 0 6px">Nội dung mẫu</span>
+          <h3 style="margin: 0 0 8px; font-size: 17px; line-height: 28px; font-weight: 600">Tóm tắt</h3>
+          <p style="margin: 0; font-size: 17px; line-height: 28px; max-width: 520px">Scope Creep là khi phạm vi dự án lớn dần vì yêu cầu mới không qua kiểm soát thay đổi.</p>
+        </div>
+        <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 20px; color: {{t.muted}}; display: flex; flex-direction: column; gap: 4px">
+          <li>Tag chữ {{t.pinkHex}}, 12/18/600, viền liền 1px cùng màu, góc phải trên mỗi khối chữ mẫu.</li>
+          <li>Biến thể chữ: "liên kết mẫu", "nhãn mẫu", "Đề xuất mẫu".</li>
+          <li>Không vẽ trạng thái tương tác. App thật báo bản nháp bằng chip nội dung C8 + banner C26.</li>
+        </ul>
+      </div>
+
+      <h2 style="margin: 24px 0 0; font-size: 22px; line-height: 32px; font-weight: 600">9. Icon</h2>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.surface}}; font-size: 13px; line-height: 20px">
+        <sc-for list="{{icons}}" as="ic" hint-placeholder-count="16">
+          <div style="padding: 10px 14px; border-bottom: 1px solid {{t.border}}; display: flex; flex-direction: column"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px">{{ic.n}}</span><span style="color: {{t.muted}}">{{ic.m}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var dark = this.props.theme === 'dark';
+    var L = {
+      mode: 'Sáng', bg: '#F8FAFC', surface: '#FFFFFF', s2: '#F1F5F9', border: '#E2E8F0', input: '#8492A6', text: '#0F172A', muted: '#475569', dlg: '#FFFFFF',
+      kaBg: '#FDE047', kaFg: '#1C1917', kaBd: '#0F172A', kaC: '13,3:1',
+      tpBg: '#FDE7C7', tpFg: '#1C1917', tpBd: '#0F172A', tpC: '14,5:1',
+      dcBg: '#BFDBFE', dcFg: '#172554', dcBd: '#0F172A', dcC: '10,3:1',
+      grBg: '#0F172A', grFg: '#FFFFFF', grBd: '#0F172A', grC: '17,9:1',
+      dnSolid: '#15803D', lrSolid: '#7E22CE', rvSolid: '#0F766E',
+      stripe: 'repeating-linear-gradient(45deg, rgba(87,83,78,.2) 0 2px, transparent 2px 8px)', stripeLabel: '#57534E ở 20%',
+      pink: '#BE185D', pinkHex: '#BE185D',
+      sh1: '0 1px 2px rgba(15,23,42,.06)', sh3: '0 24px 48px rgba(15,23,42,.18)',
+      shadowNote: 'Bóng chỉ ở giao diện Sáng: 0 1px 2px / 0 8px 24px / 0 24px 48px, rgba(15,23,42, .06 / .12 / .18).'
+    };
+    var D = {
+      mode: 'Tối', bg: '#0B1120', surface: '#111827', s2: '#1E293B', border: '#1F2937', input: '#64748B', text: '#E2E8F0', muted: '#94A3B8', dlg: '#1E293B',
+      kaBg: '#713F12', kaFg: '#FEF9C3', kaBd: '#EAB308', kaC: '8,1:1',
+      tpBg: '#3B2A16', tpFg: '#FDE7C7', tpBd: '#B45309', tpC: '11,4:1',
+      dcBg: '#1E3A8A', dcFg: '#DBEAFE', dcBd: '#3B82F6', dcC: '8,5:1',
+      grBg: '#1E293B', grFg: '#F8FAFC', grBd: '#64748B', grC: '14,0:1 · viền 3,96 so với bg',
+      dnSolid: '#4ADE80', lrSolid: '#C084FC', rvSolid: '#2DD4BF',
+      stripe: 'repeating-linear-gradient(45deg, rgba(214,211,209,.2) 0 2px, transparent 2px 8px)', stripeLabel: '#D6D3D1 ở 20%',
+      pink: '#F472B6', pinkHex: '#F472B6',
+      sh1: 'none', sh3: 'none',
+      shadowNote: 'Giao diện Tối không dùng bóng: tách lớp bằng surface-2 và viền.'
+    };
+    var t = dark ? D : L;
+    var tokens = dark ? [
+      { name: 'bg', hex: '#0B1120', note: 'Nền trang' },
+      { name: 'surface', hex: '#111827', note: 'Card, sidebar' },
+      { name: 'surface-2', hex: '#1E293B', note: 'Nền phụ, banner, dialog' },
+      { name: 'border', hex: '#1F2937', note: 'Viền card, đường kẻ' },
+      { name: 'border-input', hex: '#64748B', note: 'Viền ô nhập · 3,7:1' },
+      { name: 'text', hex: '#E2E8F0', note: 'Chữ chính · 15,3:1' },
+      { name: 'text-muted', hex: '#94A3B8', note: 'Chữ phụ · 6,9:1' },
+      { name: 'primary (mực)', hex: '#E2E8F0', note: 'Chữ trên nút #0B1120' },
+      { name: 'danger', hex: '#FCA5A5', note: 'Chỉ lỗi và xoá · 9,4:1' },
+      { name: 'link', hex: '#E2E8F0', note: 'Màu text + gạch chân' }
+    ] : [
+      { name: 'bg', hex: '#F8FAFC', note: 'Nền trang' },
+      { name: 'surface', hex: '#FFFFFF', note: 'Card, sidebar' },
+      { name: 'surface-2', hex: '#F1F5F9', note: 'Nền phụ, banner' },
+      { name: 'border', hex: '#E2E8F0', note: 'Viền card, đường kẻ' },
+      { name: 'border-input', hex: '#8492A6', note: 'Viền ô nhập · 3,2:1' },
+      { name: 'text', hex: '#0F172A', note: 'Chữ chính · 17,1:1' },
+      { name: 'text-muted', hex: '#475569', note: 'Chữ phụ · 7,2:1' },
+      { name: 'primary (mực)', hex: '#0F172A', note: 'Chữ trên nút #FFFFFF' },
+      { name: 'danger', hex: '#B91C1C', note: 'Chỉ lỗi và xoá · 6,5:1' },
+      { name: 'link', hex: '#0F172A', note: 'Màu text + gạch chân' }
+    ];
+    var statuses = dark ? [
+      { label: 'Chưa học', fg: '#CBD5E1', bg: '#1E293B', solid: '#334155', solidHex: '#334155', desc: 'Không có vạch trái · 9,9:1', isNs: true },
+      { label: 'Đang học', fg: '#E9D5FF', bg: '#3B0764', solid: '#C084FC', solidHex: '#C084FC', desc: 'Vòng tô nửa · 11,0:1', isLr: true },
+      { label: 'Đã xong', fg: '#BBF7D0', bg: '#14532D', solid: '#4ADE80', solidHex: '#4ADE80', desc: 'circle-check · 7,5:1', isDn: true },
+      { label: 'Bỏ qua', fg: '#D6D3D1', bg: '#292524', solid: '#57534E', solidHex: 'sọc', desc: 'circle-slash + sọc · 10,2:1', isSk: true },
+      { label: 'Cần ôn lại', fg: '#99F6E4', bg: '#134E4A', solid: '#2DD4BF', solidHex: '#2DD4BF', desc: 'Cờ suy ra, tự tắt khi ôn xong · 7,5:1', isRv: true }
+    ] : [
+      { label: 'Chưa học', fg: '#475569', bg: '#F1F5F9', solid: '#E2E8F0', solidHex: '#E2E8F0', desc: 'Không có vạch trái · 6,9:1', isNs: true },
+      { label: 'Đang học', fg: '#6B21A8', bg: '#F3E8FF', solid: '#7E22CE', solidHex: '#7E22CE', desc: 'Vòng tô nửa · 7,4:1', isLr: true },
+      { label: 'Đã xong', fg: '#166534', bg: '#DCFCE7', solid: '#15803D', solidHex: '#15803D', desc: 'circle-check · 6,5:1', isDn: true },
+      { label: 'Bỏ qua', fg: '#57534E', bg: '#F5F5F4', solid: '#D6D3D1', solidHex: 'sọc', desc: 'circle-slash + sọc · 7,0:1', isSk: true },
+      { label: 'Cần ôn lại', fg: '#115E59', bg: '#CCFBF1', solid: '#0F766E', solidHex: '#0F766E', desc: 'Cờ suy ra, tự tắt khi ôn xong · 6,7:1', isRv: true }
+    ];
+    var channels = [
+      { k: 'Nền vàng/be/đen/xanh', v: 'Loại nút. Không dùng cho trạng thái, banner, callout.' },
+      { k: 'Icon trạng thái + vạch trái 4px + chữ', v: 'Trạng thái học. Vạch trái chỉ dành cho trạng thái học; card, banner không dùng.' },
+      { k: 'Sọc chéo + circle-slash', v: 'Bỏ qua. Chồng lên nền loại để vẫn nhận ra loại.' },
+      { k: 'file-x / file-pen / file-check', v: 'Trạng thái nội dung. Trên bản đồ chỉ ở lớp phủ Độ phủ nội dung.' },
+      { k: 'Glyph ↺ mòng két', v: 'Cần ôn lại. Góc phải trên, vòng 16px nền surface.' },
+      { k: 'Viền 3px màu mực', v: 'Đang chọn (thay viền 1,5px).' },
+      { k: 'Vòng 2px mực, cách 2px', v: 'Focus bàn phím. Vừa chọn vừa focus thì có cả hai.' },
+      { k: 'Nét đứt', v: 'Chưa có / chờ điền, và đường dự báo trên biểu đồ.' },
+      { k: 'danger đỏ', v: 'Chỉ lỗi và xoá.' },
+      { k: 'Tag hồng C27', v: 'Lớp chú thích thiết kế, không phải UI app.' }
+    ];
+    var spaces = [4, 8, 12, 16, 24, 32, 48].map(function (n) { return { n: String(n), px: n + 'px' }; });
+    var sizes = [
+      { k: 'Nút, ô nhập', v: '36 (44)' }, { k: 'Hàng cây', v: '40 (48)' },
+      { k: 'Hàng bảng', v: '44' }, { k: 'Chip', v: '24' },
+      { k: 'Padding card', v: '20 (16)' }, { k: 'Khoảng giữa card', v: '24 (16)' },
+      { k: 'Khoảng giữa khối bài', v: '40' }, { k: 'Sidebar', v: '264 · rail 72' }
+    ];
+    var icons = [
+      { n: 'layers', m: 'Lĩnh vực' }, { n: 'book-open', m: 'Chủ đề' }, { n: 'file-text', m: 'Tài liệu' }, { n: 'award', m: 'Chứng chỉ' },
+      { n: 'folder', m: 'Nhóm' }, { n: 'circle', m: 'Chưa học' }, { n: 'contrast', m: 'Đang học' }, { n: 'circle-check', m: 'Đã xong' },
+      { n: 'circle-slash', m: 'Bỏ qua' }, { n: 'rotate-ccw', m: 'Cần ôn lại' }, { n: 'file-x / pen / check', m: 'Nội dung' }, { n: 'info', m: 'Banner' },
+      { n: 'briefcase', m: 'Phần PM' }, { n: 'trending-up', m: 'Business Acumen' }, { n: 'cpu', m: 'Technical Acumen' }, { n: 'wrench', m: 'Tools' }
+    ];
+    return { t: t, tokens: tokens, statuses: statuses, channels: channels, spaces: spaces, sizes: sizes, icons: icons };
+  }
+}
+</script>
+</body>
+</html>

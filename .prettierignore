@@ -1,0 +1,10 @@
+docs/
+data/
+noi-dung/
+.mau/
+.frame/
+dist/
+fixtures/mau/noi-dung/
+tests/fixtures/
+package-lock.json
+src/styles/tokens.css

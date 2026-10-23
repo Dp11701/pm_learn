@@ -1,0 +1,1278 @@
+{
+ "source": "https://roadmap.sh/r/project-management-crez9",
+ "sourceApi": "https://api.roadmap.sh/v1-get-roadmap-by-slug/project-management-crez9",
+ "title": "Project Management",
+ "creator": "Bohdan Ivakhiv (PM Hood)",
+ "fetchedAt": "2026-10-22",
+ "roadmapUpdatedAt": "2026-08-22T22:08:09.946Z",
+ "note": "Roadmap gốc chỉ có tên node, không có mô tả/link (đã gọi v1-get-node-content cho cả 240 node: đều rỗng). Cấu trúc dựng lại từ edges + vị trí section/stack, đã đối chiếu ảnh chụp.",
+ "parts": [
+  {
+   "id": "iogwMmOvub2ZF4zgg6WyF",
+   "kind": "part",
+   "label": "Project Management",
+   "children": [
+    {
+     "id": "OM8zp84cx9AmrgTXePshx",
+     "kind": "area",
+     "label": "PM Framework / Approach",
+     "children": [
+      {
+       "id": "yq5yoPCrn78ML11RygyDN",
+       "kind": "topic",
+       "label": "OPA"
+      },
+      {
+       "id": "VlxvRSAQ2jcCCbt45rAtL",
+       "kind": "topic",
+       "label": "PMIS"
+      },
+      {
+       "id": "KUn1ItJJOTHw6vCsiZVyf",
+       "kind": "topic",
+       "label": "SDLC"
+      },
+      {
+       "id": "VB-06dojoViy6_x7RA15-",
+       "kind": "topic",
+       "label": "PDLC"
+      },
+      {
+       "id": "cHx2ZPhYiRf9KjErwyJpn",
+       "kind": "topic",
+       "label": "EEF"
+      },
+      {
+       "id": "oGjspGsES5hSQHmQ00Z9o",
+       "kind": "topic",
+       "label": "Scrum"
+      },
+      {
+       "id": "CklQ4ObnDlujh0wVQbjgx",
+       "kind": "topic",
+       "label": "Kanban"
+      },
+      {
+       "id": "93UZ9IJwTVS2TGFUYcOzy",
+       "kind": "topic",
+       "label": "Waterfall"
+      },
+      {
+       "id": "MDPg1sB2uQIQyjAOR7luE",
+       "kind": "topic",
+       "label": "Iterative approach"
+      },
+      {
+       "id": "AETzQFEPcayGOgKn7RRNT",
+       "kind": "topic",
+       "label": "Incremental approach"
+      },
+      {
+       "id": "33lz-fwe1W4fSOBk-7N6o",
+       "kind": "topic",
+       "label": "Agile"
+      },
+      {
+       "id": "Lt8BBtmOk10X_OkyaJ4bi",
+       "kind": "topic",
+       "label": "Lean Principles"
+      },
+      {
+       "id": "FlghBTCAvADuCFArPLPjB",
+       "kind": "topic",
+       "label": "V-model"
+      },
+      {
+       "id": "fsmXLQFKszYh6HYjzJYfE",
+       "kind": "topic",
+       "label": "Discovery Phase"
+      },
+      {
+       "id": "URUNNaxkbew-WYygopmkN",
+       "kind": "topic",
+       "label": "PoC"
+      },
+      {
+       "id": "8Lh7DNi_IUGXlHmnI7lSG",
+       "kind": "topic",
+       "label": "Feasibility Study"
+      },
+      {
+       "id": "70fwCUT3mUbn6dwMC6nbP",
+       "kind": "topic",
+       "label": "MVP"
+      },
+      {
+       "id": "XY5HZI1tSar60XFAuhXYI",
+       "kind": "group",
+       "label": "Scaled Agile",
+       "children": [
+        {
+         "id": "VzXF1dj3lmSeOiTLigTA8",
+         "kind": "topic",
+         "label": "Scrum of Scrums"
+        },
+        {
+         "id": "a66yNuBIMbIdC2nLS6-8-",
+         "kind": "topic",
+         "label": "SAFe"
+        },
+        {
+         "id": "zUyxpFvBSJIFbkD5u4HoP",
+         "kind": "topic",
+         "label": "Nexus"
+        },
+        {
+         "id": "_nA77KfLCaufSpBTwqOYP",
+         "kind": "topic",
+         "label": "Spotify Model"
+        },
+        {
+         "id": "7XK_Q2ZgDMj957ILAsY6E",
+         "kind": "topic",
+         "label": "LeSS"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "LQ3Nm-OOUcQeA0IGYf98q",
+     "kind": "area",
+     "label": "Project Governance",
+     "children": [
+      {
+       "id": "a3xpqd8c6JXlm_6s2ZwYf",
+       "kind": "document",
+       "label": "Project Charter"
+      },
+      {
+       "id": "D2YKdDoE9ZDTp39D-XQUs",
+       "kind": "document",
+       "label": "Project Management Plan"
+      },
+      {
+       "id": "G_c1VHU1zoRUO6T0MpF-u",
+       "kind": "topic",
+       "label": "Project Sponsor"
+      },
+      {
+       "id": "V_qNZhGRp3BAPFDAqS3Lw",
+       "kind": "topic",
+       "label": "Steering Committee",
+       "labelOriginal": "Steering Comittee"
+      },
+      {
+       "id": "-Org3psCfPxG_-37rVcOn",
+       "kind": "group",
+       "label": "PMO Types",
+       "children": [
+        {
+         "id": "I5quh9utwO4ZDHr9BrMze",
+         "kind": "topic",
+         "label": "Supportive"
+        },
+        {
+         "id": "h1MSJsYNm2X5GHMWhT_P-",
+         "kind": "topic",
+         "label": "Controlling"
+        },
+        {
+         "id": "5vfQ8ogvHp2JO8bT9MNUU",
+         "kind": "topic",
+         "label": "Directive"
+        },
+        {
+         "id": "LiZB_PbuhsDXgzmrSTNFV",
+         "kind": "topic",
+         "label": "Strategic"
+        }
+       ]
+      },
+      {
+       "id": "Nj7fwMKyORhVAdWJoqRJo",
+       "kind": "group",
+       "label": "Project Reporting",
+       "children": [
+        {
+         "id": "cekJJ6hHVbKY31qYkfPJ2",
+         "kind": "topic",
+         "label": "Project Status Report"
+        },
+        {
+         "id": "U_gTo4753L0cCr7wGtAEx",
+         "kind": "topic",
+         "label": "Project Health report"
+        },
+        {
+         "id": "sQv5Scp8IE4Nwzc_2vnt-",
+         "kind": "topic",
+         "label": "Risk and Issue Reports"
+        },
+        {
+         "id": "7IZsVd3Ckr2xL0vIaRRua",
+         "kind": "topic",
+         "label": "Meeting Notes"
+        },
+        {
+         "id": "GdhVKfzQjYa3J707kvyud",
+         "kind": "topic",
+         "label": "Decision Log"
+        }
+       ]
+      },
+      {
+       "id": "sH0pgNW29EQo7yIRhLV1-",
+       "kind": "group",
+       "label": "Project Process Groups",
+       "children": [
+        {
+         "id": "bcmbgZBRLdbsOKcicgqNM",
+         "kind": "topic",
+         "label": "Initiation",
+         "labelOriginal": "Inititation"
+        },
+        {
+         "id": "JaxcGJ305URsiVj13Mx1m",
+         "kind": "topic",
+         "label": "Planning"
+        },
+        {
+         "id": "XfFrPKBVa2B1ZE47T-Za3",
+         "kind": "topic",
+         "label": "Execution"
+        },
+        {
+         "id": "4jEz0Zu-dEpmlHRsdmWfE",
+         "kind": "topic",
+         "label": "Monitoring and Control"
+        },
+        {
+         "id": "JilH0hUYrbBc9iRW5OzdN",
+         "kind": "topic",
+         "label": "Closure"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "_hYN0gEi9BL24nptEtXWU",
+     "kind": "area",
+     "label": "Scope Management",
+     "children": [
+      {
+       "id": "IkAZyzp2K70eGQJcAEHqB",
+       "kind": "topic",
+       "label": "Definition of Ready"
+      },
+      {
+       "id": "QtGzleAVIYRplpai7P0jm",
+       "kind": "document",
+       "label": "WBS + WBS dictionary"
+      },
+      {
+       "id": "qYiMeY-dDDfq-5-ppLJHb",
+       "kind": "topic",
+       "label": "Scope Creep"
+      },
+      {
+       "id": "3oInpqvTSSC5_K6i7j8N7",
+       "kind": "document",
+       "label": "Scope Statement"
+      },
+      {
+       "id": "YKhuRbcUFzo0hTvuTq-Yl",
+       "kind": "topic",
+       "label": "Definition of Done"
+      },
+      {
+       "id": "VJCwC6O-VsS9h0G2VjiD8",
+       "kind": "topic",
+       "label": "Acceptance of deliverables"
+      },
+      {
+       "id": "KQVmlUupuIO8g04fH3lRV",
+       "kind": "document",
+       "label": "Scope Baseline"
+      },
+      {
+       "id": "DyF45IhqV1P5Bz2GSNKpZ",
+       "kind": "group",
+       "label": "Types of Requirements",
+       "children": [
+        {
+         "id": "cs6Q30-kSEjlGs8qajRnM",
+         "kind": "topic",
+         "label": "Functional Requirements"
+        },
+        {
+         "id": "qN_Gsplm3KGNBqE5m6Vna",
+         "kind": "topic",
+         "label": "Transition Requirements"
+        },
+        {
+         "id": "aFhv6DXdP-loynw43zatR",
+         "kind": "topic",
+         "label": "Non-Functional Requirements"
+        }
+       ]
+      },
+      {
+       "id": "b3QhLM7drvXlbw8wMkuWw",
+       "kind": "group",
+       "label": "Prioritization Techniques",
+       "children": [
+        {
+         "id": "mWbB7Kbp6u5PDQ8Z0s2Cg",
+         "kind": "topic",
+         "label": "MoSCoW"
+        },
+        {
+         "id": "IjdRFhAFnOL2V91n8Ku72",
+         "kind": "topic",
+         "label": "RICE Score"
+        },
+        {
+         "id": "cluWrNUR7UGkrqJOoAa7e",
+         "kind": "topic",
+         "label": "ICE Score"
+        },
+        {
+         "id": "vg-tqGZX6vuzCatjxUcWg",
+         "kind": "topic",
+         "label": "Value/Effort Matrix",
+         "labelOriginal": "Value/ Effort Matrix"
+        },
+        {
+         "id": "WejYXPJ6rvgQld4R1fbCY",
+         "kind": "topic",
+         "label": "100 Dollar Test"
+        },
+        {
+         "id": "szupmOqQHkqBUDQb8viRw",
+         "kind": "topic",
+         "label": "Eisenhower Matrix"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "M4HRMA1Fzv8rsR0MP5myF",
+     "kind": "area",
+     "label": "Change Management",
+     "children": [
+      {
+       "id": "bkNte5AhNJkTH2moh2Zrg",
+       "kind": "topic",
+       "label": "Change Control Board (CCB)"
+      },
+      {
+       "id": "JHx_JLLGxOAC_iYBlxqLq",
+       "kind": "document",
+       "label": "Traceability Matrix"
+      },
+      {
+       "id": "mBxD7t0GeXNAjftKGMI3X",
+       "kind": "document",
+       "label": "Change Request (CR)"
+      },
+      {
+       "id": "cqdTNQLIljsnLJDWruqZ0",
+       "kind": "document",
+       "label": "Change log"
+      },
+      {
+       "id": "4xm0CeH0Upend-C12L7LE",
+       "kind": "topic",
+       "label": "Lewin's Change Management Model"
+      },
+      {
+       "id": "VWU_oWB_2boJc8nNGPyR6",
+       "kind": "topic",
+       "label": "ADKAR Model"
+      },
+      {
+       "id": "UmQ-Jv4hGaK7wThZZyPnz",
+       "kind": "topic",
+       "label": "Kotter's 8-Step Process"
+      },
+      {
+       "id": "oJL1vcYr2aBzUNse0dCN7",
+       "kind": "topic",
+       "label": "McKinsey 7S Framework"
+      }
+     ]
+    },
+    {
+     "id": "_c4CmIH9UAgWaywdQN8gH",
+     "kind": "area",
+     "label": "Schedule Management",
+     "children": [
+      {
+       "id": "8Y30NLnodjg3ppgQNDuqN",
+       "kind": "document",
+       "label": "Schedule Baseline"
+      },
+      {
+       "id": "B8eSufuh6pbSsLZ1tUyMm",
+       "kind": "topic",
+       "label": "Earned Value Management"
+      },
+      {
+       "id": "iPn0NUJF1CJmcCj40vSTv",
+       "kind": "topic",
+       "label": "Schedule compression (crashing, fast tracking)",
+       "labelOriginal": "Schedule compression ( crashing, fast tracking)"
+      },
+      {
+       "id": "jECOMyIOHdCIoYk5Jsjux",
+       "kind": "topic",
+       "label": "Monitoring schedule performance"
+      },
+      {
+       "id": "8RdT6lwP-brTdPbSVKMWi",
+       "kind": "topic",
+       "label": "Schedule forecasting"
+      },
+      {
+       "id": "_NkDpY3H67VsQp9tfo-NM",
+       "kind": "topic",
+       "label": "Schedule creation (milestones, phases, critical path)",
+       "labelOriginal": "Schedule creation ( milestones, phases, critical path)"
+      },
+      {
+       "id": "6IAHGnrjsx68stMjxycHr",
+       "kind": "topic",
+       "label": "Burndown/Burnup charts"
+      },
+      {
+       "id": "zuw3bDKuUMGHuaHJOL_3e",
+       "kind": "group",
+       "label": "Estimation approaches",
+       "children": [
+        {
+         "id": "Nd85A28v-CMwusHb5W5-z",
+         "kind": "topic",
+         "label": "Use Case Points"
+        },
+        {
+         "id": "sl_pl8kuto-WDCEE4cUMU",
+         "kind": "topic",
+         "label": "T-shirt Sizing"
+        },
+        {
+         "id": "mz7b9XAeAT7mqlZx7iN6K",
+         "kind": "topic",
+         "label": "Story Points Estimation / Planning Poker",
+         "labelOriginal": "Story Points Estimation/ Planning Poker"
+        },
+        {
+         "id": "S3dgphnXhDIbSCTCEl5Ur",
+         "kind": "topic",
+         "label": "Analogous Estimation"
+        },
+        {
+         "id": "QETUChM7xmUk-9DlNMVWn",
+         "kind": "topic",
+         "label": "Bottom-Up / Top-Down Estimation"
+        },
+        {
+         "id": "hXZ3lcStOOgzalg6BNNqd",
+         "kind": "topic",
+         "label": "Three-Point Estimation"
+        },
+        {
+         "id": "Xr2YwEl4vS9IE-8mRh3ZU",
+         "kind": "topic",
+         "label": "Expert Judgment"
+        },
+        {
+         "id": "WQ2CDO5YxQOzfqt_FbWIB",
+         "kind": "topic",
+         "label": "Wideband Delphi"
+        },
+        {
+         "id": "lhUoJroZ5tpnnDlKbK4fo",
+         "kind": "topic",
+         "label": "Function Point Analysis"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "tGDUUoV8utWOi01DM8NIE",
+     "kind": "area",
+     "label": "Risk Management",
+     "children": [
+      {
+       "id": "R_EuTo3n9A-SvI3cB4kOW",
+       "kind": "document",
+       "label": "Risk Register"
+      },
+      {
+       "id": "uPtrgewv1kpD2C9eAryRm",
+       "kind": "topic",
+       "label": "PESTLE"
+      },
+      {
+       "id": "zXNou-gesh3q3ROkcrImI",
+       "kind": "topic",
+       "label": "Quantitative Risk Assessment"
+      },
+      {
+       "id": "GZzVqSn5EqQmhtKx04yVu",
+       "kind": "topic",
+       "label": "Risk Identification Process"
+      },
+      {
+       "id": "qWddnAzJx25Qk2C2p2Mi-",
+       "kind": "topic",
+       "label": "Qualitative Risk Assessment"
+      },
+      {
+       "id": "-6pvxP53ZZdw__gLZ4PlM",
+       "kind": "topic",
+       "label": "Risk and Opportunity Response Strategies"
+      },
+      {
+       "id": "uOSFC5InCrEvFwS0x69Gd",
+       "kind": "topic",
+       "label": "Risk Appetite"
+      },
+      {
+       "id": "8TEzdJlhkHfQvdpww6s0j",
+       "kind": "topic",
+       "label": "Contingency / Management Reserve Allocation"
+      },
+      {
+       "id": "gS0_kwIEsE6MRd_MRKNVd",
+       "kind": "topic",
+       "label": "VUCA"
+      },
+      {
+       "id": "QOjGJQ_h_VGzANZe5YehO",
+       "kind": "topic",
+       "label": "BANI"
+      }
+     ]
+    },
+    {
+     "id": "3BbEZodj5U44_-da58HRN",
+     "kind": "area",
+     "label": "Cost Management",
+     "children": [
+      {
+       "id": "meq3kHG-2q7xLP4nBqLqQ",
+       "kind": "document",
+       "label": "Cost Baseline"
+      },
+      {
+       "id": "lQD7QRKjG7aCs7ZAMqiEq",
+       "kind": "topic",
+       "label": "Gross Profit Margin (GPM)"
+      },
+      {
+       "id": "K-1kbkaPa9-A9IxlHdb2q",
+       "kind": "topic",
+       "label": "Purchase Order / Invoice"
+      },
+      {
+       "id": "XwU0IniNDEs-ttYyjowuV",
+       "kind": "topic",
+       "label": "How to develop project budget",
+       "labelOriginal": "How to develope project budget"
+      },
+      {
+       "id": "u1ucFjjXBnHz10b0vuPdp",
+       "kind": "topic",
+       "label": "Cashflow / Revenue / Profit"
+      },
+      {
+       "id": "W3MgJGrdzONNDIDMesZaw",
+       "kind": "topic",
+       "label": "Cost of Goods Sold (COGS)"
+      },
+      {
+       "id": "I5vOZUktY9n1eX-uAqS1A",
+       "kind": "topic",
+       "label": "CAPEX / OPEX"
+      },
+      {
+       "id": "IShfiHzylPei6H_IJY-UC",
+       "kind": "topic",
+       "label": "EBIT / EBITDA"
+      },
+      {
+       "id": "2hn9RsYy8JB7DuhGyuYYN",
+       "kind": "topic",
+       "label": "Depreciation / Amortization"
+      },
+      {
+       "id": "YM3po-xWhjpjyGaYtW3tf",
+       "kind": "topic",
+       "label": "PnL model"
+      }
+     ]
+    },
+    {
+     "id": "7EE4ALf2foPEZFeyflTtw",
+     "kind": "area",
+     "label": "Quality Management",
+     "children": [
+      {
+       "id": "fs6lbPOFxjkw8rslh0vp4",
+       "kind": "topic",
+       "label": "Quality metrics"
+      },
+      {
+       "id": "pPaIahtnvoqhRuwfgEMKM",
+       "kind": "topic",
+       "label": "Inspection"
+      },
+      {
+       "id": "F5HfJM_m3F4hmWJn7C0vJ",
+       "kind": "topic",
+       "label": "Quality control"
+      },
+      {
+       "id": "L_4jud170PmNV91qUmA4y",
+       "kind": "topic",
+       "label": "Quality assurance"
+      },
+      {
+       "id": "XXXp7Po7bpdMs3un18dPI",
+       "kind": "topic",
+       "label": "Audit"
+      },
+      {
+       "id": "AeT0lJHifAalkGuFM4f9R",
+       "kind": "topic",
+       "label": "Cost of Quality (CoQ)"
+      },
+      {
+       "id": "2i1MJaPMW1EHXypG9PF37",
+       "kind": "topic",
+       "label": "Six Sigma methodology"
+      },
+      {
+       "id": "xmw-8_VqmdJFP7_K1bWzc",
+       "kind": "topic",
+       "label": "Total Quality Management (TQM)"
+      },
+      {
+       "id": "o41gkhZmdoS06sHdXuD9Y",
+       "kind": "topic",
+       "label": "Quality Gates",
+       "labelOriginal": "Qaulity Gates"
+      },
+      {
+       "id": "PFtBiYMqVenAKFvV3GCMG",
+       "kind": "document",
+       "label": "Quality Management Plan",
+       "labelOriginal": "Qaulity Management Plan"
+      }
+     ]
+    },
+    {
+     "id": "kpBc_x1yw_rDKQXsa5D3h",
+     "kind": "area",
+     "label": "People Management",
+     "children": [
+      {
+       "id": "jl3W1KQDNTIe_s6FXemvg",
+       "kind": "topic",
+       "label": "Carrying Interviews"
+      },
+      {
+       "id": "uf2uG44RxWEx1QQi2w7Gs",
+       "kind": "topic",
+       "label": "Retention"
+      },
+      {
+       "id": "gCNZZaz63K1Dqs0CVSpQU",
+       "kind": "topic",
+       "label": "Mentoring and professional development"
+      },
+      {
+       "id": "DNcCKGptw6eP2Mq8tQeFk",
+       "kind": "topic",
+       "label": "Recognition"
+      },
+      {
+       "id": "qE5PO3DlD2iccvuzlRK52",
+       "kind": "topic",
+       "label": "Onboarding and adaptation"
+      },
+      {
+       "id": "0CkeDoGsNsu3WZkoaUcgo",
+       "kind": "topic",
+       "label": "Staffing process"
+      },
+      {
+       "id": "tGl9mDhR31FKw6yUd2qst",
+       "kind": "topic",
+       "label": "Tuckman's Model"
+      },
+      {
+       "id": "Dkp7q5X7ODwmOrkagjGQD",
+       "kind": "topic",
+       "label": "Thomas-Kilmann Conflict Management Model",
+       "labelOriginal": "Thomas Kilmann Conflict Management Model Model"
+      },
+      {
+       "id": "rqWPKfYPr55vMP-JdeRA7",
+       "kind": "group",
+       "label": "Theories of Motivation",
+       "children": [
+        {
+         "id": "a7goGXz8IsVMKHhyWxwhq",
+         "kind": "topic",
+         "label": "Alderfer’s ERG Theory"
+        },
+        {
+         "id": "MvDbxIe01L4c8Y5cEbnoW",
+         "kind": "topic",
+         "label": "Maslow's Hierarchy of Needs"
+        },
+        {
+         "id": "F1_UJXW7ss_D0Qz7tc7Lb",
+         "kind": "topic",
+         "label": "McGregor Theory"
+        },
+        {
+         "id": "YhF0UrfHXLqF_hCT56KbV",
+         "kind": "topic",
+         "label": "Herzberg's Motivation-Hygiene theory"
+        },
+        {
+         "id": "iOno0P5UN7CQeStCqw3UR",
+         "kind": "topic",
+         "label": "Vroom’s Theory of Expectancy"
+        },
+        {
+         "id": "xub0BHopclawheLdYttTC",
+         "kind": "topic",
+         "label": "McClelland’s Theory of Needs"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "b0RtQBWB7yD-QbXktrFPB",
+     "kind": "area",
+     "label": "Stakeholder and Communication Management",
+     "children": [
+      {
+       "id": "hHIvPz4D3Zb95RBOysyxO",
+       "kind": "topic",
+       "label": "Power/Interest Grid"
+      },
+      {
+       "id": "rerR815Lx59qsdcFCBVly",
+       "kind": "topic",
+       "label": "Salience Model"
+      },
+      {
+       "id": "fGcDOQXcDadoMs-3WqnwX",
+       "kind": "topic",
+       "label": "Expectations Management"
+      },
+      {
+       "id": "wIORLbeoU41LaVOeUzKFt",
+       "kind": "topic",
+       "label": "Communication Channels Matrix"
+      },
+      {
+       "id": "RGV-mSBU9WT8HxT_60Lgl",
+       "kind": "topic",
+       "label": "Communication Channels Calculation"
+      },
+      {
+       "id": "stWvQfwnkRkN5g-tdPf61",
+       "kind": "topic",
+       "label": "Stakeholder Engagement Assessment Matrix"
+      },
+      {
+       "id": "em0yPQNiW8jhBm1HKmW68",
+       "kind": "document",
+       "label": "Communication Management Plan"
+      },
+      {
+       "id": "YdLGXXE1Ag5wINwsbr4Al",
+       "kind": "document",
+       "label": "Stakeholder Register"
+      },
+      {
+       "id": "aVBtblOwBCiuuxo7KDejS",
+       "kind": "document",
+       "label": "RACI Matrix"
+      }
+     ]
+    },
+    {
+     "id": "aGKKHcGdewsAjNpYbvzOr",
+     "kind": "area",
+     "label": "Procurement Management",
+     "children": [
+      {
+       "id": "0L69owsF_qazm0MwzJrZM",
+       "kind": "topic",
+       "label": "Make or buy decision making"
+      },
+      {
+       "id": "LMmUyxMJmFJ32cJsXPrMj",
+       "kind": "topic",
+       "label": "RFP"
+      },
+      {
+       "id": "c_lzi2FE41l7yVrfxQle8",
+       "kind": "topic",
+       "label": "RFQ"
+      },
+      {
+       "id": "sd9_-zFE9ctbaOXSaiFQW",
+       "kind": "topic",
+       "label": "RFI"
+      },
+      {
+       "id": "Ecl7bwWTEZ9wn2TiODNyZ",
+       "kind": "group",
+       "label": "Legal Documents",
+       "children": [
+        {
+         "id": "KNkhhT1z_U0X0tmlLl5cR",
+         "kind": "topic",
+         "label": "NDA"
+        },
+        {
+         "id": "uEBGrkM-o7k0slV52i2SZ",
+         "kind": "topic",
+         "label": "MSA"
+        },
+        {
+         "id": "6OiOWnTSgv5_FS_L6U_dY",
+         "kind": "topic",
+         "label": "SOW"
+        },
+        {
+         "id": "m0N9fkfe3hpXr0_Wkf9k_",
+         "kind": "topic",
+         "label": "SLA"
+        }
+       ]
+      },
+      {
+       "id": "X3ZCnvs4T8ZsAN9Ys5Fm3",
+       "kind": "group",
+       "label": "Contract Types",
+       "children": [
+        {
+         "id": "54xBZyO_cjENlSx8T0OKg",
+         "kind": "topic",
+         "label": "Time and Material"
+        },
+        {
+         "id": "WM9WjBIGjU9Ml-5l9oj-E",
+         "kind": "topic",
+         "label": "Fixed Price"
+        },
+        {
+         "id": "yJiZWc9xEZL4Kk5cAeQxg",
+         "kind": "topic",
+         "label": "Cost Reimbursable"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3cTBUIlfEByQUGJCIl9ZD",
+   "kind": "part",
+   "label": "Business Acumen",
+   "children": [
+    {
+     "id": "TIyz2D6a6flvGHx5IUwQ0",
+     "kind": "topic",
+     "label": "Sales Process"
+    },
+    {
+     "id": "uW3LcrSoCmijQ1SYHyJT9",
+     "kind": "topic",
+     "label": "Presales"
+    },
+    {
+     "id": "at77_c0EV259555nuC_3N",
+     "kind": "topic",
+     "label": "Business Model Canvas"
+    },
+    {
+     "id": "2VlIzyojI1NhhT5opkYP0",
+     "kind": "group",
+     "label": "Project Selection Method",
+     "children": [
+      {
+       "id": "8wpw6OIbhLpSl-eF8ZonL",
+       "kind": "topic",
+       "label": "Net Present Value (NPV)"
+      },
+      {
+       "id": "BaMYzFJ_cEhSl0tD_fTov",
+       "kind": "topic",
+       "label": "Internal Rate of Return (IRR)"
+      },
+      {
+       "id": "_efV1yccWrsdSqjjlJ8Hz",
+       "kind": "topic",
+       "label": "Payback Period"
+      },
+      {
+       "id": "ExnhsjNYdJg48iwPDDam9",
+       "kind": "topic",
+       "label": "Benefit-Cost Ratio"
+      },
+      {
+       "id": "xHwi4P_KwPGMgct9i1lg7",
+       "kind": "topic",
+       "label": "Opportunity Cost Analysis"
+      },
+      {
+       "id": "z7qW9yt66eCZ4iohfI1aK",
+       "kind": "topic",
+       "label": "Strategic Alignment Matrix"
+      },
+      {
+       "id": "7C6FzhhJPrvwFfojnlqzS",
+       "kind": "topic",
+       "label": "Portfolio Balancing"
+      },
+      {
+       "id": "D4SV2rTSfUZOhzG-7b0QJ",
+       "kind": "topic",
+       "label": "Scoring Models"
+      },
+      {
+       "id": "zdR2WZV453Z6qnKWoE0mv",
+       "kind": "topic",
+       "label": "ROI"
+      }
+     ]
+    },
+    {
+     "id": "tdPQq4NibrwZ3qxBrpz72",
+     "kind": "group",
+     "label": "Client Engagement models",
+     "children": [
+      {
+       "id": "kT5B0BeC7ZM1vJqTB9ko9",
+       "kind": "topic",
+       "label": "Project-Based Engagement"
+      },
+      {
+       "id": "4VFVN2zdA9tBzdg6sCEbl",
+       "kind": "topic",
+       "label": "Managed Services"
+      },
+      {
+       "id": "AxgLvJUKCFjahrpd7dgFy",
+       "kind": "topic",
+       "label": "Hybrid Model"
+      },
+      {
+       "id": "2oEzTJjvrq2aF7LZgw5QG",
+       "kind": "topic",
+       "label": "Dedicated Team"
+      },
+      {
+       "id": "FwPhv7uGNpoooNH7FlabM",
+       "kind": "topic",
+       "label": "Staff Augmentation"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DLpMs0MnogJXthYyNmxq5",
+   "kind": "part",
+   "label": "Technical Acumen",
+   "children": [
+    {
+     "id": "8aTsFPCwsIuvIBneK7orb",
+     "kind": "group",
+     "label": "Systems engineering",
+     "children": [
+      {
+       "id": "Shyg53NvFGgzSFj60w9EA",
+       "kind": "topic",
+       "label": "CI/CD"
+      },
+      {
+       "id": "5v9PUnzK0tAnmq9SX32IY",
+       "kind": "topic",
+       "label": "Infrastructure management"
+      },
+      {
+       "id": "t2I7IdWiicJQvG34pP22l",
+       "kind": "topic",
+       "label": "Cloud overview"
+      }
+     ]
+    },
+    {
+     "id": "04GYYYdN9F8MHwjvjAV1l",
+     "kind": "group",
+     "label": "Data management",
+     "children": [
+      {
+       "id": "u0vDTCdXQZSysjhPGt70T",
+       "kind": "topic",
+       "label": "Data quality"
+      },
+      {
+       "id": "DbIWz_bHF5OjozD-OBLlF",
+       "kind": "topic",
+       "label": "Data security"
+      }
+     ]
+    },
+    {
+     "id": "ooa8Jbs-9VjZflPaXBg4I",
+     "kind": "group",
+     "label": "QA overview",
+     "children": [
+      {
+       "id": "TC9Y-qmxmghyRmj94vXJA",
+       "kind": "topic",
+       "label": "Test strategy/Test plan"
+      },
+      {
+       "id": "2RswgPnu41iqOkMqHAXpu",
+       "kind": "topic",
+       "label": "Test Case management"
+      },
+      {
+       "id": "O-dd-5U5W55A37UrjCGGo",
+       "kind": "topic",
+       "label": "Defect management"
+      },
+      {
+       "id": "MD1Ota5Ur9GaF2yYV2NX2",
+       "kind": "topic",
+       "label": "Automated testing & test pyramid"
+      }
+     ]
+    },
+    {
+     "id": "4HfHuw89XFAo6FHREKB3Q",
+     "kind": "group",
+     "label": "AI overview",
+     "children": [
+      {
+       "id": "0IT3YvYGGoikVm_PYqY9e",
+       "kind": "topic",
+       "label": "LLMs overview",
+       "labelOriginal": "LLMs overviwev"
+      },
+      {
+       "id": "pURRWSQw5lwfBtxEm3_lk",
+       "kind": "topic",
+       "label": "Prompt engineering",
+       "labelOriginal": "Prompt engeniering"
+      },
+      {
+       "id": "Lg7zcLlpNNPKn7861h73W",
+       "kind": "topic",
+       "label": "GenAI / GenAI for SDLC",
+       "labelOriginal": "GenAI/ GenAI for SDLC"
+      }
+     ]
+    },
+    {
+     "id": "pxQ2mu2wUtQsk5oBmJGAT",
+     "kind": "group",
+     "label": "Development overview",
+     "children": [
+      {
+       "id": "RsSEHxpnQ3C1kaD1DvLtd",
+       "kind": "topic",
+       "label": "Branching strategy"
+      },
+      {
+       "id": "EEDIN0uVAsO_BYQ8NBQRE",
+       "kind": "topic",
+       "label": "Code review"
+      },
+      {
+       "id": "VWdSCxavmRqXpB2nakq2D",
+       "kind": "topic",
+       "label": "Tech debt"
+      },
+      {
+       "id": "I6uXLRGiVmAtR7w7YtzA5",
+       "kind": "topic",
+       "label": "Architectural principles"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "z3_IoE9wqkipxTOPkEEaa",
+   "kind": "part",
+   "label": "Tools",
+   "children": [
+    {
+     "id": "M0gKB1m6lonblVe4rj23a",
+     "kind": "group",
+     "label": "Interactive Boards",
+     "children": [
+      {
+       "id": "JOIhGuu2Tc83t-U2byoZF",
+       "kind": "topic",
+       "label": "Miro"
+      },
+      {
+       "id": "uBP_bHh50olqJe1K_3vo9",
+       "kind": "topic",
+       "label": "Mural"
+      },
+      {
+       "id": "rpe26nX2cJrc0OyHBk2tz",
+       "kind": "topic",
+       "label": "Figjam"
+      }
+     ]
+    },
+    {
+     "id": "ZV-j_dfic0NSpqr9uxx7E",
+     "kind": "group",
+     "label": "Project Management Tools",
+     "children": [
+      {
+       "id": "CtCCdzhX7p2jLr404zMI9",
+       "kind": "topic",
+       "label": "MS Project"
+      },
+      {
+       "id": "94VuhUNHc1Dwn-0I281fE",
+       "kind": "topic",
+       "label": "Primavera P6 Oracle"
+      }
+     ]
+    },
+    {
+     "id": "oUIxMrWCPhMX7qCk41Nkj",
+     "kind": "group",
+     "label": "Task Management",
+     "children": [
+      {
+       "id": "FlmpgDpE1Wr6XKlqncX4g",
+       "kind": "topic",
+       "label": "Asana"
+      },
+      {
+       "id": "JcTKaAAeSH23s5wfvBmnq",
+       "kind": "topic",
+       "label": "Trello"
+      },
+      {
+       "id": "NbE4-C-ZPoxqAXtLsj7MQ",
+       "kind": "topic",
+       "label": "Azure DevOps"
+      },
+      {
+       "id": "9MJ13BC2dfWV1Oj2J8bdE",
+       "kind": "topic",
+       "label": "Jira"
+      }
+     ]
+    },
+    {
+     "id": "MGLDPQxDnuWyOhJoytRDX",
+     "kind": "group",
+     "label": "Wiki & Others",
+     "children": [
+      {
+       "id": "dS5qLyyQkG_7GLj_6L3R5",
+       "kind": "topic",
+       "label": "Confluence"
+      },
+      {
+       "id": "e2h6po_GAPjKJxE3W_bdH",
+       "kind": "topic",
+       "label": "MS suite"
+      },
+      {
+       "id": "53cIuPhogXj3Hfrrgnvvt",
+       "kind": "topic",
+       "label": "Google suite"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qkYV2ygHIA58dsjcvMN0b",
+   "kind": "part",
+   "label": "Certifications",
+   "children": [
+    {
+     "id": "OHBObeJIOW7CZaMLB8UDa",
+     "kind": "topic",
+     "label": "Professional Scrum Master (PSM)"
+    },
+    {
+     "id": "f793PsEUyI5_xuOBTmXMi",
+     "kind": "topic",
+     "label": "PRINCE 2 Foundation"
+    },
+    {
+     "id": "yB_ioJoZKUKkliIuKvjId",
+     "kind": "topic",
+     "label": "Certified Associate in Project Management (CAPM)"
+    },
+    {
+     "id": "kMung0YeIKtawz15f5nsi",
+     "kind": "topic",
+     "label": "Professional Scrum Product Owner (PSPO)"
+    },
+    {
+     "id": "_82TdgTC9Y5642P63JJFX",
+     "kind": "topic",
+     "label": "PRINCE 2 Practitioner"
+    },
+    {
+     "id": "e-VSd1gj_sfnt8OuDIQCa",
+     "kind": "topic",
+     "label": "Project Management Professional (PMP)"
+    },
+    {
+     "id": "t16bY0rFZanw0Ki61ahZp",
+     "kind": "topic",
+     "label": "Professional Scrum with Kanban (PSK)"
+    },
+    {
+     "id": "4sDVXDvlW7mSQSRdmojwP",
+     "kind": "topic",
+     "label": "ITIL"
+    },
+    {
+     "id": "vc2EEJwG4IR2_E65Uxmwe",
+     "kind": "topic",
+     "label": "Agile Certified Practitioner (PMI-ACP®)"
+    },
+    {
+     "id": "avvjiXod6h_oM8kfFSjvM",
+     "kind": "topic",
+     "label": "SAFe"
+    }
+   ]
+  }
+ ]
+}

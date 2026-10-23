@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Earned Value Management · chế độ duyệt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F8FAFC}
+a{color:#0F172A}a:hover{color:#334155}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; background: #F8FAFC; color: #0F172A; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px">
+  <aside aria-label="Điều hướng chính" style="flex: 0 0 264px; background: #FFFFFF; border-right: 1px solid #E2E8F0">
+    <dc-import name="C34-sidebar" active="lo-trinh" min-height="3000px" hint-size="264px,3000px"></dc-import>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 24px 40px 48px; display: flex; flex-direction: column; gap: 24px">
+    <nav aria-label="Breadcrumb" style="font-size: 13px; line-height: 20px; color: #475569"><span lang="en">Project Management</span> › <span lang="en">Schedule Management</span> › <span lang="en" style="font-weight: 600; color: #0F172A">Earned Value Management</span></nav>
+
+    <header style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #0F172A; background: #FDE7C7; color: #1C1917; font-size: 12px; line-height: 18px; font-weight: 600">Chủ đề</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; border: 1px solid #E2E8F0; background: #F1F5F9; font-size: 12px; line-height: 18px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v9.5"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg>Bản nháp · AI</span>
+      </div>
+      <h1 tabindex="-1" lang="en" style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">Earned Value Management</h1>
+    </header>
+
+    <div role="region" aria-label="Thanh duyệt bài" style="position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 20px; background: #FFFFFF; border: 1.5px solid #0F172A; border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,.12)">
+      <div style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 320px">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px"><strong style="font-size: 17px; line-height: 28px; font-weight: 600">Chế độ duyệt</strong><span aria-live="polite" style="font-size: 13px; line-height: 20px; color: #475569; font-variant-numeric: tabular-nums">Còn 3 khối chưa soát · đã soát 7/10</span></div>
+        <span role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="7" aria-label="Đã soát 7 trên 10 khối" style="display: flex; gap: 3px">
+          <sc-for list="{{blocks}}" as="b" hint-placeholder-count="10"><span style="flex: 1; height: 6px; border-radius: 2px; background: {{b.seg}}; border: {{b.segBd}}; box-sizing: border-box"></span></sc-for>
+        </span>
+      </div>
+      <a href="#" style="height: 36px; display: inline-flex; align-items: center; padding: 0 12px; color: #0F172A; font-weight: 500">Thoát chế độ duyệt</a>
+      <button type="button" disabled aria-describedby="duyet-ly-do" style="height: 40px; padding: 0 18px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F1F5F9; color: #475569; font: 600 15px/24px 'Be Vietnam Pro', sans-serif">Duyệt bài</button>
+      <span id="duyet-ly-do" style="flex-basis: 100%; font-size: 13px; line-height: 20px; color: #475569">Nút Duyệt bài mở khi bạn đã soát đủ mọi khối có nội dung. Duyệt xong, bài chuyển sang "Đã duyệt · 22/10/2026".</span>
+    </div>
+
+    <div style="max-width: 760px; display: flex; flex-direction: column; gap: 24px">
+      <sc-for list="{{blocks}}" as="b" hint-placeholder-count="10">
+        <section style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #FFFFFF; border: {{b.bd}}; border-radius: 10px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+            <h2 style="flex: 1 1 240px; margin: 0; font-size: 20px; line-height: 30px; font-weight: 600">{{b.title}}<span style="font-size: 13px; font-weight: 400; color: #475569">{{b.opt}}</span></h2>
+            <span style="font-size: 12px; line-height: 18px; font-weight: 600; color: #BE185D; border: 1px solid #BE185D; border-radius: 4px; padding: 0 6px">Nội dung mẫu</span>
+            <button type="button" role="switch" aria-checked="{{b.checked}}" style="display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 12px 0 8px; border: 1px solid {{b.swBd}}; border-radius: 6px; background: {{b.swBg}}; color: #0F172A; font: 600 13px/20px 'Be Vietnam Pro', sans-serif">
+              <span style="position: relative; width: 32px; height: 18px; box-sizing: border-box; border-radius: 9px; background: {{b.track}}; border: 1px solid {{b.trackBd}}"><span style="position: absolute; top: 2px; left: {{b.knob}}; width: 12px; height: 12px; border-radius: 50%; background: {{b.knobBg}}"></span></span>
+              {{b.swLabel}}
+            </button>
+          </div>
+          <p style="margin: 0; font-size: 17px; line-height: 28px">{{b.text}}</p>
+        </section>
+      </sc-for>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var list = [
+      ['Tóm tắt', 1, 'Tóm tắt — 1–2 câu nói chủ đề là gì.'],
+      ['Vì sao PM cần biết', 1, 'Vì sao PM cần biết — 3–5 câu về quyết định và rủi ro liên quan.'],
+      ['Khái niệm cốt lõi', 1, 'Khái niệm cốt lõi — 3–5 khái niệm chính, mỗi khái niệm 1–2 câu tiếng Việt.'],
+      ['Ví dụ thực tế', 1, 'Ví dụ thực tế — một tình huống dự án phần mềm, 4–6 câu.'],
+      ['Cách áp dụng', 1, 'Cách áp dụng — các bước làm theo thứ tự, mỗi bước một câu hành động.'],
+      ['Góc dev lead → PM', 0, 'Góc dev lead → PM — 2 cột "Bạn đã quen" và "Điều cần đổi", mỗi cột 2–3 câu.'],
+      ['So sánh', 1, 'So sánh — đặt chủ đề cạnh 1–2 khái niệm dễ nhầm, dạng bảng ngắn hoặc 3–4 câu.', ' · tuỳ chọn'],
+      ['Thực hành trên dự án thật', 0, 'Thực hành trên dự án thật — đề bài, đầu ra, tiêu chí tự kiểm.'],
+      ['Tự kiểm tra', 0, 'Tự kiểm tra — 1–3 câu hỏi dạng "- H: … | Đ: …".'],
+      ['Tham khảo', 1, 'Tham khảo — Nguồn mẫu 1 — chưa điền.']
+    ];
+    var blocks = list.map(function (b) {
+      var on = !!b[1];
+      return {
+        title: b[0], opt: b[3] || '', text: '[Nội dung mẫu — ' + b[2] + '] Câu giữ chỗ có độ dài gần bằng đoạn thật để thấy nhịp chữ khi soát.',
+        checked: on ? 'true' : 'false', swLabel: on ? 'Đã soát' : 'Chưa soát',
+        swBd: on ? '#0F172A' : '#8492A6', swBg: on ? '#F1F5F9' : '#FFFFFF',
+        track: on ? '#0F172A' : '#FFFFFF', trackBd: on ? '#0F172A' : '#8492A6', knob: on ? '16px' : '2px', knobBg: on ? '#FFFFFF' : '#8492A6',
+        bd: on ? '1px solid #E2E8F0' : '1.5px solid #8492A6',
+        seg: on ? '#0F172A' : 'transparent', segBd: on ? '0' : '1px solid #8492A6'
+      };
+    });
+    return { blocks: blocks };
+  }
+}
+</script>
+</body>
+</html>

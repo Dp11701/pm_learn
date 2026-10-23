@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Drawer · mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 375px; height: 960px; overflow: hidden; background: #F8FAFC; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif">
+  <div aria-hidden="true" style="position: absolute; inset: 0">
+    <dc-import name="F04-tong-quan-375" hint-size="375px,2400px"></dc-import>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(15,23,42,.48)"></div>
+  <div role="dialog" aria-modal="true" aria-label="Menu" style="position: absolute; left: 0; top: 0; width: 312px; height: 960px; overflow: hidden; background: #FFFFFF; box-shadow: 0 24px 48px rgba(15,23,42,.18)">
+    <dc-import name="C34-sidebar" active="tong-quan" mobile="{{true}}" min-height="960px" hint-size="312px,960px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":375,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

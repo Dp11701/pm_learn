@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>F02 Component phần 2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 4400px; overflow: hidden; box-sizing: border-box; padding: 64px 80px; background: {{t.bg}}; color: {{t.text}}; font-family: 'Be Vietnam Pro', Inter, system-ui, sans-serif; font-size: 15px; line-height: 24px; display: flex; flex-direction: column; gap: 40px">
+
+  <header style="display: flex; flex-direction: column; gap: 8px; padding-bottom: 32px; border-bottom: 1px solid {{t.border}}">
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 20px; color: {{t.muted}}">F02 · Component phần 2 · {{t.mode}}</span>
+    <h1 style="margin: 0; font-size: 28px; line-height: 40px; font-weight: 700">C2 · C3 · C9 · C12–C25 · C28–C34 · C37 · C38</h1>
+    <p style="margin: 0; color: {{t.muted}}">Mỗi ô: tên component, các trạng thái cạnh nhau. Focus luôn là vòng 2px màu mực cách 2px. Chữ mẫu gắn nhãn hồng.</p>
+  </header>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C2</span>Khung nhóm</h2>
+      <div style="display: flex; gap: 20px; align-items: flex-start">
+        <sc-for list="{{groupStates}}" as="g" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="width: 180px; box-sizing: border-box; border: 1.5px solid {{t.grBd}}; border-radius: 8px; overflow: hidden">
+              <div style="height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: {{g.bar}}; color: {{t.grFg}}; font-size: 12px; line-height: 18px; font-weight: 600; outline: {{g.outline}}; outline-offset: 2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span lang="en">Contract Types</span></div>
+              <div style="padding: 8px; display: flex; flex-direction: column; gap: 6px"><span style="height: 28px; border-radius: 6px; border: 1.5px solid {{t.tpBd}}; background: {{t.tpBg}}"></span><span style="height: 28px; border-radius: 6px; border: 1.5px solid {{t.tpBd}}; background: {{t.tpBg}}"></span></div>
+            </div>
+            <span style="font-size: 12px; color: {{t.muted}}">{{g.cap}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Bấm thanh tiêu đề để zoom vừa khung nhóm. Nhóm không có trạng thái học.</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C3</span>NodePanel · bottom sheet</h2>
+      <div style="display: flex; gap: 20px; align-items: flex-end">
+        <div style="width: 260px; box-sizing: border-box; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid {{t.border}}; border-radius: 14px 0 0 14px; background: {{t.surface}}; box-shadow: {{t.sh2}}">
+          <div style="display: flex; justify-content: space-between"><span style="height: 20px; padding: 0 6px; border-radius: 4px; border: 1px solid {{t.tpBd}}; background: {{t.tpBg}}; color: {{t.tpFg}}; font-size: 11px; line-height: 18px; font-weight: 600">Chủ đề</span><span style="font-size: 12px; color: {{t.muted}}">‹ › ✕</span></div>
+          <strong lang="en" style="font-size: 15px">Scope Creep</strong>
+          <span style="height: 28px; border-radius: 6px; border: 1px solid {{t.input}}"></span>
+          <span style="height: 32px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; font-size: 13px; line-height: 32px; font-weight: 600; text-align: center">Mở bài học</span>
+          <span style="font-size: 11px; color: {{t.muted}}">Panel phải 380px · desktop</span>
+        </div>
+        <div style="width: 220px; box-sizing: border-box; padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid {{t.border}}; border-radius: 14px 14px 0 0; background: {{t.surface}}">
+          <span style="align-self: center; width: 32px; height: 4px; border-radius: 2px; background: {{t.input}}"></span>
+          <strong lang="en" style="font-size: 15px">Scope Creep</strong>
+          <span style="height: 44px; border-radius: 6px; border: 1px solid {{t.input}}"></span>
+          <span style="height: 44px; border-radius: 6px; background: {{t.primary}}"></span>
+          <span style="font-size: 11px; color: {{t.muted}}">Bottom sheet · mobile</span>
+        </div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Bản đầy đủ ở F06. Lỗi tải: thân panel thay bằng C38 "Không đọc được mục này" + Thử lại.</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px; grid-column: 1 / -1">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C9</span>Hàng cây</h2>
+      <div style="display: flex; flex-direction: column; border: 1px solid {{t.border}}; border-radius: 10px; overflow: hidden">
+        <sc-for list="{{treeRows}}" as="r" hint-placeholder-count="6">
+          <div style="display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 4px 16px 4px {{r.pad}}; border-bottom: 1px solid {{t.border}}; border-left: {{r.bl}}; background: {{r.bg}}; outline: {{r.outline}}; outline-offset: -3px; color: {{r.fg}}">
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border-radius: 3px; border: 1.5px solid {{r.cbBd}}; background: {{r.cbBg}}"></span>
+            <span lang="en" style="flex: 1; font-weight: {{r.w}}">{{r.name}}</span>
+            <span style="font-size: 13px; color: {{r.metaColor}}">{{r.meta}}</span>
+            <span style="width: 170px; font-size: 12px; line-height: 18px; color: {{t.muted}}">{{r.cap}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C12</span>Breadcrumb</h2>
+      <div style="position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 13px; line-height: 20px; padding-bottom: 168px">
+        <span lang="en" style="padding: 4px 6px; border-radius: 6px">Project Management ▾</span><span aria-hidden="true" style="color: {{t.muted}}">›</span>
+        <span lang="en" style="padding: 4px 6px; border-radius: 6px; background: {{t.s2}}; outline: 2px solid {{t.primary}}; outline-offset: 2px">Scope Management ▾</span><span aria-hidden="true" style="color: {{t.muted}}">›</span>
+        <span lang="en" style="padding: 4px 6px; font-weight: 600">Scope Creep</span>
+        <div role="menu" style="position: absolute; left: 140px; top: 36px; width: 260px; padding: 6px; display: flex; flex-direction: column; gap: 2px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px; box-shadow: {{t.sh2}}">
+          <sc-for list="{{siblings}}" as="s" hint-placeholder-count="5">
+            <span style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: 6px; background: {{s.bg}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{s.dot}}; border: 1px solid {{t.input}}"></span><span lang="en" style="flex: 1">{{s.name}}</span><span style="font-size: 12px; color: {{t.muted}}">{{s.st}}</span></span>
+          </sc-for>
+        </div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">▾ mở danh sách cùng cấp kèm trạng thái. Mobile chỉ hiện "‹ Scope Management".</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C13 · C14</span>Dải vị trí · Pager</h2>
+      <div style="position: relative; display: flex; align-items: center; gap: 4px; padding-top: 40px">
+        <sc-for list="{{dots}}" as="d" hint-placeholder-count="8"><span style="width: {{d.s}}; height: {{d.s}}; box-sizing: border-box; border-radius: 50%; border: 2px solid {{d.c}}; background: {{d.fill}}; outline: {{d.o}}; outline-offset: 2px"></span></sc-for>
+        <span style="position: absolute; left: 70px; top: 0; padding: 4px 8px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; font-size: 12px; line-height: 18px; white-space: nowrap"><span lang="en">Scope Statement</span> · Chưa học</span>
+        <span style="margin-left: 12px; font-size: 13px; color: {{t.muted}}">Mục 3/16 · tooltip khi hover, vòng focus ở chấm 4</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; font-size: 13px; line-height: 20px">
+        <div style="padding: 10px 12px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="color: {{t.muted}}">‹ Trước</span><br><strong lang="en">WBS + WBS dictionary</strong></div>
+        <div style="padding: 10px 12px; border: 1px solid {{t.text}}; border-radius: 10px; background: {{t.s2}}; text-align: right"><span style="color: {{t.muted}}">Tiếp — sang lĩnh vực mới ›</span><br><strong lang="en">Change Management</strong></div>
+        <div style="padding: 10px 12px; border: 1px solid {{t.border}}; border-radius: 10px; outline: 2px solid {{t.primary}}; outline-offset: 2px"><span style="color: {{t.muted}}">Tiếp — sang phần mới ›</span><br><strong lang="en">Business Acumen</strong></div>
+        <div style="padding: 10px 12px; border: 1px dashed {{t.input}}; border-radius: 10px; color: {{t.muted}}; text-align: right">Đây là mục cuối cùng của roadmap</div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Mặc định · hover (viền chữ) · focus · mục cuối (không có liên kết).</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C15 · C16</span>Card · Khối bài</h2>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; font-size: 12px; line-height: 18px">
+        <div style="height: 72px; padding: 10px; box-sizing: border-box; border: 1px solid {{t.border}}; border-radius: 10px; box-shadow: {{t.sh1}}">Mặc định</div>
+        <div style="height: 72px; padding: 10px; box-sizing: border-box; border: 1px solid {{t.text}}; border-radius: 10px">Hover</div>
+        <div style="height: 72px; padding: 10px; box-sizing: border-box; border: 1px solid {{t.border}}; border-radius: 10px; outline: 2px solid {{t.primary}}; outline-offset: 2px">Focus</div>
+        <div style="height: 72px; padding: 10px; box-sizing: border-box; border: 1px solid {{t.danger}}; border-radius: 10px; color: {{t.danger}}">Lỗi · Thử lại</div>
+      </div>
+      <div style="position: relative; padding: 14px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 600; color: {{t.pink}}; border: 1px solid {{t.pink}}; border-radius: 4px; padding: 0 5px">Nội dung mẫu</span><strong style="font-size: 15px">Ví dụ thực tế</strong><p style="margin: 4px 0 0; font-size: 13px; line-height: 20px; color: {{t.muted}}">[Nội dung mẫu — đoạn 4–6 câu]</p></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 14px; border: 1.5px dashed {{t.input}}; border-radius: 10px; font-size: 13px"><strong>Tự kiểm tra ★</strong><span style="color: {{t.muted}}">Chưa có — Thêm</span></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 14px; border: 1px solid {{t.border}}; border-radius: 10px; font-size: 13px"><strong>Cách áp dụng</strong><span style="display: inline-flex; align-items: center; gap: 8px"><span style="position: relative; width: 32px; height: 18px; box-sizing: border-box; border-radius: 9px; background: {{t.primary}}"><span style="position: absolute; top: 3px; left: 17px; width: 12px; height: 12px; border-radius: 50%; background: {{t.onPrimary}}"></span></span>Đã soát</span></div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C17 · C18</span>Bảng mẫu · Bảng sửa được</h2>
+      <div style="display: grid; grid-template-columns: 64px 1fr 72px 72px; font-size: 13px; line-height: 20px; border: 1px solid {{t.border}}; border-radius: 10px; overflow: hidden">
+        <span style="padding: 8px 10px; background: {{t.s2}}; font-weight: 600; border-right: 1px solid {{t.border}}">ID</span><span style="padding: 8px 10px; background: {{t.s2}}; font-weight: 600">Mô tả rủi ro</span><span style="padding: 8px 10px; background: {{t.s2}}; font-weight: 600">Xác suất</span><span style="padding: 8px 10px; background: {{t.s2}}; font-weight: 600">Tác động</span>
+        <span style="padding: 8px 10px; border-top: 1px solid {{t.border}}; border-right: 1px solid {{t.border}}; font-family: 'JetBrains Mono', monospace">R-01</span><span style="padding: 8px 10px; border-top: 1px solid {{t.border}}">[Rủi ro mẫu 1]</span><span style="padding: 8px 10px; border-top: 1px solid {{t.border}}">4</span><span style="padding: 8px 10px; border-top: 1px solid {{t.border}}">3</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 64px 1fr 72px 72px; gap: 6px; font-size: 13px; line-height: 20px">
+        <span style="padding: 6px 8px; font-family: 'JetBrains Mono', monospace">R-04</span>
+        <span style="padding: 5px 8px; border: 1px solid {{t.primary}}; border-radius: 6px; outline: 2px solid {{t.primary}}; outline-offset: 2px">Đang gõ…</span>
+        <span style="padding: 5px 8px; border: 1.5px solid {{t.danger}}; border-radius: 6px">7</span>
+        <span style="padding: 5px 8px; border: 1px solid {{t.input}}; border-radius: 6px">2</span>
+        <span></span><span></span><span style="grid-column: 3 / -1; color: {{t.danger}}; font-size: 12px">Nhập số từ 1 đến 5</span>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">C17 chỉ đọc, cột đầu cố định. C18 (P2) dùng cùng khung: ô đang sửa có focus, ô sai có viền danger + câu hướng dẫn.</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C19 · C20</span>Callout · Thẻ thực hành</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: {{t.border}}; border: 1px solid {{t.border}}; border-radius: 10px; overflow: hidden; font-size: 13px; line-height: 20px">
+        <div style="padding: 12px; background: {{t.s2}}"><strong>Bạn đã quen</strong><br><span style="color: {{t.muted}}">[Nội dung mẫu]</span></div>
+        <div style="padding: 12px; background: {{t.s2}}"><strong>Điều cần đổi</strong><br><span style="color: {{t.muted}}">[Nội dung mẫu]</span></div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 13px; line-height: 20px">
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 6px"><strong>Đang làm</strong><span style="height: 28px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}; text-align: center; line-height: 28px">Xong</span></div>
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 6px"><strong>Đã xong</strong><span style="color: {{t.muted}}">Kết quả đã lưu · sửa được</span></div>
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 6px"><strong>Không áp dụng</strong><span style="color: {{t.muted}}">Lý do: "[lý do của bạn]"</span></div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C21</span>Câu tự kiểm tra</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; font-size: 13px; line-height: 20px">
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 8px"><strong>1 · Đang trả lời</strong><span style="height: 52px; border: 1px solid {{t.input}}; border-radius: 6px"></span><span style="align-self: flex-start; padding: 4px 10px; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.s2}}; color: {{t.muted}}">Xem đáp án</span></div>
+        <div style="position: relative; padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 8px"><strong>2 · Đã xem đáp án</strong><span style="padding: 8px; border-radius: 6px; background: {{t.s2}}">Đáp án: <span style="color: {{t.pink}}">[Nội dung mẫu]</span></span>
+          <span style="display: flex; gap: 6px"><span style="padding: 4px 10px; border: 1px solid {{t.input}}; border-radius: 6px">Đúng</span><span style="padding: 4px 10px; border: 1.5px solid {{t.primary}}; border-radius: 6px; background: {{t.s2}}; font-weight: 600">Một phần ✓</span><span style="padding: 4px 10px; border: 1px solid {{t.input}}; border-radius: 6px">Sai</span></span></div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Tự chấm dùng nút trung tính; "Sai" không dùng màu đỏ vì đỏ chỉ dành cho lỗi và xoá.</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C22</span>Flashcard · hộp Leitner</h2>
+      <div style="display: flex; gap: 12px">
+        <div style="flex: 1; height: 120px; box-sizing: border-box; padding: 14px; border: 1px solid {{t.border}}; border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; box-shadow: {{t.sh1}}"><strong lang="en" style="font-size: 17px">MoSCoW</strong><span style="font-size: 11px; color: {{t.muted}}">Mặt trước · Lật (Space)</span></div>
+        <div style="flex: 1; height: 120px; box-sizing: border-box; padding: 14px; border: 1px solid {{t.border}}; border-radius: 14px; background: {{t.s2}}; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px"><span style="font-size: 13px; color: {{t.pink}}">[Nội dung mẫu — đáp án 1–2 câu]</span><span style="font-size: 11px; color: {{t.muted}}">Mặt sau · Quên (1) / Nhớ (2)</span></div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; font-size: 12px; line-height: 18px; text-align: center; font-variant-numeric: tabular-nums">
+        <sc-for list="{{boxes}}" as="b" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 4px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="color: {{t.muted}}">Hộp {{b.n}}</span><strong style="font-size: 20px; line-height: 28px">{{b.c}}</strong><span style="color: {{t.muted}}">ôn sau {{b.d}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C23 · C24 · C25</span>Đồng hồ · Ghi chú · Tự lưu</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 13px; line-height: 20px">
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px; background: {{t.s2}}"><span style="color: {{t.muted}}">Đang chạy · <span lang="en">Risk Register</span></span><br><strong style="font-family: 'JetBrains Mono', monospace; font-size: 20px; line-height: 30px">00:24:17</strong></div>
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="color: {{t.muted}}">Chưa bấm giờ</span><br><span style="display: inline-block; margin-top: 6px; padding: 2px 10px; border: 1px solid {{t.input}}; border-radius: 6px">▶ Bắt đầu</span></div>
+        <div style="padding: 12px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="color: {{t.muted}}">Chip mobile</span><br><span style="display: inline-block; margin-top: 6px; padding: 2px 10px; border: 1px solid {{t.input}}; border-radius: 14px; font-family: 'JetBrains Mono', monospace">00:24:17</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><span style="height: 64px; border: 1px solid {{t.input}}; border-radius: 6px"></span>
+        <div aria-live="polite" style="display: flex; gap: 16px; font-size: 12px; line-height: 18px"><span style="color: {{t.muted}}">Đang lưu…</span><span style="color: {{t.muted}}">Đã lưu lúc 21:42</span><span style="color: {{t.danger}}">Lỗi lưu — <u>Thử lại</u></span></div></div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C28 · C29</span>Tìm kiếm · Bộ lọc</h2>
+      <div style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid {{t.primary}}; border-radius: 6px; outline: 2px solid {{t.primary}}; outline-offset: 2px"><span style="color: {{t.muted}}">⌕</span><span style="flex: 1">risk</span><kbd style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{t.muted}}">Esc</kbd></div>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; background: {{t.s2}}; font-size: 13px; line-height: 20px"><span style="width: 14px; height: 14px; border-radius: 3px; background: {{t.dcBg}}; border: 1px solid {{t.dcBd}}"></span><span lang="en"><strong>Risk</strong> Register</span><span style="color: {{t.muted}}">· Project Management › Risk Management</span></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; line-height: 20px">
+        <span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border: 1px solid {{t.input}}; border-radius: 6px">Loại ▾</span>
+        <span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border: 1px solid {{t.text}}; border-radius: 6px; background: {{t.s2}}">Hover ▾</span>
+        <span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border: 1.5px solid {{t.primary}}; border-radius: 6px; background: {{t.s2}}; font-weight: 600">Trạng thái: Đang học ✕</span>
+        <span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border: 1px solid {{t.input}}; border-radius: 6px; outline: 2px solid {{t.primary}}; outline-offset: 2px">Focus ▾</span>
+        <span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border: 1px solid {{t.border}}; border-radius: 6px; background: {{t.s2}}; color: {{t.muted}}">Có ghi chú · disabled</span>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Luôn kèm "Xoá bộ lọc" và "Đang hiển thị 9/199 mục".</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C30</span>Vùng thả file</h2>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; font-size: 12px; line-height: 18px; text-align: center">
+        <div style="height: 96px; box-sizing: border-box; padding: 10px; border: 1.5px dashed {{t.input}}; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; gap: 4px"><strong style="font-size: 13px">Thường</strong><span style="color: {{t.muted}}">Kéo file hoặc thư mục .md</span></div>
+        <div style="height: 96px; box-sizing: border-box; padding: 10px; border: 2px dashed {{t.primary}}; border-radius: 10px; background: {{t.s2}}; display: flex; flex-direction: column; justify-content: center; gap: 4px"><strong style="font-size: 13px">Kéo vào</strong><span>Thả để kiểm tra 15 file</span></div>
+        <div style="height: 96px; box-sizing: border-box; padding: 10px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; gap: 6px"><strong style="font-size: 13px">Đang xử lý</strong><span style="height: 6px; border-radius: 3px; background: {{t.s2}}; display: flex"><span style="width: 60%; background: {{t.primary}}; border-radius: 3px"></span></span><span style="color: {{t.muted}}">9/15</span></div>
+        <div style="height: 96px; box-sizing: border-box; padding: 10px; border: 1.5px dashed {{t.danger}}; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; gap: 4px; color: {{t.danger}}"><strong style="font-size: 13px">Lỗi</strong><span>Chỉ nhận file .md</span></div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C31 · C32 · C34</span>Trình soạn · Dialog · Sidebar</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 72px; gap: 12px; align-items: start; font-size: 12px; line-height: 18px">
+        <div style="display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 4px; height: 120px; padding: 6px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="background: {{t.s2}}; border-radius: 4px"></span><span style="border: 1px solid {{t.input}}; border-radius: 4px; padding: 4px; font-family: 'JetBrains Mono', monospace; color: {{t.muted}}">## Tóm tắt</span><span style="background: {{t.s2}}; border-radius: 4px"></span></div>
+        <div style="height: 120px; box-sizing: border-box; padding: 12px; border: 1px solid {{t.border}}; border-radius: 14px; box-shadow: {{t.sh3}}; background: {{t.surface}}; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 13px">Duyệt bài này?</strong><span style="color: {{t.muted}}">Giữ focus bên trong · Esc đóng</span><span style="align-self: flex-end; padding: 2px 10px; border-radius: 6px; background: {{t.primary}}; color: {{t.onPrimary}}">Duyệt</span></div>
+        <div style="height: 120px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 8px; border: 1px solid {{t.border}}; border-radius: 10px"><span style="width: 28px; height: 28px; border-radius: 6px; background: {{t.primary}}"></span><span style="width: 28px; height: 28px; border-radius: 6px; background: {{t.s2}}"></span><span style="width: 28px; height: 28px; border-radius: 6px; background: {{t.s2}}"></span></div>
+      </div>
+      <span style="font-size: 13px; line-height: 20px; color: {{t.muted}}">Trình soạn đầy đủ ở F20 · Sidebar đầy đủ ở artboard C34 · Rail 72px dùng ở 1024–1279.</span>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C33</span>Toast</h2>
+      <div aria-live="polite" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: {{t.primary}}; color: {{t.onPrimary}}; box-shadow: {{t.sh2}}; font-size: 15px"><span style="flex: 1">Đã chuyển <span lang="en">Scope Creep</span> sang Đã xong</span><u style="font-weight: 600">Hoàn tác</u><span style="font-size: 12px; opacity: .8">5 giây</span></div>
+      <div role="alert" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: {{t.surface}}; border: 1.5px solid {{t.danger}}; color: {{t.text}}; box-shadow: {{t.sh2}}; font-size: 15px"><span style="color: {{t.danger}}; font-weight: 600; flex: 1">Lỗi lưu</span><u style="font-weight: 600">Thử lại</u></div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C37</span>Biểu đồ · burnup</h2>
+      <svg width="540" height="220" viewBox="0 0 540 220" role="img" aria-label="Burnup tuần 38 đến 43: Đã xong 6, 12, 19, 27, 33, 37; phạm vi giảm từ 199 xuống 195 ở tuần 40; dự báo nét đứt">
+        <line x1="40" y1="200" x2="530" y2="200" stroke="{{t.border}}" stroke-width="1"></line>
+        <line x1="40" y1="10" x2="40" y2="200" stroke="{{t.border}}" stroke-width="1"></line>
+        <polyline points="{{chart.scope}}" fill="none" stroke="{{t.muted}}" stroke-width="2"></polyline>
+        <polyline points="{{chart.done}}" fill="none" stroke="{{t.dnSolid}}" stroke-width="2.5"></polyline>
+        <polyline points="{{chart.fc}}" fill="none" stroke="{{t.dnSolid}}" stroke-width="2" stroke-dasharray="6 5"></polyline>
+        <text x="44" y="22" font-size="11" fill="{{t.muted}}">Phạm vi 199 → 195</text>
+        <text x="44" y="215" font-size="11" fill="{{t.muted}}">Tuần 38</text>
+        <text x="250" y="215" font-size="11" fill="{{t.muted}}">Tuần 43</text>
+        <text x="380" y="215" font-size="11" fill="{{t.muted}}">Dự báo</text>
+      </svg>
+      <div style="display: flex; justify-content: space-between; font-size: 13px; line-height: 20px"><span style="color: {{t.muted}}">Màu đặc theo trạng thái · dự báo nét đứt · heatmap thang slate</span><u>Xem dạng bảng</u></div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.surface}}; border: 1px solid {{t.border}}; border-radius: 10px">
+      <h2 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 600"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{t.muted}}; margin-right: 8px">C38</span>Empty · error · skeleton</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 13px; line-height: 20px">
+        <div style="padding: 14px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px"><span style="width: 40px; height: 40px; border-radius: 50%; background: {{t.s2}}"></span><span>Chưa có ghi chú</span><span style="padding: 2px 10px; border: 1px solid {{t.input}}; border-radius: 6px">Mở bài đang học</span></div>
+        <div style="padding: 14px; border: 1px solid {{t.danger}}; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px"><span style="width: 40px; height: 40px; border-radius: 50%; background: {{t.s2}}; color: {{t.danger}}; text-align: center; line-height: 40px; font-weight: 700">!</span><span>Không tải được card này</span><span style="padding: 2px 10px; border: 1px solid {{t.input}}; border-radius: 6px">Thử lại</span></div>
+        <div aria-busy="true" style="padding: 14px; border: 1px solid {{t.border}}; border-radius: 10px; display: flex; flex-direction: column; gap: 8px"><span style="height: 12px; width: 50%; border-radius: 4px; background: {{t.s2}}"></span><span style="height: 28px; border-radius: 4px; background: {{t.s2}}"></span><span style="height: 12px; width: 80%; border-radius: 4px; background: {{t.s2}}"></span><span style="height: 12px; width: 60%; border-radius: 4px; background: {{t.s2}}"></span></div>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":4400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var dark = this.props.theme === 'dark';
+    var t = dark ? {
+      mode: 'Tối', bg: '#0B1120', surface: '#111827', s2: '#1E293B', border: '#1F2937', input: '#64748B', text: '#E2E8F0', muted: '#94A3B8', primary: '#E2E8F0', onPrimary: '#0B1120', danger: '#FCA5A5',
+      tpBg: '#3B2A16', tpFg: '#FDE7C7', tpBd: '#B45309', dcBg: '#1E3A8A', dcBd: '#3B82F6', grBg: '#1E293B', grFg: '#F8FAFC', grBd: '#64748B', grHover: '#334155',
+      lrSolid: '#C084FC', dnSolid: '#4ADE80', pink: '#F472B6', sh1: 'none', sh2: 'none', sh3: 'none'
+    } : {
+      mode: 'Sáng', bg: '#F8FAFC', surface: '#FFFFFF', s2: '#F1F5F9', border: '#E2E8F0', input: '#8492A6', text: '#0F172A', muted: '#475569', primary: '#0F172A', onPrimary: '#FFFFFF', danger: '#B91C1C',
+      tpBg: '#FDE7C7', tpFg: '#1C1917', tpBd: '#0F172A', dcBg: '#BFDBFE', dcBd: '#0F172A', grBg: '#0F172A', grFg: '#FFFFFF', grBd: '#0F172A', grHover: '#334155',
+      lrSolid: '#7E22CE', dnSolid: '#15803D', pink: '#BE185D', sh1: '0 1px 2px rgba(15,23,42,.06)', sh2: '0 8px 24px rgba(15,23,42,.12)', sh3: '0 24px 48px rgba(15,23,42,.18)'
+    };
+    var groupStates = [
+      { cap: 'Mặc định', bar: t.grBg, outline: 'none' },
+      { cap: 'Hover thanh', bar: t.grHover, outline: 'none' },
+      { cap: 'Focus thanh', bar: t.grBg, outline: '2px solid ' + t.primary }
+    ];
+    function row(name, pad, opts) {
+      return Object.assign({ name: name, pad: pad, bl: '4px solid transparent', bg: t.surface, outline: 'none', fg: t.text, cbBd: t.input, cbBg: 'transparent', w: 500, meta: '', metaColor: t.muted, cap: '' }, opts);
+    }
+    var treeRows = [
+      row('Scope Management', '16px', { w: 600, meta: '5/16', cap: 'Hàng cha · phân số' }),
+      row('Scope Creep', '40px', { bl: '4px solid ' + t.lrSolid, meta: 'Đang học', cap: 'Mặc định' }),
+      row('Definition of Done', '40px', { bl: '4px solid ' + t.dnSolid, bg: t.s2, meta: 'Đã xong', cap: 'Hover' }),
+      row('Scope Statement', '40px', { outline: '2px solid ' + t.primary, meta: 'Chưa học', cap: 'Focus (roving tabindex)' }),
+      row('Acceptance of deliverables', '40px', { bg: t.s2, cbBd: t.primary, cbBg: t.primary, meta: 'Chưa học', cap: 'Đã chọn' }),
+      row('Scope Baseline', '40px', { fg: t.muted, meta: 'Không khớp bộ lọc', cap: 'Cấp cha giữ lại · muted' }),
+      row('RICE Score', '40px', { meta: 'Lỗi lưu — Thử lại', metaColor: t.danger, cap: 'Lỗi' })
+    ];
+    var siblings = [
+      { name: 'PM Framework / Approach', st: '12/22', dot: t.dnSolid, bg: 'transparent' },
+      { name: 'Project Governance', st: '6/18', dot: t.dnSolid, bg: 'transparent' },
+      { name: 'Scope Management', st: '5/16 · đang mở', dot: t.dnSolid, bg: t.s2 },
+      { name: 'Change Management', st: '2/8', dot: t.dnSolid, bg: 'transparent' },
+      { name: 'Schedule Management', st: '3/14', dot: t.dnSolid, bg: 'transparent' }
+    ];
+    var ds = ['dn', 'ns', 'cur', 'ns', 'dn', 'ns', 'ns', 'dn'];
+    var dots = ds.map(function (d, i) {
+      return { s: d === 'cur' ? '18px' : '12px', c: d === 'dn' ? t.dnSolid : (d === 'cur' ? t.primary : t.input), fill: d === 'dn' ? t.dnSolid : (d === 'cur' ? 'linear-gradient(90deg, ' + t.lrSolid + ' 50%, transparent 50%)' : 'transparent'), o: i === 3 ? '2px solid ' + t.primary : 'none' };
+    });
+    var boxes = [[1, 34, '1 ngày'], [2, 21, '2 ngày'], [3, 15, '4 ngày'], [4, 9, '8 ngày'], [5, 6, '16 ngày']].map(function (b) { return { n: b[0], c: b[1], d: b[2] }; });
+    function x(w) { return 40 + (w - 38) * 50; }
+    function y(v) { return 200 - v * 0.9; }
+    var done = [6, 12, 19, 27, 33, 37];
+    var scope = [199, 199, 195, 195, 195, 195, 195, 195, 195, 195];
+    var chart = {
+      done: done.map(function (v, i) { return x(38 + i) + ',' + y(v); }).join(' '),
+      scope: scope.map(function (v, i) { return x(38 + i) + ',' + y(v); }).join(' '),
+      fc: [43, 47.8].map(function (w) { return x(w) + ',' + y(37 + (w - 43) * 6.25); }).join(' ')
+    };
+    return { t: t, groupStates: groupStates, treeRows: treeRows, siblings: siblings, dots: dots, boxes: boxes, chart: chart };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Tìm kiếm comittee và safe</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 720px; overflow: hidden; background: #E2E8F0; font-family: 'Be Vietnam Pro', sans-serif">
+<div style="position: absolute; left: 80px; top: 40px"><dc-import name="C28-tim-kiem" query="comittee" hint-size="560px,260px"></dc-import></div>
+<div style="position: absolute; left: 720px; top: 40px"><dc-import name="C28-tim-kiem" query="safe" hint-size="560px,320px"></dc-import></div>
+<div style="position: absolute; left: 80px; top: 400px"><dc-import name="C28-tim-kiem" query="kiểm thử tự động" hint-size="560px,260px"></dc-import></div>
+<p style="position: absolute; left: 720px; top: 420px; width: 560px; margin: 0; font-size: 15px; line-height: 24px; color: #0F172A">“comittee” khớp tên gốc trước khi sửa chính tả. “safe” trả về 2 mục trùng tên, breadcrumb dưới tên để phân biệt. Truy vấn tiếng Việt chỉ khớp giải nghĩa của mục đã có nội dung, nên “kiểm thử tự động” chưa có kết quả.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

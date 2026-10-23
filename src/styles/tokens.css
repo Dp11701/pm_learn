@@ -1,0 +1,84 @@
+/* Học PM A–Z — design tokens (bản bàn giao docs/design-handoff/tokens.css, bỏ @import Google Fonts; font tự host qua @fontsource). */
+
+:root {
+  /* Nền & chữ */
+  --bg: #F8FAFC; --surface: #FFFFFF; --surface-2: #F1F5F9;
+  --border: #E2E8F0; --border-input: #8492A6;
+  --text: #0F172A; --text-muted: #475569;
+  --primary: #0F172A; --on-primary: #FFFFFF; --primary-hover: #334155;
+  --danger: #B91C1C; --danger-hover: #991B1B; --on-danger: #FFFFFF;
+
+  /* Loại nút (chỉ báo LOẠI, không dùng cho trạng thái/banner/callout) */
+  --type-area-bg: #FDE047;  --type-area-fg: #1C1917;  --type-area-bd: #0F172A;
+  --type-topic-bg: #FDE7C7; --type-topic-fg: #1C1917; --type-topic-bd: #0F172A;
+  --type-doc-bg: #BFDBFE;   --type-doc-fg: #172554;   --type-doc-bd: #0F172A;
+  --type-group-bg: #0F172A; --type-group-fg: #FFFFFF; --type-group-bd: #0F172A;
+
+  /* Trạng thái học: fg / bg (pill) / solid (vạch trái 4px, biểu đồ) */
+  --st-none-fg: #475569;   --st-none-bg: #F1F5F9;   --st-none-solid: #E2E8F0;
+  --st-learning-fg: #6B21A8; --st-learning-bg: #F3E8FF; --st-learning-solid: #7E22CE;
+  --st-done-fg: #166534;   --st-done-bg: #DCFCE7;   --st-done-solid: #15803D;
+  --st-skip-fg: #57534E;   --st-skip-bg: #F5F5F4;
+  --st-skip-stripe: repeating-linear-gradient(45deg, rgba(87,83,78,.2) 0 2px, transparent 2px 8px);
+  --st-review-fg: #115E59; --st-review-bg: #CCFBF1; --st-review-solid: #0F766E;
+
+  /* Lớp chú thích thiết kế C27 — KHÔNG phải UI app */
+  --annotation: #BE185D;
+
+  /* Chữ */
+  --font-sans: 'Be Vietnam Pro', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --fs-h1: 28px; --lh-h1: 40px;  --fs-h2: 22px; --lh-h2: 32px;
+  --fs-body: 17px; --lh-body: 28px; --fs-ui: 15px; --lh-ui: 24px;
+  --fs-meta: 13px; --lh-meta: 20px; --fs-chip: 12px; --lh-chip: 18px;
+
+  /* Khoảng cách, kích thước, hình */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+  --h-control: 36px; --h-control-touch: 44px; --h-tree-row: 40px; --h-table-row: 44px; --h-chip: 24px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  --shadow-1: 0 1px 2px rgba(15,23,42,.06); --shadow-2: 0 8px 24px rgba(15,23,42,.12); --shadow-3: 0 24px 48px rgba(15,23,42,.18);
+  --focus-ring: 2px solid var(--primary); --focus-offset: 2px;
+  --sidebar-w: 264px; --rail-w: 72px; --panel-w: 380px;
+}
+
+/* Tối: chọn tay (data-theme="dark") hoặc Theo hệ thống */
+:root[data-theme="dark"] {
+  --bg: #0B1120; --surface: #111827; --surface-2: #1E293B;
+  --border: #1F2937; --border-input: #64748B;
+  --text: #E2E8F0; --text-muted: #94A3B8;
+  --primary: #E2E8F0; --on-primary: #0B1120; --primary-hover: #CBD5E1;
+  --danger: #FCA5A5; --danger-hover: #F87171; --on-danger: #0B1120;
+  --type-area-bg: #713F12;  --type-area-fg: #FEF9C3;  --type-area-bd: #EAB308;
+  --type-topic-bg: #3B2A16; --type-topic-fg: #FDE7C7; --type-topic-bd: #B45309;
+  --type-doc-bg: #1E3A8A;   --type-doc-fg: #DBEAFE;   --type-doc-bd: #3B82F6;
+  --type-group-bg: #1E293B; --type-group-fg: #F8FAFC; --type-group-bd: #64748B;
+  --st-none-fg: #CBD5E1;   --st-none-bg: #1E293B;   --st-none-solid: #334155;
+  --st-learning-fg: #E9D5FF; --st-learning-bg: #3B0764; --st-learning-solid: #C084FC;
+  --st-done-fg: #BBF7D0;   --st-done-bg: #14532D;   --st-done-solid: #4ADE80;
+  --st-skip-fg: #D6D3D1;   --st-skip-bg: #292524;
+  --st-skip-stripe: repeating-linear-gradient(45deg, rgba(214,211,209,.2) 0 2px, transparent 2px 8px);
+  --st-review-fg: #99F6E4; --st-review-bg: #134E4A; --st-review-solid: #2DD4BF;
+  --annotation: #F472B6;
+  --shadow-1: none; --shadow-2: none; --shadow-3: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #0B1120; --surface: #111827; --surface-2: #1E293B;
+  --border: #1F2937; --border-input: #64748B;
+  --text: #E2E8F0; --text-muted: #94A3B8;
+  --primary: #E2E8F0; --on-primary: #0B1120; --primary-hover: #CBD5E1;
+  --danger: #FCA5A5; --danger-hover: #F87171; --on-danger: #0B1120;
+  --type-area-bg: #713F12;  --type-area-fg: #FEF9C3;  --type-area-bd: #EAB308;
+  --type-topic-bg: #3B2A16; --type-topic-fg: #FDE7C7; --type-topic-bd: #B45309;
+  --type-doc-bg: #1E3A8A;   --type-doc-fg: #DBEAFE;   --type-doc-bd: #3B82F6;
+  --type-group-bg: #1E293B; --type-group-fg: #F8FAFC; --type-group-bd: #64748B;
+  --st-none-fg: #CBD5E1;   --st-none-bg: #1E293B;   --st-none-solid: #334155;
+  --st-learning-fg: #E9D5FF; --st-learning-bg: #3B0764; --st-learning-solid: #C084FC;
+  --st-done-fg: #BBF7D0;   --st-done-bg: #14532D;   --st-done-solid: #4ADE80;
+  --st-skip-fg: #D6D3D1;   --st-skip-bg: #292524;
+  --st-skip-stripe: repeating-linear-gradient(45deg, rgba(214,211,209,.2) 0 2px, transparent 2px 8px);
+  --st-review-fg: #99F6E4; --st-review-bg: #134E4A; --st-review-solid: #2DD4BF;
+  --annotation: #F472B6;
+  --shadow-1: none; --shadow-2: none; --shadow-3: none;
+  }
+}

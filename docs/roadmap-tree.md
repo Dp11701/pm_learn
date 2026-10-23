@@ -1,0 +1,255 @@
+# Cây chủ đề — Project Management roadmap (roadmap.sh)
+
+Nguồn: https://roadmap.sh/r/project-management-crez9 · tác giả: Bohdan Ivakhiv (PM Hood) · cập nhật roadmap: 2026-08-22 · lấy ngày 2026-10-22
+
+> Roadmap gốc **chỉ có tên node**, không có nội dung/tài liệu cho từng chủ đề (đã kiểm tra API nội dung của cả 240 node: đều rỗng). Nội dung bài học phải tự soạn.
+
+Ký hiệu: **[KA]** knowledge area · **[Nhóm]** topic group title · **[Tài liệu]** document/artifact · còn lại là topic. Tên sửa lỗi chính tả có ghi tên gốc trong ngoặc vuông.
+
+## Project Management (144 mục)
+
+- **[KA] PM Framework / Approach** (22 mục)
+  - OPA
+  - PMIS
+  - SDLC
+  - PDLC
+  - EEF
+  - Scrum
+  - Kanban
+  - Waterfall
+  - Iterative approach
+  - Incremental approach
+  - Agile
+  - Lean Principles
+  - V-model
+  - Discovery Phase
+  - PoC
+  - Feasibility Study
+  - MVP
+  - [Nhóm] Scaled Agile
+    - Scrum of Scrums
+    - SAFe
+    - Nexus
+    - Spotify Model
+    - LeSS
+- **[KA] Project Governance** (18 mục)
+  - [Tài liệu] Project Charter
+  - [Tài liệu] Project Management Plan
+  - Project Sponsor
+  - Steering Committee [gốc: “Steering Comittee”]
+  - [Nhóm] PMO Types
+    - Supportive
+    - Controlling
+    - Directive
+    - Strategic
+  - [Nhóm] Project Reporting
+    - Project Status Report
+    - Project Health report
+    - Risk and Issue Reports
+    - Meeting Notes
+    - Decision Log
+  - [Nhóm] Project Process Groups
+    - Initiation [gốc: “Inititation”]
+    - Planning
+    - Execution
+    - Monitoring and Control
+    - Closure
+- **[KA] Scope Management** (16 mục)
+  - Definition of Ready
+  - [Tài liệu] WBS + WBS dictionary
+  - Scope Creep
+  - [Tài liệu] Scope Statement
+  - Definition of Done
+  - Acceptance of deliverables
+  - [Tài liệu] Scope Baseline
+  - [Nhóm] Types of Requirements
+    - Functional Requirements
+    - Transition Requirements
+    - Non-Functional Requirements
+  - [Nhóm] Prioritization Techniques
+    - MoSCoW
+    - RICE Score
+    - ICE Score
+    - Value/Effort Matrix [gốc: “Value/ Effort Matrix”]
+    - 100 Dollar Test
+    - Eisenhower Matrix
+- **[KA] Change Management** (8 mục)
+  - Change Control Board (CCB)
+  - [Tài liệu] Traceability Matrix
+  - [Tài liệu] Change Request (CR)
+  - [Tài liệu] Change log
+  - Lewin's Change Management Model
+  - ADKAR Model
+  - Kotter's 8-Step Process
+  - McKinsey 7S Framework
+- **[KA] Schedule Management** (16 mục)
+  - [Tài liệu] Schedule Baseline
+  - Earned Value Management
+  - Schedule compression (crashing, fast tracking) [gốc: “Schedule compression ( crashing, fast tracking)”]
+  - Monitoring schedule performance
+  - Schedule forecasting
+  - Schedule creation (milestones, phases, critical path) [gốc: “Schedule creation ( milestones, phases, critical path)”]
+  - Burndown/Burnup charts
+  - [Nhóm] Estimation approaches
+    - Use Case Points
+    - T-shirt Sizing
+    - Story Points Estimation / Planning Poker [gốc: “Story Points Estimation/ Planning Poker”]
+    - Analogous Estimation
+    - Bottom-Up / Top-Down Estimation
+    - Three-Point Estimation
+    - Expert Judgment
+    - Wideband Delphi
+    - Function Point Analysis
+- **[KA] Risk Management** (10 mục)
+  - [Tài liệu] Risk Register
+  - PESTLE
+  - Quantitative Risk Assessment
+  - Risk Identification Process
+  - Qualitative Risk Assessment
+  - Risk and Opportunity Response Strategies
+  - Risk Appetite
+  - Contingency / Management Reserve Allocation
+  - VUCA
+  - BANI
+- **[KA] Cost Management** (10 mục)
+  - [Tài liệu] Cost Baseline
+  - Gross Profit Margin (GPM)
+  - Purchase Order / Invoice
+  - How to develop project budget [gốc: “How to develope project budget”]
+  - Cashflow / Revenue / Profit
+  - Cost of Goods Sold (COGS)
+  - CAPEX / OPEX
+  - EBIT / EBITDA
+  - Depreciation / Amortization
+  - PnL model
+- **[KA] Quality Management** (10 mục)
+  - Quality metrics
+  - Inspection
+  - Quality control
+  - Quality assurance
+  - Audit
+  - Cost of Quality (CoQ)
+  - Six Sigma methodology
+  - Total Quality Management (TQM)
+  - Quality Gates [gốc: “Qaulity Gates”]
+  - [Tài liệu] Quality Management Plan [gốc: “Qaulity Management Plan”]
+- **[KA] People Management** (14 mục)
+  - Carrying Interviews
+  - Retention
+  - Mentoring and professional development
+  - Recognition
+  - Onboarding and adaptation
+  - Staffing process
+  - Tuckman's Model
+  - Thomas-Kilmann Conflict Management Model [gốc: “Thomas Kilmann Conflict Management Model Model”]
+  - [Nhóm] Theories of Motivation
+    - Alderfer’s ERG Theory
+    - Maslow's Hierarchy of Needs
+    - McGregor Theory
+    - Herzberg's Motivation-Hygiene theory
+    - Vroom’s Theory of Expectancy
+    - McClelland’s Theory of Needs
+- **[KA] Stakeholder and Communication Management** (9 mục)
+  - Power/Interest Grid
+  - Salience Model
+  - Expectations Management
+  - Communication Channels Matrix
+  - Communication Channels Calculation
+  - Stakeholder Engagement Assessment Matrix
+  - [Tài liệu] Communication Management Plan
+  - [Tài liệu] Stakeholder Register
+  - [Tài liệu] RACI Matrix
+- **[KA] Procurement Management** (11 mục)
+  - Make or buy decision making
+  - RFP
+  - RFQ
+  - RFI
+  - [Nhóm] Legal Documents
+    - NDA
+    - MSA
+    - SOW
+    - SLA
+  - [Nhóm] Contract Types
+    - Time and Material
+    - Fixed Price
+    - Cost Reimbursable
+
+## Business Acumen (17 mục)
+
+- Sales Process
+- Presales
+- Business Model Canvas
+- [Nhóm] Project Selection Method
+  - Net Present Value (NPV)
+  - Internal Rate of Return (IRR)
+  - Payback Period
+  - Benefit-Cost Ratio
+  - Opportunity Cost Analysis
+  - Strategic Alignment Matrix
+  - Portfolio Balancing
+  - Scoring Models
+  - ROI
+- [Nhóm] Client Engagement models
+  - Project-Based Engagement
+  - Managed Services
+  - Hybrid Model
+  - Dedicated Team
+  - Staff Augmentation
+
+## Technical Acumen (16 mục)
+
+- [Nhóm] Systems engineering
+  - CI/CD
+  - Infrastructure management
+  - Cloud overview
+- [Nhóm] Data management
+  - Data quality
+  - Data security
+- [Nhóm] QA overview
+  - Test strategy/Test plan
+  - Test Case management
+  - Defect management
+  - Automated testing & test pyramid
+- [Nhóm] AI overview
+  - LLMs overview [gốc: “LLMs overviwev”]
+  - Prompt engineering [gốc: “Prompt engeniering”]
+  - GenAI / GenAI for SDLC [gốc: “GenAI/ GenAI for SDLC”]
+- [Nhóm] Development overview
+  - Branching strategy
+  - Code review
+  - Tech debt
+  - Architectural principles
+
+## Tools (12 mục)
+
+- [Nhóm] Interactive Boards
+  - Miro
+  - Mural
+  - Figjam
+- [Nhóm] Project Management Tools
+  - MS Project
+  - Primavera P6 Oracle
+- [Nhóm] Task Management
+  - Asana
+  - Trello
+  - Azure DevOps
+  - Jira
+- [Nhóm] Wiki & Others
+  - Confluence
+  - MS suite
+  - Google suite
+
+## Certifications (10 mục)
+
+- Professional Scrum Master (PSM)
+- PRINCE 2 Foundation
+- Certified Associate in Project Management (CAPM)
+- Professional Scrum Product Owner (PSPO)
+- PRINCE 2 Practitioner
+- Project Management Professional (PMP)
+- Professional Scrum with Kanban (PSK)
+- ITIL
+- Agile Certified Practitioner (PMI-ACP®)
+- SAFe
+
+**Tổng:** 5 phần · 11 knowledge area · 21 nhóm · 184 topic · 15 tài liệu → 199 mục học (+32 node tiêu đề).
