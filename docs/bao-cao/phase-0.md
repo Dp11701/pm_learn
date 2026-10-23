@@ -16,7 +16,7 @@ Ngày 23/10/2026 · commit `aeb047d` · không phải điểm dừng chờ duy�
 | `npm run check` | xanh: tsc, ESLint, Prettier, 417 test (Asia/Ho_Chi_Minh) + 46 test ngày giờ (America/Los_Angeles), chống gõ cứng, 46 cặp tương phản, bundle |
 | Chống gõ cứng | 35 file, 236 nút, 52 cụm cấm: 0 vi phạm |
 | Bundle production | không có `/_dev`, không có chữ mẫu |
-| Trình duyệt F01 | 1440 và 375, Sáng và Tối; đổi giao diện bằng phím mũi tên; axe 0 lỗi cả 2 giao diện; không cuộn ngang; console sạch; tải lại giữ giao diện |
+| Trình duyệt F01 | 1440, 1024 và 375, Sáng và Tối; đổi giao diện bằng phím mũi tên; axe 0 lỗi cả 2 giao diện; không cuộn ngang; console sạch; tải lại giữ giao diện |
 | Mã D | phase 0 không có mã D |
 
 ## Review chéo (2 agent độc lập) — đã sửa
@@ -56,3 +56,7 @@ Ngày 23/10/2026 · commit `aeb047d` · không phải điểm dừng chờ duy�
 ## Ngoài repo
 
 - Tạo `~/workspace/pm/.claude/launch.json` để trình duyệt trong Claude chạy được `npm run dev` của app.
+
+## Ảnh chụp
+
+- `phase-0-f01-toi-1440.jpg`, `phase-0-f01-sang-1024.jpg`, `phase-0-f01-toi-375.jpg`
