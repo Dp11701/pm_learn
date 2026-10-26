@@ -163,7 +163,7 @@ export const THUC_HANH_SAP_CO = 'Chọn dự án, ghi kết quả, đánh dấu 
 /** Dưới nút "Xem đáp án" đang tắt của câu tự kiểm tra (C21 chỉ đọc, src/components/bai-hoc/CauTuKiemTra.tsx). */
 export const CAU_HOI_SAP_CO = 'Ô trả lời, Xem đáp án và tự chấm có ở phase 3.'
 
-/** Mô tả ô C38 "Có ở phase 11" của khối Kế hoạch thi của tôi (src/pages/bai-hoc/ThanBai.tsx). */
+/** Mô tả ô C38 "Có ở phase 11" của khối Kế hoạch thi của tôi (src/pages/bai-hoc/KhoiApp.tsx). */
 export const KE_HOACH_THI_SAP_CO =
   'Ngày thi dự kiến và số ngày còn lại; có ngày thi thì bước Áp dụng được tính là xong.'
 
@@ -180,26 +180,26 @@ export const BAT_BUOC = 'bắt buộc'
 // Nhãn "Không áp dụng" là chữ của §1 / 3.2; trạng thái đã đánh dấu "Không áp dụng" + `Lý do: "…"` theo C20 ở
 // F02b; "Huỷ" theo F19; toast lỗi / Thử lại / Hoàn tác nguyên văn 3.1 — các chữ đó nằm tại chỗ.
 
-/** Nút phụ khi khối đã đánh dấu Không áp dụng (src/pages/bai-hoc/ThanBai.tsx, KhoiKeHoachThi). */
+/** Nút phụ khi khối đã đánh dấu Không áp dụng (src/pages/bai-hoc/KhoiApp.tsx, KhoiKeHoachThi). */
 export const BO_DANH_DAU = 'Bỏ đánh dấu'
 
-/** Tiêu đề dialog C32 ghi lý do (ThanBai.tsx, HopThoaiKhongApDung). */
+/** Tiêu đề dialog C32 ghi lý do (KhoiApp.tsx, HopThoaiKhongApDung). */
 export const TIEU_DE_KHONG_AP_DUNG = 'Đánh dấu Không áp dụng'
 
-/** Đoạn mô tả của dialog (ThanBai.tsx, HopThoaiKhongApDung). */
+/** Đoạn mô tả của dialog (KhoiApp.tsx, HopThoaiKhongApDung). */
 export const MO_TA_KHONG_AP_DUNG =
   'Bước Áp dụng của chứng chỉ này được tính là xong mà không cần kế hoạch thi. Bỏ đánh dấu được bất cứ lúc nào.'
 
-/** Nhãn ô C36 lý do (ThanBai.tsx); F02b ghi "Lý do: …" ở trạng thái đã đánh dấu. */
+/** Nhãn ô C36 lý do (KhoiApp.tsx); F02b ghi "Lý do: …" ở trạng thái đã đánh dấu. */
 export const NHAN_LY_DO = 'Lý do'
 
-/** Gợi ý dưới ô lý do (ThanBai.tsx); `toiDa` = LY_DO_AP_DUNG_TOI_DA của server/du-lieu/ap-dung.ts. */
+/** Gợi ý dưới ô lý do (KhoiApp.tsx); `toiDa` = LY_DO_AP_DUNG_TOI_DA của server/du-lieu/ap-dung.ts. */
 export const goiYLyDo = (toiDa: number) => `Bắt buộc · tối đa ${toiDa} ký tự`
 
-/** Câu lỗi C36 khi bấm Lưu / Enter mà ô lý do trống (ThanBai.tsx). */
+/** Câu lỗi C36 khi bấm Lưu / Enter mà ô lý do trống (KhoiApp.tsx). */
 export const LOI_THIEU_LY_DO = 'Ghi lý do để đánh dấu Không áp dụng.'
 
-/** Nút chính của dialog (ThanBai.tsx). */
+/** Nút chính của dialog (KhoiApp.tsx). */
 export const NUT_LUU = 'Lưu'
 
 /** Toast sau khi đánh dấu, trước tên mục (src/app/du-lieu/ap-dung.ts): "Đã đánh dấu Không áp dụng: <tên>". */
@@ -208,5 +208,5 @@ export const DA_DANH_DAU_KHONG_AP_DUNG = 'Đã đánh dấu Không áp dụng:'
 /** Toast sau khi bỏ đánh dấu, trước tên mục (src/app/du-lieu/ap-dung.ts). */
 export const DA_BO_DANH_DAU_KHONG_AP_DUNG = 'Đã bỏ đánh dấu Không áp dụng:'
 
-/** Dưới khối Kế hoạch thi khi GET /api/ap-dung hỏng (ThanBai.tsx); như "Lỗi: không đọc được tiến độ bước" của C10. */
+/** Dưới khối Kế hoạch thi khi GET /api/ap-dung hỏng (KhoiApp.tsx); như "Lỗi: không đọc được tiến độ bước" của C10. */
 export const LOI_DOC_AP_DUNG = 'Lỗi: không đọc được bước Áp dụng'

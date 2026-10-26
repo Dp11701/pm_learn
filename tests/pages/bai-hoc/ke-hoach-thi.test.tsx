@@ -2,8 +2,9 @@
 // Khối "Kế hoạch thi của tôi" của Chứng chỉ (phase 2a; đề xuất 3.2, mục 9 hàng 2a; §1 "Không áp dụng" kèm lý
 // do): C38 "Có ở phase 11" + nút "Không áp dụng" → dialog C32 lý do bắt buộc (C36, Enter lưu, bỏ qua khi ghép
 // chữ, bản tạm nhap-tam) → khối "Không áp dụng" + lý do + "Bỏ đánh dấu"; toast Hoàn tác; lỗi lưu giữ giá trị
-// cũ + Thử lại; lỗi tải; focus giữ trên cùng một nút; axe trên khối và dialog. Máy chủ giả: trang bài
-// (moi-truong) + GET / PUT / DELETE /api/ap-dung theo hợp đồng server/du-lieu/ap-dung.ts.
+// cũ + Thử lại; lỗi tải; focus giữ trên cùng một nút; axe trên khối và dialog; bước Áp dụng của thanh 4 bước đổi
+// ngay khi lưu / hoàn tác; chứng chỉ CHƯA có file bài vẫn có khối này (khối do app tạo, không phải ô "Chưa có").
+// Máy chủ giả: trang bài (moi-truong) + GET / PUT / DELETE /api/ap-dung theo hợp đồng server/du-lieu/ap-dung.ts.
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MucApDung } from '../../../server/du-lieu/ap-dung'
@@ -17,6 +18,9 @@ interface MayChuApDung {
   loiTai: number
   /** Số lần PUT / DELETE tới trả 500 */
   loiGhi: number
+  /** Giữ mọi PUT / DELETE lại tới khi moCua() */
+  dongCua(): void
+  moCua(): void
 }
 
 let sv: MayChuBai
@@ -27,7 +31,20 @@ const json = (status: number, data: unknown) =>
 
 /** Thêm GET / PUT / DELETE /api/ap-dung vào máy chủ giả của trang bài (dùng chung revision, yeuCau). */
 function ganApDung(goc: MayChuBai): MayChuApDung {
-  const may: MayChuApDung = { apDung: {}, loiTai: 0, loiGhi: 0 }
+  let dong = false
+  const dangGiu: (() => void)[] = []
+  const may: MayChuApDung = {
+    apDung: {},
+    loiTai: 0,
+    loiGhi: 0,
+    dongCua() {
+      dong = true
+    },
+    moCua() {
+      dong = false
+      for (const mo of dangGiu.splice(0)) mo()
+    },
+  }
   const fetchTruoc = globalThis.fetch
   vi.stubGlobal(
     'fetch',
@@ -46,6 +63,7 @@ function ganApDung(goc: MayChuBai): MayChuApDung {
       if (m && (method === 'PUT' || method === 'DELETE')) {
         const body = init?.body === undefined ? undefined : JSON.parse(String(init.body))
         goc.yeuCau.push({ method, url, body })
+        if (dong) await new Promise<void>((r) => dangGiu.push(r))
         if (may.loiGhi > 0) {
           may.loiGhi -= 1
           return json(500, { loi: 'Máy chủ gặp lỗi.' })
@@ -152,10 +170,12 @@ describe('khối Kế hoạch thi — chưa đánh dấu', () => {
   })
 
   it('tải lỗi: dòng lỗi + "Thử lại", nút tắt; Thử lại tải được thì bật', async () => {
-    ad.loiTai = 1
+    // Mọi lượt tải đều lỗi (đầu bài tải trước, khối gắn sau tự thử lại một lần) tới khi máy chủ hết lỗi.
+    ad.loiTai = Number.POSITIVE_INFINITY
     moBai(`/hoc/${pmp.slug}`)
     expect(await screen.findByText(/Lỗi: không đọc được bước Áp dụng/)).toBeTruthy()
     expect(nutKhoi().hasAttribute('disabled')).toBe(true)
+    ad.loiTai = 0
     fireEvent.click(within(khoi()).getByRole('button', { name: 'Thử lại' }))
     await waitFor(() =>
       expect(
@@ -320,5 +340,129 @@ describe('đánh dấu / bỏ đánh dấu (đề xuất 3.1, 3.2)', () => {
     await moVaCho()
     const dong = await within(khoi()).findByText(/^Lý do: "x+"$/)
     expect(dong.className).toContain('[overflow-wrap:anywhere]')
+  })
+})
+
+/** Ô bước Áp dụng của thanh 4 bước ở đầu bài. */
+const buocApDung = () => document.querySelector('header [data-buoc="ap-dung"]')!
+
+describe('thanh 4 bước — bước Áp dụng theo dữ liệu đã lưu (đề xuất 3.2)', () => {
+  it('đã đánh dấu từ trước: "Áp dụng · Không áp dụng" ngay khi tải; bấm bước tới khối Kế hoạch thi', async () => {
+    ad.apDung[pmp.id] = { trangThai: 'khong-ap-dung', lyDo: 'Chưa định thi' }
+    await moVaCho()
+    await waitFor(() => expect(buocApDung().getAttribute('data-tinh-trang')).toBe('khong-ap-dung'))
+    expect(buocApDung().textContent).toBe('Áp dụng · Không áp dụng')
+    expect(buocApDung().querySelector('a')?.getAttribute('href')).toBe('#ke-hoach-thi-cua-toi')
+  })
+
+  it('Lưu Không áp dụng → bước đổi NGAY (máy chủ chưa trả lời); Hoàn tác → về "chưa làm" ngay', async () => {
+    await moVaCho()
+    expect(buocApDung().getAttribute('data-tinh-trang')).toBe('chua-lam')
+    expect(buocApDung().textContent).toBe('Áp dụng — chưa làm')
+
+    ad.dongCua()
+    const dialog = await moHopThoai()
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Lý do' }), {
+      target: { value: 'Không định thi' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Lưu' }))
+    // PUT còn bị giữ ở máy chủ: thanh đã đổi theo giá trị lạc quan
+    await waitFor(() => expect(buocApDung().getAttribute('data-tinh-trang')).toBe('khong-ap-dung'))
+    expect(buocApDung().textContent).toBe('Áp dụng · Không áp dụng')
+    expect(ghiDaGui().map((y) => y.method)).toEqual(['PUT'])
+    expect(ad.apDung).toEqual({})
+    await act(async () => ad.moCua())
+    await waitFor(() => expect(ad.apDung[pmp.id]).toBeTruthy())
+    expect(buocApDung().getAttribute('data-tinh-trang')).toBe('khong-ap-dung')
+
+    ad.dongCua()
+    fireEvent.click(await screen.findByRole('button', { name: 'Hoàn tác' }))
+    await waitFor(() => expect(buocApDung().getAttribute('data-tinh-trang')).toBe('chua-lam'))
+    expect(ghiDaGui().map((y) => y.method)).toEqual(['PUT', 'DELETE'])
+    expect(ad.apDung[pmp.id]).toBeTruthy()
+    await act(async () => ad.moCua())
+    await waitFor(() => expect(ad.apDung).toEqual({}))
+    expect(buocApDung().getAttribute('data-tinh-trang')).toBe('chua-lam')
+  })
+
+  it('"Bỏ đánh dấu" → bước về "chưa làm" ngay; lưu lỗi → về lại "Không áp dụng" (giá trị đã lưu)', async () => {
+    ad.apDung[pmp.id] = { trangThai: 'khong-ap-dung', lyDo: 'Lý do cũ' }
+    await moVaCho()
+    await waitFor(() => expect(nutKhoi().textContent).toBe('Bỏ đánh dấu'))
+    ad.loiGhi = 1
+    ad.dongCua()
+    fireEvent.click(nutKhoi())
+    await waitFor(() => expect(buocApDung().getAttribute('data-tinh-trang')).toBe('chua-lam'))
+    expect(ghiDaGui().map((y) => y.method)).toEqual(['DELETE'])
+    await act(async () => ad.moCua())
+    await screen.findByRole('alert')
+    await waitFor(() => expect(buocApDung().getAttribute('data-tinh-trang')).toBe('khong-ap-dung'))
+  })
+
+  it('bài Chủ đề: bước Áp dụng "chưa làm", không gọi /api/ap-dung', async () => {
+    sv.bai.set(sc.id, phanHoi(sc, fileChuDe(sc)))
+    moBai(`/hoc/${sc.slug}`)
+    await screen.findByRole('article')
+    await cho(10)
+    expect(buocApDung().getAttribute('data-tinh-trang')).toBe('chua-lam')
+    expect(sv.dem('GET /api/ap-dung')).toBe(0)
+  })
+})
+
+describe('chứng chỉ chưa có file bài (F17; đề xuất 3.2): Kế hoạch thi là khối do app tạo, không phải ô "Chưa có"', () => {
+  beforeEach(() => {
+    sv.bai.delete(pmp.id)
+  })
+
+  it('khung bài vẽ đúng khối Kế hoạch thi như trang bài: C38 "Có ở phase 11" + nút "Không áp dụng", không nét đứt; axe', async () => {
+    const { container } = await moVaCho()
+    expect(screen.getByRole('heading', { name: 'Mục này chưa có nội dung.' })).toBeTruthy()
+    expect(container.textContent).toContain('0/7 khối bắt buộc')
+    const k = khoi()
+    expect(k.id).toBe('ke-hoach-thi-cua-toi')
+    expect(k.textContent).toContain('Có ở phase 11')
+    expect(k.textContent).not.toContain('Chưa có')
+    expect(k.closest('li')?.getAttribute('data-khoi-app')).toBe('ke-hoach-thi-cua-toi')
+    expect(k.closest('li')?.className).not.toContain('border-dashed')
+    expect(container.querySelector('[data-khoi="ke-hoach-thi-cua-toi"].border-dashed')).toBeNull()
+    // Các khối nội dung vẫn là ô nét đứt "Chưa có"
+    expect(container.querySelector('li[data-khoi="tom-tat"]')?.className).toContain('border-dashed')
+    // Thanh 4 bước: bước Áp dụng bấm được, tới khối Kế hoạch thi
+    expect(buocApDung().querySelector('a')?.getAttribute('href')).toBe('#ke-hoach-thi-cua-toi')
+    await expectNoAxeViolations(container)
+  })
+
+  it('đánh dấu Không áp dụng được khi chưa có bài: PUT, khối hiện lý do, bước Áp dụng xong', async () => {
+    await moVaCho()
+    const dialog = await moHopThoai()
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Lý do' }), {
+      target: { value: 'Không định thi' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Lưu' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(khoi().textContent).toContain('Lý do: "Không định thi"')
+    expect(buocApDung().getAttribute('data-tinh-trang')).toBe('khong-ap-dung')
+    await waitFor(() =>
+      expect(ad.apDung[pmp.id]).toEqual({ trangThai: 'khong-ap-dung', lyDo: 'Không định thi' }),
+    )
+    expect(ghiDaGui().map((y) => y.method)).toEqual(['PUT'])
+  })
+
+  it('Tài liệu chưa có bài: Bản của tôi là khối C38 "Có ở phase 7c", không phải ô "Chưa có"; Chủ đề: không có Nói lại', async () => {
+    const rr = muc('risk-register')
+    const { container } = moBai(`/hoc/${rr.slug}`)
+    await screen.findByRole('heading', { name: 'Mục này chưa có nội dung.' })
+    const banCuaToi = container.querySelector('section#ban-cua-toi')!
+    expect(banCuaToi.textContent).toContain('Có ở phase 7c')
+    expect(banCuaToi.closest('li')?.getAttribute('data-khoi-app')).toBe('ban-cua-toi')
+    expect(container.querySelector('li[data-khoi="ban-cua-toi"]')).toBeNull()
+    await expectNoAxeViolations(container)
+    cleanup()
+
+    const sm = muc('salience-model')
+    const chuDe = moBai(`/hoc/${sm.slug}`)
+    await screen.findByRole('heading', { name: 'Mục này chưa có nội dung.' })
+    expect(chuDe.container.querySelector('#noi-lai-bang-loi-cua-ban')).toBeNull()
+    expect(chuDe.container.querySelector('[data-khoi-app]')).toBeNull()
   })
 })

@@ -1,10 +1,12 @@
 // Lớp dữ liệu bước Áp dụng trên web (đề xuất 3.2; §1 "Hoặc chọn Không áp dụng và ghi lý do"): TanStack Query,
 // cùng cách làm với trang-thai.tsx. Hợp đồng ở server/du-lieu/ap-dung.ts.
-// - useApDung(): GET /api/ap-dung; tải lại khi revision của /api/meta khác revision đang giữ. Ngoài
-//   QueryClientProvider thì coi như chưa có dữ liệu (không gọi API, mọi bước Áp dụng chưa làm).
+// - useApDung(): GET /api/ap-dung; tải lại khi revision của /api/meta mới hơn revision đang giữ (như ảnh chụp
+//   trạng thái học: lần ghi của chính tab nhận revision server trả về, meta hỏi trước lần ghi không làm tải lại).
+//   Ngoài QueryClientProvider thì coi như chưa có dữ liệu (không gọi API, mọi bước Áp dụng chưa làm).
 // - useGhiApDung(): Không áp dụng kèm lý do (PUT) / bỏ đánh dấu (DELETE), có hiệu lực ngay (cập nhật lạc
-//   quan); lưu lỗi thì trả về giá trị cũ + toast lỗi "Thử lại"; lưu xong thì toast + "Hoàn tác" 5 giây (Hoàn tác
-//   gửi lại giá trị cũ: lý do cũ → PUT, chưa đánh dấu → DELETE). Các lần ghi chạy nối tiếp theo thứ tự bấm.
+//   quan); lưu lỗi thì trả về giá trị server đã xác nhận gần nhất + toast lỗi "Thử lại"; lưu xong thì toast +
+//   "Hoàn tác" 5 giây (Hoàn tác gửi lại giá trị cũ: lý do cũ → PUT, chưa đánh dấu → DELETE). Các lần ghi chạy
+//   nối tiếp theo thứ tự bấm.
 // Phase 2a chỉ Chứng chỉ đánh dấu được (khối Kế hoạch thi); thanh 4 bước đọc buocCua(id).
 import { createElement, Fragment, useCallback, useContext, useEffect, useMemo } from 'react'
 import {
@@ -18,9 +20,10 @@ import {
 } from '@tanstack/react-query'
 import { z } from 'zod'
 import type { TinhTrangBuoc } from '../../../shared/domain/trang-thai'
-import { layCay } from '../../../shared/roadmap'
+import { layCay, type MauBai } from '../../../shared/roadmap'
 import {
   CAC_TRANG_THAI_AP_DUNG,
+  MAU_DANH_DAU_DUOC,
   buocApDung,
   lyDoKhongApDung,
   type AnhChupApDung,
@@ -35,7 +38,8 @@ import { useToast } from '../../components/Toast'
 import { DA_BO_DANH_DAU_KHONG_AP_DUNG, DA_DANH_DAU_KHONG_AP_DUNG } from '../../copy/cho-duyet'
 import { useKetNoi } from '../ket-noi'
 import { xoaNhapTam } from '../nhap-tam'
-import { goiApi, LoiGoiApi } from './api'
+import { goiApi } from './api'
+import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
 import { KHOA_GHI, KHOA_TRANG_THAI } from './trang-thai'
 
 export type { MucApDung }
@@ -89,23 +93,9 @@ function guiKhongApDung(id: string, lyDo: string): Promise<KetQuaGhiApDung> {
   return goiApi(duongDanMuc(id), LuocDoKetQua, { method: 'PUT', body })
 }
 
-/** DELETE /api/ap-dung/:id (goiApi chưa nhận DELETE; xử lý lỗi như goiApi). */
-async function guiBoDanhDau(id: string): Promise<KetQuaGhiApDung> {
-  const duongDan = duongDanMuc(id)
-  const phanHoi = await fetch(duongDan, {
-    method: 'DELETE',
-    cache: 'no-store',
-    headers: { Accept: 'application/json' },
-  })
-  const json: unknown = await phanHoi.json().catch(() => null)
-  if (!phanHoi.ok) {
-    const loi =
-      typeof json === 'object' && json !== null && 'loi' in json && typeof json.loi === 'string'
-        ? json.loi
-        : `DELETE ${duongDan}: ${phanHoi.status}`
-    throw new LoiGoiApi(phanHoi.status, loi)
-  }
-  return LuocDoKetQua.parse(json)
+/** DELETE /api/ap-dung/:id */
+function guiBoDanhDau(id: string): Promise<KetQuaGhiApDung> {
+  return goiApi(duongDanMuc(id), LuocDoKetQua, { method: 'DELETE' })
 }
 
 // ---------- Đọc ----------
@@ -125,9 +115,9 @@ function ganMuc(anhChup: AnhChupApDung, id: string, muc: MucApDung | null): AnhC
   return { ...anhChup, apDung }
 }
 
-/** Nhận revision của lần ghi chỉ khi đó là thay đổi duy nhất kể từ dữ liệu đang giữ (như trang-thai.tsx). */
-function revisionSauGhi(cu: number, moi: number): number {
-  return moi === cu + 1 ? moi : cu
+/** Mẫu bài có dữ liệu Áp dụng (MAU_DANH_DAU_DUOC của server; phase 3 thêm Chủ đề, Tài liệu). */
+export function coDuLieuApDung(mau: MauBai): boolean {
+  return MAU_DANH_DAU_DUOC.includes(mau)
 }
 
 export interface DuLieuApDung {
@@ -144,14 +134,19 @@ export interface DuLieuApDung {
   buocCua: (id: string) => TinhTrangBuoc
 }
 
-export function useApDung(): DuLieuApDung {
+/**
+ * Dữ liệu Áp dụng. `tai: false` (vd. mục có mẫu chưa có dữ liệu Áp dụng — coDuLieuApDung): không gọi API, chỉ
+ * đọc dữ liệu đã có trong cache.
+ */
+export function useApDung({ tai = true }: { tai?: boolean } = {}): DuLieuApDung {
   const ctx = useContext(QueryClientContext)
   const client = ctx ?? layClientRong()
+  const bat = ctx !== undefined && tai
   const q = useQuery(
     {
       queryKey: KHOA_AP_DUNG,
       queryFn: () => taiApDung(),
-      enabled: ctx !== undefined,
+      enabled: bat,
       // Độ mới do revision quyết (effect dưới), như ảnh chụp trạng thái học.
       staleTime: Number.POSITIVE_INFINITY,
     },
@@ -161,24 +156,26 @@ export function useApDung(): DuLieuApDung {
   const revisionMeta = useKetNoi().meta?.revision
   const soDangGhi = useIsMutating({ mutationKey: KHOA_GHI }, client)
 
+  // Server có dữ liệu mới hơn → tải lại (không chen vào lúc đang ghi; cancelRefetch false để nhiều nơi cùng
+  // gọi chỉ thành một lượt tải). Meta cũ hơn dữ liệu (hỏi trước lần ghi của chính tab) thì không.
   useEffect(() => {
-    if (!ctx || revisionMeta === undefined || anhChup === undefined || soDangGhi > 0) return
-    if (revisionMeta === anhChup.revision) return
+    if (!ctx || !bat || revisionMeta === undefined || anhChup === undefined || soDangGhi > 0) return
+    if (!canTaiLaiTheoMeta(ctx, 'ap-dung', revisionMeta, anhChup.revision)) return
     void ctx.invalidateQueries({ queryKey: KHOA_AP_DUNG }, { cancelRefetch: false })
-  }, [ctx, revisionMeta, anhChup, soDangGhi])
+  }, [ctx, bat, revisionMeta, anhChup, soDangGhi])
 
   const { refetch } = q
   const taiLai = useCallback(() => void refetch(), [refetch])
   return useMemo(
     () => ({
       anhChup,
-      dangTai: ctx !== undefined && anhChup === undefined && !q.isError,
+      dangTai: bat && anhChup === undefined && !q.isError,
       loi: anhChup === undefined && q.isError,
       taiLai,
       cua: (id: string) => anhChup?.apDung[id],
       buocCua: (id: string) => buocApDung(anhChup?.apDung[id]),
     }),
-    [anhChup, ctx, q.isError, taiLai],
+    [anhChup, bat, q.isError, taiLai],
   )
 }
 
@@ -192,10 +189,6 @@ interface BienGhi {
   hoanTac?: boolean
   /** Hiện toast sau TRE_TOAST ms (gọi từ dialog: chờ dialog đóng hẳn để vùng toast không bị ẩn) */
   treToast?: boolean
-}
-
-interface NguCanhGhi {
-  truoc: MucApDung | null
 }
 
 export interface ApiGhiApDung {
@@ -212,28 +205,60 @@ function tenMuc(id: string) {
   return muc ? createElement(TenMuc, null, muc.label) : id
 }
 
+/**
+ * Giá trị server đã xác nhận của các mục đang có lần ghi chưa xong, theo từng QueryClient (như trang-thai.tsx).
+ * Lưu lỗi thì trả mục về giá trị này, không phải giá trị trước lần ghi đó (có thể là giá trị lạc quan của lần
+ * ghi trước, chưa từng lưu). Có khoá từ lần ghi đầu tới khi lần ghi cuối của mục xong.
+ */
+const daXacNhan = new WeakMap<QueryClient, Map<string, MucApDung | null>>()
+
+function bangXacNhan(client: QueryClient): Map<string, MucApDung | null> {
+  let bang = daXacNhan.get(client)
+  if (!bang) {
+    bang = new Map()
+    daXacNhan.set(client, bang)
+  }
+  return bang
+}
+
+/** Số lần ghi Áp dụng của mục chưa xong (lần đang gọi callback vẫn tính là chưa xong). */
+function soLanDangGhi(client: QueryClient, id: string): number {
+  return client.getMutationCache().findAll({
+    mutationKey: KHOA_GHI_AP_DUNG,
+    status: 'pending',
+    predicate: (m) => (m.state.variables as BienGhi | undefined)?.id === id,
+  }).length
+}
+
 export function useGhiApDung(): ApiGhiApDung {
   const client = useQueryClient()
   const { toast } = useToast()
 
-  const mutation = useMutation<KetQuaGhiApDung, Error, BienGhi, NguCanhGhi>({
+  const mutation = useMutation<KetQuaGhiApDung, Error, BienGhi>({
     mutationKey: KHOA_GHI_AP_DUNG,
     scope: PHAM_VI_GHI,
     mutationFn: ({ id, lyDo }) => (lyDo === null ? guiBoDanhDau(id) : guiKhongApDung(id, lyDo)),
-    // Đồng bộ: cache đổi ngay lúc bấm; huỷ lượt tải đang chạy để nó không ghi đè giá trị lạc quan.
+    // Đồng bộ: cache đổi ngay lúc bấm (cả lần ghi còn xếp hàng sau lần khác); huỷ lượt tải đang chạy để nó không
+    // ghi đè giá trị lạc quan. Lần ghi đầu của mục giữ lại giá trị đang có — giá trị server đã xác nhận.
     onMutate: ({ id, lyDo }) => {
       void client.cancelQueries({ queryKey: KHOA_AP_DUNG })
-      const truoc = client.getQueryData<AnhChupApDung>(KHOA_AP_DUNG)?.apDung[id] ?? null
+      const xacNhan = bangXacNhan(client)
+      if (!xacNhan.has(id)) {
+        xacNhan.set(id, client.getQueryData<AnhChupApDung>(KHOA_AP_DUNG)?.apDung[id] ?? null)
+      }
       const moi: MucApDung | null = lyDo === null ? null : { trangThai: 'khong-ap-dung', lyDo }
       client.setQueryData<AnhChupApDung>(KHOA_AP_DUNG, (cu) => cu && ganMuc(cu, id, moi))
-      return { truoc }
     },
-    onError: (_loi, bien, nguCanh) => {
-      if (nguCanh) {
-        client.setQueryData<AnhChupApDung>(
-          KHOA_AP_DUNG,
-          (cu) => cu && ganMuc(cu, bien.id, nguCanh.truoc),
-        )
+    onError: (_loi, bien) => {
+      // Còn lần ghi sau của cùng mục đang chờ: giá trị lạc quan của lần sau giữ nguyên và kết quả của lần sau
+      // quyết định (Thử lại lần này sẽ ghi đè lần sau), nên không trả về, không toast.
+      if (soLanDangGhi(client, bien.id) > 1) return
+      // Giữ trạng thái cũ: trả mục về giá trị server đã xác nhận gần nhất. Không còn lần ghi nào khác đang chờ
+      // thì tải lại cho chắc.
+      const xacNhan = bangXacNhan(client)
+      if (xacNhan.has(bien.id)) {
+        const muc = xacNhan.get(bien.id) ?? null
+        client.setQueryData<AnhChupApDung>(KHOA_AP_DUNG, (cu) => cu && ganMuc(cu, bien.id, muc))
       }
       if (client.isMutating({ mutationKey: KHOA_GHI }) <= 1) {
         void client.invalidateQueries({ queryKey: KHOA_AP_DUNG })
@@ -245,21 +270,28 @@ export function useGhiApDung(): ApiGhiApDung {
       })
     },
     onSuccess: (kq, bien) => {
+      bangXacNhan(client).set(kq.id, kq.muc)
+      // Còn lần ghi sau của cùng mục: giữ giá trị lạc quan của lần sau trên màn hình, chỉ nhận revision.
+      const conLanSau = soLanDangGhi(client, kq.id) > 1
+      // Revision server trả về chỉ là của lần ghi này khi có đổi (không đổi → revision hiện tại của DB, có thể
+      // là thay đổi của nơi khác mà dữ liệu đang giữ chưa có).
+      const revision = (cu: number) => (kq.daDoi ? revisionSauGhi(cu, kq.revision) : cu)
       client.setQueryData<AnhChupApDung>(
         KHOA_AP_DUNG,
         (cu) =>
           cu && {
-            ...ganMuc(cu, kq.id, kq.muc),
-            revision: revisionSauGhi(cu.revision, kq.revision),
+            ...(conLanSau ? cu : ganMuc(cu, kq.id, kq.muc)),
+            revision: revision(cu.revision),
           },
       )
       // Ảnh chụp trạng thái học nhận revision mới để không phải tải lại vì lần ghi này.
       client.setQueryData<AnhChupHoc>(
         KHOA_TRANG_THAI,
-        (cu) => cu && { ...cu, revision: revisionSauGhi(cu.revision, kq.revision) },
+        (cu) => cu && { ...cu, revision: revision(cu.revision) },
       )
       if (bien.lyDo !== null) xoaNhapTam(khoaNhapLyDo(kq.id))
       if (!kq.daDoi) return
+      ghiNhanRevisionCuaTab(client, kq.revision)
       const lyDoCu = lyDoKhongApDung(kq.truoc)
       const hien = () =>
         toast({
@@ -280,6 +312,10 @@ export function useGhiApDung(): ApiGhiApDung {
         })
       if (bien.treToast) window.setTimeout(hien, TRE_TOAST)
       else hien()
+    },
+    // Lần ghi cuối của mục xong (thành công hay lỗi) → bỏ giá trị đã xác nhận đang giữ.
+    onSettled: (_kq, _loi, bien) => {
+      if (soLanDangGhi(client, bien.id) <= 1) bangXacNhan(client).delete(bien.id)
     },
   })
   const { mutate } = mutation

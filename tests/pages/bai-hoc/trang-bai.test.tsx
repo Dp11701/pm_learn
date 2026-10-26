@@ -239,6 +239,39 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
     )
   })
 
+  it('Khái niệm cốt lõi dạng F11: đoạn mở → danh sách định nghĩa → đoạn kết, không mất chữ nào', async () => {
+    const moDau = giuCho('Khái niệm cốt lõi')
+    const ketLai = giuCho('Khái niệm cốt lõi, đoạn kết')
+    datScopeCreep({
+      thay: {
+        'Khái niệm cốt lõi': [
+          moDau,
+          '',
+          `- **[Khái niệm mẫu 1]** — ${giuCho('Khái niệm 1')}`,
+          `- **[Khái niệm mẫu 2]** — ${giuCho('Khái niệm 2')}`,
+          `- **[Khái niệm mẫu 3]** — ${giuCho('Khái niệm 3')}`,
+          '',
+          ketLai,
+        ].join('\n'),
+      },
+    })
+    const { container } = await moVaCho()
+    await screen.findByRole('article')
+    const khoi = container.querySelector('#khai-niem-cot-loi')!
+    // Thứ tự con trực tiếp của khối: h2, đoạn mở, danh sách, đoạn kết (F11: đoạn rồi danh sách, cách 12)
+    const con = [...khoi.children]
+    expect(con.map((c) => c.tagName)).toEqual(['H2', 'DIV', 'DL', 'DIV'])
+    expect(con[1].textContent).toBe(moDau)
+    expect(con[3].textContent).toBe(ketLai)
+    expect([...khoi.querySelectorAll('dt')].map((dt) => dt.textContent)).toEqual([
+      '[Khái niệm mẫu 1]',
+      '[Khái niệm mẫu 2]',
+      '[Khái niệm mẫu 3]',
+    ])
+    expect(khoi.querySelector('p')?.textContent).toBe(moDau)
+    await expectNoAxeViolations(khoi as HTMLElement)
+  })
+
   it('đổi trạng thái bằng phím khi focus ở link trong bài: link không bị gắn lại (giữ focus)', async () => {
     datScopeCreep({
       thay: { 'Tham khảo': '- [Nguồn mẫu 1](https://example.com/nguon) — chưa điền' },

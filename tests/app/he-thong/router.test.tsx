@@ -236,7 +236,10 @@ describe('trang có slug', () => {
         .filter(Boolean)
         .map((m) => `/hoc/${m.slug}`)
       expect(cac).toEqual(ke)
-      expect(screen.queryByText(/^Có ở phase /)).toBeNull()
+      // Không phải trang chờ "Có ở phase n" (ô C38 trong khối do app tạo của bài thì có, vd. Kế hoạch thi)
+      expect(
+        screen.queryAllByText(/^Có ở phase /).filter((p) => !p.closest('section[data-khoi]')),
+      ).toEqual([])
     },
   )
 

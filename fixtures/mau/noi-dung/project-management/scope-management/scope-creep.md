@@ -18,6 +18,8 @@ lien_quan: [change-request-cr, change-control-board-ccb, scope-baseline]
 
 ## Khái niệm cốt lõi
 
+[Nội dung mẫu — Khái niệm cốt lõi] Khối này liệt kê 3–5 khái niệm chính của bài, mỗi khái niệm 1–2 câu tiếng Việt.
+
 - **[Khái niệm mẫu 1]** — Một đến hai câu tiếng Việt định nghĩa khái niệm, giữ thuật ngữ tiếng Anh khi cần.
 - **[Khái niệm mẫu 2]** — Một đến hai câu tiếng Việt định nghĩa khái niệm, giữ thuật ngữ tiếng Anh khi cần.
 - **[Khái niệm mẫu 3]** — Một đến hai câu tiếng Việt định nghĩa khái niệm, giữ thuật ngữ tiếng Anh khi cần.

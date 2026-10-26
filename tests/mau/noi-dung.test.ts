@@ -218,6 +218,12 @@ describe('bài theo frame', () => {
       '[Khái niệm mẫu 2]',
       '[Khái niệm mẫu 3]',
     ])
+    // F11: một đoạn mở rồi danh sách; khối vẫn theo quy ước (hiện danh sách định nghĩa, không phải Markdown thường)
+    expect(khaiNiem?.hopLe).toBe(true)
+    expect(khaiNiem?.kieu === 'dinh-nghia' && khaiNiem.truoc?.noiDung).toMatch(
+      /^\[Nội dung mẫu — Khái niệm cốt lõi\] Khối này liệt kê 3–5 khái niệm chính/,
+    )
+    expect(khaiNiem?.kieu === 'dinh-nghia' && khaiNiem.sau).toBeNull()
     const tuKiemTra = cauTruc('tu-kiem-tra')
     expect(tuKiemTra?.kieu === 'tu-kiem-tra' && tuKiemTra.cauHoi).toHaveLength(1)
     const gocDev = cauTruc('goc-dev-lead-pm')

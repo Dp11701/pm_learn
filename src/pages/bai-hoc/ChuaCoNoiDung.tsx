@@ -1,7 +1,9 @@
 // Mục chưa có nội dung (F17, F18, §8.7): card icon file-x 20 trong vòng 40 + "Mục này chưa có nội dung." +
 // câu §8.7 (+ câu F17, F18 bỏ trên mobile) + 3 nút "Soạn bài" (chính, trình soạn phase 7b) · "Nhập file .md"
 // (tab Nhập phase 2b, gán sẵn mục) · "Sao chép prompt soạn bài" (F19 trái, D14). Bên dưới là khung các khối
-// của mẫu dạng ô nét đứt "Chưa có" (KhungBaiTrong). Không có câu nào giải thích về mục (§8.7).
+// của mẫu dạng ô nét đứt "Chưa có" (KhungBaiTrong); khối do app tạo (Bản của tôi, Kế hoạch thi) không phải khối
+// nội dung nên vẽ đúng như ở trang bài (KhoiApp) — chứng chỉ chưa có bài vẫn đánh dấu được "Không áp dụng" cho
+// bước Áp dụng (đề xuất 3.2). Không có câu nào giải thích về mục (§8.7).
 // Desktop: nút thụt 56 thẳng chữ; mobile: padding 16, nút full-width cao 44 xếp dọc (F18).
 import { FileX } from 'lucide-react'
 import type { Cay, MucHoc } from '../../../shared/roadmap'
@@ -9,6 +11,7 @@ import HopThoaiPrompt from '../../components/HopThoaiPrompt'
 import Nut, { NutLink } from '../../components/Nut'
 import KhungBaiTrong from '../../components/bai-hoc/KhungBaiTrong'
 import { duongDanNhap, duongDanSoan } from '../../components/bai-hoc/dinh-vi'
+import KhoiApp from './KhoiApp'
 
 export default function ChuaCoNoiDung({ muc, cay }: { muc: MucHoc; cay: Cay }) {
   return (
@@ -51,7 +54,7 @@ export default function ChuaCoNoiDung({ muc, cay }: { muc: MucHoc; cay: Cay }) {
           />
         </div>
       </section>
-      <KhungBaiTrong mau={muc.mau} />
+      <KhungBaiTrong mau={muc.mau} veKhoiApp={(khoi) => <KhoiApp khoi={khoi} muc={muc} />} />
     </>
   )
 }

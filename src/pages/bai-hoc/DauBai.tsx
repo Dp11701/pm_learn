@@ -1,14 +1,20 @@
 // Đầu bài (F11, F17, F18; §8.5, §8.7, D1, D2, D8): chip loại C4 + chip nội dung C8 · H1 tên mục (lang=en)
 // + " — giải nghĩa" (muted 500) · dòng "Tên gốc trên roadmap: …" (đề xuất 1.3) · segmented C6 (đổi trạng thái
-// có hiệu lực ngay, toast Hoàn tác) + "Xem trên bản đồ", "Soạn" · thanh 4 bước C10 (phase 2a: trạng thái 0;
-// Kiểm tra "Không áp dụng · chưa có câu hỏi" khi bài không có câu hỏi, D8) · dải vị trí C13.
+// có hiệu lực ngay, toast Hoàn tác) + "Xem trên bản đồ", "Soạn" · thanh 4 bước C10 (phase 2a: Áp dụng theo dữ
+// liệu đã lưu — chứng chỉ "Không áp dụng" ở khối Kế hoạch thi, đề xuất 3.2; bước khác chưa làm; Kiểm tra "Không
+// áp dụng · chưa có câu hỏi" khi bài không có câu hỏi, D8) · dải vị trí C13.
 // Mục chưa có nội dung giữ đủ đầu bài (D8). "Đã học n phút" / đồng hồ (T) có ở phase 3; phím E ở phase 7b.
 // Khoảng cách theo F11: các dòng cách 16, đáy 24 + đường kẻ.
 import type { MouseEvent } from 'react'
 import { CircleAlert, Map as IconBanDo, Pencil } from 'lucide-react'
 import type { LoiDong } from '../../../shared/noi-dung'
 import type { Cay, MucHoc } from '../../../shared/roadmap'
-import { CAC_BUOC, type Buoc, type TrangThaiNoiDung } from '../../../shared/domain/trang-thai'
+import {
+  CAC_BUOC,
+  type Buoc,
+  type TinhTrangBuoc,
+  type TrangThaiNoiDung,
+} from '../../../shared/domain/trang-thai'
 import { NutLink } from '../../components/Nut'
 import TenMuc from '../../components/TenMuc'
 import TieuDeTrang from '../../components/TieuDeTrang'
@@ -23,9 +29,16 @@ import { LOP_H1 } from '../chung'
 import type { DatTrangThaiTrang, TrangThaiTrang } from './kieu-trang'
 import { LOI_DOC_TRANG_THAI } from '../../copy/cho-duyet'
 
-/** Thanh 4 bước trước khi có dữ liệu bước (phase 3): mọi bước chưa làm; không có câu hỏi → Không áp dụng. */
-export function bonBuocBanDau(coCauHoi: boolean): TinhTrangBonBuoc {
+/**
+ * Thanh 4 bước khi mới có dữ liệu bước Áp dụng (Hiểu, Kiểm tra, Ghi nhớ có ở phase 3): Áp dụng theo dữ liệu đã
+ * lưu, bước khác chưa làm; không có câu hỏi → Kiểm tra Không áp dụng.
+ */
+export function bonBuocBanDau(
+  coCauHoi: boolean,
+  apDung: TinhTrangBuoc = 'chua-lam',
+): TinhTrangBonBuoc {
   const tt = Object.fromEntries(CAC_BUOC.map((b) => [b, 'chua-lam'])) as TinhTrangBonBuoc
+  tt['ap-dung'] = apDung
   if (!coCauHoi) tt['kiem-tra'] = 'khong-ap-dung'
   return tt
 }
@@ -52,6 +65,8 @@ export interface PropsDauBai {
   datHoc?: DatTrangThaiTrang
   /** null khi chưa biết (bài đang tải, lỗi) */
   coCauHoi: boolean | null
+  /** Bước Áp dụng theo dữ liệu đã lưu (useApDung().buocCua); đổi ngay khi lưu / hoàn tác */
+  buocApDung: TinhTrangBuoc
   neoBuoc: Partial<Record<Buoc, string>>
 }
 
@@ -64,6 +79,7 @@ export default function DauBai({
   hoc,
   datHoc,
   coCauHoi,
+  buocApDung,
   neoBuoc,
 }: PropsDauBai) {
   const khongCau = coCauHoi === false
@@ -127,7 +143,7 @@ export default function DauBai({
       </div>
 
       <ThanhBonBuoc
-        tinhTrang={bonBuocBanDau(!khongCau)}
+        tinhTrang={bonBuocBanDau(!khongCau, buocApDung)}
         lienKet={neoBuoc}
         khiChon={denKhoi}
         ghiChu={khongCau ? { 'kiem-tra': 'Không áp dụng · chưa có câu hỏi' } : {}}

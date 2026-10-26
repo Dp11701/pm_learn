@@ -1,5 +1,6 @@
 // Trang bài học /hoc/:slug — phần vẽ (F11 trừ cột phải, F17, F18; §8.5, §8.6, §8.6b, §8.7; đề xuất 3.6, 3.9,
-// 4.4). Dữ liệu (bài, trạng thái học, đặt trạng thái) truyền vào từ TrangMucHoc.
+// 4.4). Dữ liệu (bài, trạng thái học, đặt trạng thái) truyền vào từ TrangMucHoc; bước Áp dụng của thanh 4 bước
+// đọc thẳng useApDung (chung cache với khối Kế hoạch thi, chạy được cả ngoài QueryClientProvider).
 // Bố cục F11: lề 24 40 48 (mobile 16), breadcrumb (≥ 1024; dưới đó top bar "‹ cấp cha") · đầu bài · banner ·
 // cột đọc ≤ 720 (cột phải 320 — đồng hồ, mục lục, ghi chú, flashcard — có ở phase 3), chữ thân bài 17/28
 // (mobile 16/26), các khối cách 40 · chân bài "Đã xong, sang bài tiếp" + pager.
@@ -10,6 +11,7 @@ import { ChevronRight } from 'lucide-react'
 import { giaiLienQuan } from '../../../shared/noi-dung'
 import { CAC_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import { chuoiCha, layCay, type MucHoc } from '../../../shared/roadmap'
+import { coDuLieuApDung, useApDung } from '../../app/du-lieu/ap-dung'
 import { usePhimTat } from '../../app/phim-tat'
 import { LE_NGANG_TRANG } from '../../app/khung/le-trang'
 import { useThanhTrenMobile } from '../../app/khung/thanh-tren'
@@ -19,7 +21,7 @@ import Breadcrumb from '../../components/bai-hoc/Breadcrumb'
 import Pager from '../../components/bai-hoc/Pager'
 import { duongDanNut, truocTiep } from '../../components/bai-hoc/dinh-vi'
 import BannerBai from './BannerBai'
-import { cacOHien, neoBonBuoc, soCauHoi } from './bo-cuc'
+import { cacOAppKhungBai, cacOHien, neoBonBuoc, soCauHoi } from './bo-cuc'
 import ChuaCoNoiDung from './ChuaCoNoiDung'
 import DauBai from './DauBai'
 import type { TaiBai } from './du-lieu-bai'
@@ -58,6 +60,8 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
   const cay = layCay()
   const navigate = useNavigate()
   const { trangThaiCua } = hoc
+  // Bước Áp dụng trên thanh 4 bước: cùng cache với khối Kế hoạch thi nên đổi ngay khi lưu / hoàn tác.
+  const apDung = useApDung({ tai: coDuLieuApDung(muc.mau) })
   const { truoc, tiep } = truocTiep(cay, muc, trangThaiCua)
 
   // Top bar mobile: "‹ cấp cha" (§6.2, D6).
@@ -114,6 +118,11 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
   )
   // Chưa có nội dung → 0 câu (D8); lỗi đọc file → chưa biết (không ghi "Không áp dụng").
   const coCauHoi = duLieu && !duLieu.loiDoc ? soCauHoi(cacO) > 0 : null
+  // Neo thanh 4 bước: ô của bài; chưa có file thì khối do app tạo trên khung bài (vd. Kế hoạch thi).
+  const neoBuoc = useMemo(
+    () => neoBonBuoc(duLieu && !duLieu.loiDoc && !ketQua ? cacOAppKhungBai(muc.mau) : cacO),
+    [duLieu, ketQua, muc.mau, cacO],
+  )
 
   function xongVaTiep() {
     if (!tiep) return
@@ -166,7 +175,8 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
         hoc={hoc}
         datHoc={datHocDauBai}
         coCauHoi={coCauHoi}
-        neoBuoc={neoBonBuoc(cacO)}
+        buocApDung={apDung.buocCua(muc.id)}
+        neoBuoc={neoBuoc}
       />
       {duLieu && <BannerBai muc={muc} duLieu={duLieu} />}
       {coNoiDung ? (

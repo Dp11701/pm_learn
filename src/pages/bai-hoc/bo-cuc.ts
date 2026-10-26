@@ -15,6 +15,8 @@ import {
   type KhoiMau,
 } from '../../../shared/noi-dung'
 import type { Buoc } from '../../../shared/domain/trang-thai'
+import type { MauBai } from '../../../shared/roadmap'
+import { khoiKhungBai, laKhoiCuaNguoiHoc } from '../../components/bai-hoc/KhungBaiTrong'
 
 export type OHien =
   /** Khối viết trong file, có chữ (mau null = khối không có trong mẫu) */
@@ -91,4 +93,14 @@ export function neoBonBuoc(cac: readonly OHien[]): Partial<Record<Buoc, string>>
     else if (kieu === 'tu-kiem-tra' && o.loai === 'khoi') neo['kiem-tra'] ??= `#${o.id}`
   }
   return neo
+}
+
+/**
+ * Ô do app tạo trên khung bài của mục chưa có nội dung (KhungBaiTrong vẽ chính các khối này, vd. Kế hoạch thi):
+ * neo của thanh 4 bước trỏ tới đó như ở trang bài.
+ */
+export function cacOAppKhungBai(mau: MauBai): OHien[] {
+  return khoiKhungBai(mau)
+    .filter(laKhoiCuaNguoiHoc)
+    .map((k) => ({ loai: 'app', id: k.id, ten: k.tieuDe, mau: k }))
 }

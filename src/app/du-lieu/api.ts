@@ -22,7 +22,7 @@ export class LoiGoiApi extends Error {
 }
 
 interface TuyChonGoi {
-  method?: 'GET' | 'PUT' | 'POST'
+  method?: 'GET' | 'PUT' | 'POST' | 'DELETE'
   body?: unknown
   signal?: AbortSignal
 }

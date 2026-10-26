@@ -45,6 +45,9 @@ const DOAN_DAU: Readonly<Record<string, string>> = {
   // F11
   'vi-sao-pm-can-biet':
     '[Nội dung mẫu — Vì sao PM cần biết] Khối này giải thích trong 3–5 câu tiếng Việt vì sao người làm PM phải nắm chủ đề này: nó ảnh hưởng tới quyết định nào, rủi ro gì xảy ra nếu bỏ qua, và nó nối với những trách nhiệm hằng ngày của PM ra sao. Đoạn văn thật sẽ dài khoảng bốn dòng ở cột đọc này.',
+  // F11: đoạn mở của Khái niệm cốt lõi (trước danh sách định nghĩa; chỉ bài theo frame)
+  'khai-niem-cot-loi':
+    '[Nội dung mẫu — Khái niệm cốt lõi] Khối này liệt kê 3–5 khái niệm chính của bài, mỗi khái niệm 1–2 câu tiếng Việt.',
   // F11
   'vi-du-thuc-te':
     '[Nội dung mẫu — Ví dụ thực tế] Khối này kể một tình huống cụ thể trong dự án phần mềm, 4–6 câu: bối cảnh, điều đã xảy ra, dấu hiệu nhận biết và cách nhóm đã xử lý. Ví dụ nên gần với công việc của một dev lead đang chuyển sang vai trò PM để người đọc nhận ra ngay.',
@@ -148,8 +151,10 @@ function thanKhoi(ng: NguCanh, khoi: KhoiMau, tieuDe: string): string {
       return doan(DOAN_DAU[khoi.id])
     case 'process-group':
       return DOAN_DAU[khoi.id]
-    case 'dinh-nghia':
-      return lap(SO_KHAI_NIEM_FRAME[muc.slug] ?? 3 + (muc.index % 3), KHAI_NIEM).join('\n')
+    case 'dinh-nghia': {
+      const ds = lap(SO_KHAI_NIEM_FRAME[muc.slug] ?? 3 + (muc.index % 3), KHAI_NIEM).join('\n')
+      return ng.theoFrame ? `${DOAN_DAU[khoi.id]}\n\n${ds}` : ds
+    }
     case 'goc-dev-lead':
       return MUC_CON_GOC_DEV_LEAD.map((ten) => `### ${ten}\n\n${GOC_DEV_LEAD[ten]}`).join('\n\n')
     case 'thuc-hanh':

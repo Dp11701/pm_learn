@@ -215,8 +215,11 @@ describe('C14 Pager', () => {
 })
 
 describe('Khung bài trống (F17, F18)', () => {
+  /** Khối do app tạo: nơi dùng vẽ chính khối đó (trang thật: KhoiApp); ở đây chỉ là một đoạn đánh dấu. */
+  const veKhoiApp = (k: { id: string; tieuDe: string }) => <p data-khoi-that={k.id}>{k.tieuDe}</p>
+
   it('Chủ đề: "0/9 khối bắt buộc", khối 7 ghi đủ 3 tên, Mục liên quan tuỳ chọn, không có Nói lại', async () => {
-    const { container } = render(<KhungBaiTrong mau="chu-de" />)
+    const { container } = render(<KhungBaiTrong mau="chu-de" veKhoiApp={veKhoiApp} />)
     expect(container.textContent).toContain('0/9 khối bắt buộc')
     const hang = within(screen.getByRole('list')).getAllByRole('listitem')
     expect(hang.map((h) => h.getAttribute('data-khoi'))).not.toContain('noi-lai-bang-loi-cua-ban')
@@ -224,17 +227,47 @@ describe('Khung bài trống (F17, F18)', () => {
     expect(hang[6].textContent).toBe('So sánh · Thuật ngữ · Thực hành công cụ · tuỳ chọnChưa có')
     expect(hang[0].textContent).toBe('Tóm tắt ★ (bắt buộc)Chưa có')
     expect(hang.every((h) => h.className.includes('border-dashed'))).toBe(true)
+    // Mục liên quan đọc lien_quan của file: vẫn là ô "Chưa có" (F17)
+    expect(container.querySelector('[data-khoi="muc-lien-quan"]')?.textContent).toBe(
+      'Mục liên quan · tuỳ chọnChưa có',
+    )
+    expect(container.querySelector('[data-khoi-that]')).toBeNull()
     await expectNoAxeViolations(container)
   })
 
-  it('Tài liệu 0/8 (có Bản của tôi), Chứng chỉ 0/7 (có Kế hoạch thi, không có Nhật ký thi thử P2)', () => {
-    const { container } = render(<KhungBaiTrong mau="tai-lieu" />)
+  it('Tài liệu 0/8, Chứng chỉ 0/7 (không có Nhật ký thi thử P2): Bản của tôi, Kế hoạch thi là khối do app tạo — vẽ qua veKhoiApp đúng vị trí, không bao giờ là ô nét đứt "Chưa có"', async () => {
+    const { container } = render(<KhungBaiTrong mau="tai-lieu" veKhoiApp={veKhoiApp} />)
     expect(container.textContent).toContain('0/8 khối bắt buộc')
-    expect(container.querySelector('[data-khoi="ban-cua-toi"]')).not.toBeNull()
+    expect(container.querySelector('[data-khoi="ban-cua-toi"]')).toBeNull()
+    const banCuaToi = container.querySelector('[data-khoi-app="ban-cua-toi"]')!
+    expect(banCuaToi.className).not.toContain('border-dashed')
+    expect(banCuaToi.textContent).toBe('Bản của tôi')
+    expect(banCuaToi.textContent).not.toContain('Chưa có')
+    // đúng vị trí trong mẫu: sau Lỗi thường gặp, trước Tự kiểm tra
+    const thuTu = (c: Element) =>
+      [...c.querySelectorAll('li')].map(
+        (h) => h.getAttribute('data-khoi') ?? h.getAttribute('data-khoi-app'),
+      )
+    expect(thuTu(container).slice(5, 8)).toEqual(['loi-thuong-gap', 'ban-cua-toi', 'tu-kiem-tra'])
+    await expectNoAxeViolations(container)
     cleanup()
-    const cc = render(<KhungBaiTrong mau="chung-chi" />)
+
+    const cc = render(<KhungBaiTrong mau="chung-chi" veKhoiApp={veKhoiApp} />)
     expect(cc.container.textContent).toContain('0/7 khối bắt buộc')
-    expect(cc.container.querySelector('[data-khoi="ke-hoach-thi-cua-toi"]')).not.toBeNull()
+    expect(cc.container.querySelector('[data-khoi="ke-hoach-thi-cua-toi"]')).toBeNull()
+    const keHoach = cc.container.querySelector('[data-khoi-app="ke-hoach-thi-cua-toi"]')!
+    expect(keHoach.className).not.toContain('border-dashed')
+    expect(keHoach.querySelector('[data-khoi-that="ke-hoach-thi-cua-toi"]')).not.toBeNull()
     expect(cc.container.querySelector('[data-khoi="nhat-ky-thi-thu"]')).toBeNull()
+    expect(cc.container.querySelector('[data-khoi-app="nhat-ky-thi-thu"]')).toBeNull()
+    expect(thuTu(cc.container).slice(3, 6)).toEqual([
+      'phu-roadmap',
+      'ke-hoach-thi-cua-toi',
+      'tu-kiem-tra',
+    ])
+    // Không ô nét đứt nào là khối do app tạo chứa việc của người học
+    for (const o of cc.container.querySelectorAll('.border-dashed')) {
+      expect(o.getAttribute('data-khoi')).not.toMatch(/noi-lai|ban-cua-toi|ke-hoach-thi/)
+    }
   })
 })

@@ -31,6 +31,7 @@ import TenMuc from '../../components/TenMuc'
 import { useToast } from '../../components/Toast'
 import { useKetNoi } from '../ket-noi'
 import { guiDatTrangThai, guiLuotMo, taiAnhChup } from './api'
+import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
 import {
   danhSachDangHoc,
   hocTiep,
@@ -70,27 +71,6 @@ export function ganMuc(anhChup: AnhChupHoc, id: string, muc: MucTrangThai | null
   return { ...anhChup, trangThai }
 }
 
-/** Nhận revision từ phản hồi ghi chỉ khi lần ghi đó là thay đổi duy nhất kể từ ảnh chụp đang giữ;
- *  ngược lại để nguyên, revision của /api/meta sẽ mới hơn và ảnh chụp được tải lại. */
-function revisionSauGhi(anhChup: AnhChupHoc, revisionMoi: number): number {
-  return revisionMoi === anhChup.revision + 1 ? revisionMoi : anhChup.revision
-}
-
-/** Revision /api/meta lớn nhất đã thấy, theo từng QueryClient (mọi nơi dùng hook chung một ảnh chụp). */
-const metaCaoNhat = new WeakMap<QueryClient, number>()
-
-/**
- * Có cần tải lại ảnh chụp không. Meta mới hơn ảnh chụp → có. Meta cũ hơn ảnh chụp là lần hỏi trước lần ghi của
- * chính tab (ảnh chụp đã nhận revision server trả về) → không. Riêng khi revision server lùi so với lần hỏi
- * trước (thay file DB rồi chạy lại server) → có.
- */
-function canTaiLaiAnhChup(client: QueryClient, revisionMeta: number, revisionAnh: number) {
-  const truoc = metaCaoNhat.get(client)
-  const lui = truoc !== undefined && revisionMeta < truoc
-  if (truoc === undefined || revisionMeta > truoc || lui) metaCaoNhat.set(client, revisionMeta)
-  return revisionMeta > revisionAnh || (lui && revisionMeta !== revisionAnh)
-}
-
 export interface DuLieuTrangThai {
   /** undefined khi chưa tải xong (hoặc lỗi lần đầu, hoặc ngoài QueryClientProvider) */
   anhChup: AnhChupHoc | undefined
@@ -126,7 +106,7 @@ export function useTrangThai(): DuLieuTrangThai {
   // nơi cùng gọi chỉ thành một lượt tải).
   useEffect(() => {
     if (!ctx || revisionMeta === undefined || anhChup === undefined || soDangGhi > 0) return
-    if (!canTaiLaiAnhChup(ctx, revisionMeta, anhChup.revision)) return
+    if (!canTaiLaiTheoMeta(ctx, 'trang-thai', revisionMeta, anhChup.revision)) return
     void ctx.invalidateQueries({ queryKey: KHOA_TRANG_THAI }, { cancelRefetch: false })
   }, [ctx, revisionMeta, anhChup, soDangGhi])
 
@@ -255,6 +235,7 @@ export function useDatTrangThai(): ApiDatTrangThai {
       })
     },
     onSuccess: (kq, bien) => {
+      if (kq.daDoi) ghiNhanRevisionCuaTab(client, kq.revision)
       bangXacNhan(client).set(kq.id, kq.muc)
       // Còn lần ghi sau của cùng mục: giữ giá trị lạc quan của lần sau trên màn hình, chỉ nhận revision.
       const conLanSau = soLanDangGhi(client, kq.id) > 1
@@ -263,7 +244,8 @@ export function useDatTrangThai(): ApiDatTrangThai {
         (cu) =>
           cu && {
             ...(conLanSau ? cu : ganMuc(cu, kq.id, kq.muc)),
-            revision: revisionSauGhi(cu, kq.revision),
+            // Ghi không đổi gì thì revision trả về có thể là của tab khác: không nhận, để còn tải lại.
+            revision: kq.daDoi ? revisionSauGhi(cu.revision, kq.revision) : cu.revision,
           },
       )
       if (!kq.daDoi) return
@@ -337,13 +319,14 @@ export function useGhiLuotMo(id: string | undefined): void {
     mutationKey: KHOA_LUOT_MO,
     mutationFn: guiLuotMo,
     onSuccess: (kq) => {
+      ghiNhanRevisionCuaTab(client, kq.revision)
       client.setQueryData<AnhChupHoc>(
         KHOA_TRANG_THAI,
         (cu) =>
           cu && {
             ...cu,
             luotMo: { ...cu.luotMo, [kq.id]: kq.lanMoCuoi },
-            revision: revisionSauGhi(cu, kq.revision),
+            revision: revisionSauGhi(cu.revision, kq.revision),
           },
       )
     },
