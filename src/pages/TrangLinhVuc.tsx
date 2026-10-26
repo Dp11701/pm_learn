@@ -5,6 +5,7 @@ import TenMuc from '../components/TenMuc'
 import { timNut } from './chung'
 import KhongTimThay from './KhongTimThay'
 import TrangSapCo from './TrangSapCo'
+import { MO_TA_SAP_CO } from '../copy/cho-duyet'
 
 export default function TrangLinhVuc() {
   const linhVuc = timNut(useParams().slug, 'area')
@@ -15,7 +16,7 @@ export default function TrangLinhVuc() {
       tieuDe={<TenMuc>{linhVuc.label}</TenMuc>}
       truocTieuDe={<ChipLoai loai="linh-vuc" />}
       phase="4"
-      moTa="Tiến độ của lĩnh vực, các nhóm và mục học dạng cây, kệ tài liệu và chuyển sang lĩnh vực kề."
+      moTa={MO_TA_SAP_CO.linhVuc}
     />
   )
 }

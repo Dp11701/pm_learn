@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 import { readFileSync } from 'node:fs'
-import { act, cleanup, fireEvent, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import cayJson from '../../../docs/roadmap-tree.json'
 import { layCay } from '../../../shared/roadmap'
 import { dinhDangNgay } from '../../../shared/dinh-dang'
 import { KHOA_GIAO_DIEN, datGiaoDien } from '../../../src/app/giao-dien'
 import { DU_LIEU_KHUNG_TRONG, type DuLieuKhung } from '../../../src/app/khung/du-lieu-khung'
+import { LE_NGANG_TRANG } from '../../../src/app/khung/le-trang'
+import { KhungTrang } from '../../../src/pages/chung'
 import { expectNoAxeViolations } from '../../ho-tro/axe'
 import { dungLocalStorageJsdom } from '../../giao-dien/moi-truong'
 import { choMotNhip, doiBeRong, giaMatchMedia, moKhung } from './moi-truong'
@@ -26,7 +28,9 @@ vi.mock(import('../../../src/app/phim-tat'), async (goc) => ({
 }))
 vi.mock(import('../../../src/app/ket-noi'), async (goc) => ({
   ...(await goc()),
-  BannerMatKetNoi: () => <div data-testid="banner-mat-ket-noi" />,
+  BannerMatKetNoi: ({ className }: { className?: string }) => (
+    <div data-testid="banner-mat-ket-noi" className={className} />
+  ),
 }))
 
 const cay = layCay()
@@ -91,6 +95,11 @@ describe('KhungApp — link bỏ qua và vùng chính', () => {
     const banner = screen.getByTestId('banner-mat-ket-noi')
     const main = screen.getByRole('main')
     expect(banner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    // F26: thẻ bo góc trong lề trang; vùng dính có nền nên nội dung cuộn không lộ qua góc bo.
+    expect(banner.className).toContain('sticky')
+    expect(banner.className).toContain('top-0')
+    expect(banner.className).toContain('bg-bg')
+    expect(banner.className).toContain(LE_NGANG_TRANG)
     cleanup()
 
     giaMatchMedia(375)
@@ -100,6 +109,7 @@ describe('KhungApp — link bỏ qua và vùng chính', () => {
       thanhTren.compareDocumentPosition(screen.getByTestId('banner-mat-ket-noi')) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
+    expect(screen.getByTestId('banner-mat-ket-noi').className).toContain('top-[var(--topbar-h)]')
   })
 })
 
@@ -142,12 +152,26 @@ describe('Sidebar C34 (≥ 1280)', () => {
     moKhung('/', { duLieu: { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 12, soBanNhap: 9 } })
     const onTap = screen.getByRole('link', { name: 'Ôn tập, 12 thẻ đến hạn' })
     const noiDung = screen.getByRole('link', { name: 'Nội dung, 9 bản nháp' })
-    expect(onTap.querySelector('[aria-hidden="true"].bg-primary')?.textContent).toBe('12')
-    expect(noiDung.querySelector('[aria-hidden="true"].border')?.textContent).toBe('9')
+    expect(onTap.querySelector('[data-kieu="dac"] [aria-hidden="true"]')?.textContent).toBe('12')
+    expect(noiDung.querySelector('[data-kieu="vien"] [aria-hidden="true"]')?.textContent).toBe('9')
     cleanup()
     moKhung('/')
     expect(screen.getByRole('link', { name: 'Ôn tập' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Nội dung' })).toBeTruthy()
+  })
+
+  it('badge dùng C7: > 99 hiện "99+", tên truy cập giữ đủ số; hàng đang mở thì badge đảo màu', () => {
+    moKhung('/on-tap', { duLieu: { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 150, soBanNhap: 1234 } })
+    const onTap = screen.getByRole('link', { name: 'Ôn tập, 150 thẻ đến hạn' })
+    const noiDung = screen.getByRole('link', { name: 'Nội dung, 1.234 bản nháp' })
+    const badgeOnTap = onTap.querySelector('[data-kieu="dac"]')!
+    expect(badgeOnTap.querySelector('[aria-hidden="true"]')?.textContent).toBe('99+')
+    expect(noiDung.querySelector('[data-kieu="vien"] [aria-hidden="true"]')?.textContent).toBe(
+      '99+',
+    )
+    expect(onTap.getAttribute('aria-current')).toBe('page')
+    expect(badgeOnTap.className).toContain('bg-on-primary!')
+    expect(noiDung.querySelector('[data-kieu="vien"]')!.className).not.toContain('!')
   })
 
   it('khối "Đang học" trống → "Chưa có mục đang học", không có "Xem tất cả"', () => {
@@ -215,6 +239,17 @@ describe('Sidebar C34 (≥ 1280)', () => {
     expect(html.hasAttribute('data-theme')).toBe(false)
   })
 
+  it('nút Giao diện luôn có icon như C34 (cả "Theo hệ thống"); chữ chỉ xuống dòng sau "Giao diện:"', () => {
+    moKhung('/')
+    const nut = () => screen.getByRole('button', { name: /^Giao diện:/ })
+    for (let i = 0; i < 3; i++) {
+      expect(nut().querySelectorAll('svg')).toHaveLength(1)
+      const ten = nut().querySelector('.whitespace-nowrap')!
+      expect(nut().textContent).toBe(`Giao diện: ${ten.textContent}`)
+      fireEvent.click(nut())
+    }
+  })
+
   it('nút "?" gọi useMoBangPhimTat()()', () => {
     moKhung('/')
     const nut = screen.getByRole('button', { name: 'Bảng phím tắt' })
@@ -262,11 +297,21 @@ describe('Rail 72px (1024–1279)', () => {
     expect(
       screen.getByRole('link', { name: 'Ôn tập, 12 thẻ đến hạn' }).getAttribute('aria-current'),
     ).toBe('page')
-    expect(linkMenu().every((a) => a.textContent === '' || /^\d+$/.test(a.textContent ?? ''))).toBe(
-      true,
-    )
+    expect(
+      linkMenu().every((a) => a.textContent === '' || /^(\d+|99\+)$/.test(a.textContent ?? '')),
+    ).toBe(true)
     expect(screen.queryByRole('region', { name: 'Đang học' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Mở menu' })).toBeNull()
+  })
+
+  it('badge thu nhỏ của C7: > 99 hiện "99+", aria-label đủ số; ô đang mở đảo màu', () => {
+    moKhung('/on-tap', { duLieu: { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 150, soBanNhap: 100 } })
+    const onTap = screen.getByRole('link', { name: 'Ôn tập, 150 thẻ đến hạn' })
+    const badge = onTap.querySelector('[data-kieu="dac"]')!
+    expect(badge.textContent).toBe('99+')
+    expect(badge.className).toContain('bg-on-primary!')
+    const noiDung = screen.getByRole('link', { name: 'Nội dung, 100 bản nháp' })
+    expect(noiDung.querySelector('[data-kieu="vien"]')?.textContent).toBe('99+')
   })
 
   it('tìm, Giao diện, "?" và chỗ cắm đồng hồ (chấm khi chạy) ở rail', () => {
@@ -480,6 +525,55 @@ describe('Focus sau khi chuyển trang (§11)', () => {
     expect(document.activeElement).toBe(h1())
     expect(h1().textContent).toBe('Tổng quan')
   })
+
+  it('Lùi / Tiến giữa trang ngoài khung và khung (gắn mới, POP) vẫn focus H1; chỉ lần tải đầu là không', async () => {
+    const { router } = moKhung('/ngoai')
+    expect(document.activeElement).toBe(document.body)
+    fireEvent.click(screen.getByRole('link', { name: 'Về khung' }))
+    expect(h1().textContent).toBe('Tổng quan')
+
+    // Lùi về mục lịch sử đầu tiên (key 'default', POP): trang ngoài khung gắn mới.
+    await act(() => router.navigate(-1))
+    expect(router.state.location.key).toBe('default')
+    expect(h1().textContent).toBe('Trang ngoài khung')
+    expect(document.activeElement).toBe(h1())
+
+    // Tiến: khung gắn mới bằng POP.
+    await act(() => router.navigate(1))
+    expect(h1().textContent).toBe('Tổng quan')
+    expect(document.activeElement).toBe(h1())
+  })
+})
+
+describe('Trang 404 trong khung: không tô mục menu nào', () => {
+  const coCurrent = () => linkMenu().filter((a) => a.hasAttribute('aria-current'))
+
+  it('sidebar (1440): /hoc/<slug sai> không tô Lộ trình; về bài thật thì tô lại', async () => {
+    const { router } = moKhung('/hoc/khong-co-muc-nay')
+    expect(h1().textContent).toBe('Không tìm thấy trang này.')
+    expect(coCurrent()).toEqual([])
+    await act(() => router.navigate(`/hoc/${cacChuDe[0].slug}`))
+    expect(screen.getByRole('link', { name: 'Lộ trình' }).getAttribute('aria-current')).toBe('true')
+  })
+
+  it('rail (1100): không ô nào aria-current', () => {
+    giaMatchMedia(1100)
+    moKhung('/hoc/khong-co-muc-nay')
+    expect(coCurrent()).toEqual([])
+  })
+
+  it('375: top bar ghi tên app, drawer không tô mục nào', () => {
+    giaMatchMedia(375)
+    moKhung('/hoc/khong-co-muc-nay')
+    expect(within(screen.getByRole('banner')).getByText('Học PM A–Z').tagName).toBe('P')
+    fireEvent.click(screen.getByRole('button', { name: 'Mở menu' }))
+    const drawer = screen.getByRole('dialog', { name: 'Menu' })
+    expect(
+      within(drawer)
+        .getAllByRole('link')
+        .filter((a) => a.hasAttribute('aria-current')),
+    ).toEqual([])
+  })
 })
 
 describe('Chân trang ghi nguồn (§6.1)', () => {
@@ -493,6 +587,17 @@ describe('Chân trang ghi nguồn (§6.1)', () => {
     expect(
       within(chan).getByRole('link', { name: 'roadmap.sh (mở tab mới)' }).getAttribute('href'),
     ).toBe(cayJson.source)
+  })
+
+  it('lề ngang của chân trang bằng lề nội dung (KhungTrang) ở mọi bề rộng: 40 / 24 / 16', () => {
+    const leNgang = (el: Element) =>
+      el.className.split(/\s+/).filter((c) => /^(max-\w+:)?px-/.test(c))
+    moKhung('/')
+    const chan = leNgang(screen.getByRole('contentinfo'))
+    cleanup()
+    const { container } = render(<KhungTrang>Nội dung</KhungTrang>)
+    expect(chan).toEqual(leNgang(container.firstElementChild!))
+    expect(chan).toEqual(['px-10', 'max-lg:px-6', 'max-md:px-4'])
   })
 
   it('mã nguồn không gõ cứng tên roadmap, tác giả hay ngày', () => {

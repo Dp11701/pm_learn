@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { layCay } from '../../../shared/roadmap'
 import { dinhDangSo } from '../../../shared/dinh-dang'
+import { chuBadge, type KieuBadge } from '../../components/trang-thai/Badge'
 import type { DuLieuKhung } from './du-lieu-khung'
 
 /** Tên app (logo C34, tooltip rail, top bar khi không có tên trang). */
@@ -98,23 +99,23 @@ export function ariaCurrent(
 }
 
 export interface BadgeMenu {
-  so: string
-  /** Chữ cho trình đọc màn hình, vd. "12 thẻ đến hạn". */
+  /** Số đếm; badge C7 tự hiện "99+" khi > 99 (đề xuất 3.3). */
+  so: number
+  /** Chữ cho trình đọc màn hình, đủ số, vd. "12 thẻ đến hạn", "150 bản nháp". */
   moTa: string
   /** Đặc = việc cần làm hôm nay; viền = số đếm thông tin (quyết định 4 của designer). */
-  kieu: 'dac' | 'vien'
+  kieu: KieuBadge
 }
 
-/** Badge của Ôn tập (thẻ đến hạn) và Nội dung (bản nháp); 0 thì không hiện. */
+function taoBadge(so: number, donVi: string, kieu: KieuBadge): BadgeMenu | null {
+  if (chuBadge(so) === null) return null
+  return { so, moTa: `${dinhDangSo(so)} ${donVi}`, kieu }
+}
+
+/** Badge của Ôn tập (thẻ đến hạn) và Nội dung (bản nháp); 0 thì không hiện (đề xuất 3.3). */
 export function badgeCua(khoa: KhoaMenu, duLieu: DuLieuKhung): BadgeMenu | null {
-  if (khoa === 'on-tap' && duLieu.soTheDenHan > 0) {
-    const so = dinhDangSo(duLieu.soTheDenHan)
-    return { so, moTa: `${so} thẻ đến hạn`, kieu: 'dac' }
-  }
-  if (khoa === 'noi-dung' && duLieu.soBanNhap > 0) {
-    const so = dinhDangSo(duLieu.soBanNhap)
-    return { so, moTa: `${so} bản nháp`, kieu: 'vien' }
-  }
+  if (khoa === 'on-tap') return taoBadge(duLieu.soTheDenHan, 'thẻ đến hạn', 'dac')
+  if (khoa === 'noi-dung') return taoBadge(duLieu.soBanNhap, 'bản nháp', 'vien')
   return null
 }
 

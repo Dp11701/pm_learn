@@ -39,7 +39,7 @@ describe('Banner (C26)', () => {
     expect(screen.getByText('Không đọc được file').className).toContain('text-danger')
   })
 
-  it('dính đầu trang, icon riêng, mô tả là vùng live (banner mất kết nối F26)', () => {
+  it('dính đầu trang, icon riêng (banner mất kết nối F26); moTaLive không lồng vùng live trong alert', () => {
     render(
       <Banner
         loai="loi"
@@ -55,7 +55,19 @@ describe('Banner (C26)', () => {
     expect(b.className).toContain('sticky')
     expect(b.className).toContain('top-0')
     expect(b.querySelector('svg')?.getAttribute('class')).toContain('lucide-wifi-off')
-    expect(screen.getByText('Tự thử lại sau 5 giây…').getAttribute('aria-live')).toBe('polite')
+    // Banner alert đã là vùng live (đọc lại khi moTa đổi): không có aria-live con → không đọc hai lần.
+    expect(b.contains(screen.getByText('Tự thử lại sau 5 giây…'))).toBe(true)
+    expect(b.querySelector('[aria-live],[role="status"],[role="alert"]')).toBeNull()
+  })
+
+  it('moTaLive: live đúng một tầng ở mọi vai trò', () => {
+    const { rerender } = render(<Banner tieuDe="Đang đồng bộ" moTa="Còn 3 mục" moTaLive />)
+    expect(screen.getByRole('status').querySelector('[aria-live]')).toBeNull()
+    rerender(<Banner tieuDe="Đang đồng bộ" moTa="Còn 3 mục" moTaLive vaiTro="none" />)
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(screen.getByText('Còn 3 mục').getAttribute('aria-live')).toBe('polite')
+    rerender(<Banner tieuDe="Đang đồng bộ" moTa="Còn 3 mục" vaiTro="none" />)
+    expect(screen.getByText('Còn 3 mục').getAttribute('aria-live')).toBeNull()
   })
 
   it('nút đóng gọi khiDong; disabled (voHieu) không có role, chữ muted', () => {

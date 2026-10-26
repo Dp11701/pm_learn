@@ -2,7 +2,7 @@
 // So theo e.code (vị trí phím vật lý) nên Telex/VNI không biến "[" thành "ơ". Bỏ qua khi: đang gõ
 // (ô nhập, contenteditable, CodeMirror), IME đang ghép chữ, giữ Alt/Ctrl/⌘ (Shift chỉ cho "?"),
 // đang mở dialog modal (Radix tự xử lý Esc) hoặc focus ở menu/listbox/combobox (chúng tự xử lý phím).
-// Trang đăng ký phím của mình bằng usePhimTat; cùng một phím thì nơi đăng ký sau cùng (lớp trên cùng) nhận.
+// Trang đăng ký phím của mình bằng usePhimTat; cùng một phím thì lớp trên cùng nhận (xem usePhimTat).
 // F27 hiện đủ bảng §11 như frame, kể cả phím của màn hình phase sau (cột phase trong sổ ghi lúc có tác dụng).
 import {
   createContext,
@@ -186,16 +186,32 @@ export function maPhimTuSuKien(e: KeyboardEvent): MaPhimToanCuc | null {
 
 type XuLyPhim = (e: KeyboardEvent) => void
 interface DangKy {
+  /** Thứ tự lớp: số lớn hơn nằm trên */
+  lop: number
   xuLy: { current: XuLyPhim }
 }
 
 // Sổ đăng ký ở cấp module: usePhimTat chạy được ở mọi chỗ trong cây, không phụ thuộc thứ tự lồng provider.
 const soDangKy = new Map<MaPhimToanCuc, DangKy[]>()
 
+// Bộ đếm lớp: cấp số lúc component render lần đầu. React render cha trước con, anh trước em, nên con
+// (panel trong trang) và phần gắn sau (overlay mở sau) luôn có số lớn hơn.
+let demLop = 0
+function lopMoi(): number {
+  return ++demLop
+}
+
+/** Đăng ký của lớp trên cùng (lop lớn nhất) cho một phím. */
+function dangKyTrenCung(ma: MaPhimToanCuc): DangKy | undefined {
+  let tren: DangKy | undefined
+  for (const d of soDangKy.get(ma) ?? []) if (!tren || d.lop > tren.lop) tren = d
+  return tren
+}
+
 function nghePhim(e: KeyboardEvent) {
   const ma = maPhimTuSuKien(e)
   if (!ma) return
-  const dangKy = soDangKy.get(ma)?.at(-1)
+  const dangKy = dangKyTrenCung(ma)
   if (!dangKy) return
   e.preventDefault()
   dangKy.xuLy.current(e)
@@ -203,7 +219,10 @@ function nghePhim(e: KeyboardEvent) {
 
 /**
  * Đăng ký xử lý một phím tắt khi component đang hiện (vd. trang bài: "[" → mục trước).
- * enabled = false thì tạm bỏ đăng ký. Cùng phím: nơi đăng ký sau cùng nhận (overlay trên cùng).
+ * Cùng phím: lớp trên cùng nhận. Lớp cấp một lần lúc render đầu (con trên cha, gắn sau trên gắn
+ * trước), không phụ thuộc thứ tự chạy effect. enabled = false thì tạm nhường cho lớp dưới; bật lại
+ * vẫn giữ lớp cũ, nên không đè overlay đang mở phía trên. Overlay luôn gắn sẵn và chỉ bật/tắt bằng
+ * enabled thì phải render sau phần nó che (là con, hoặc đứng sau trong cây) để có lớp cao hơn.
  */
 export function usePhimTat(
   ma: MaPhimToanCuc,
@@ -211,19 +230,20 @@ export function usePhimTat(
   { enabled = true }: { enabled?: boolean } = {},
 ): void {
   const ref = useRef(xuLy)
+  const [lop] = useState(lopMoi)
   useEffect(() => {
     ref.current = xuLy
   })
   useEffect(() => {
     if (!enabled) return
-    const dangKy: DangKy = { xuLy: ref }
+    const dangKy: DangKy = { lop, xuLy: ref }
     soDangKy.set(ma, [...(soDangKy.get(ma) ?? []), dangKy])
     return () => {
       const conLai = (soDangKy.get(ma) ?? []).filter((d) => d !== dangKy)
       if (conLai.length > 0) soDangKy.set(ma, conLai)
       else soDangKy.delete(ma)
     }
-  }, [ma, enabled])
+  }, [ma, enabled, lop])
 }
 
 // Đếm số provider đang gắn: lỡ gắn hai lần thì gỡ một cái không làm mất bộ nghe chung.

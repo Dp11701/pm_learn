@@ -3,6 +3,7 @@
 import { act, render } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { vi } from 'vitest'
+import { datLaiTaiDau } from '../../../src/app/khung/focus'
 import { cacRoute } from '../../../src/app/router'
 
 export function datMoiTruong() {
@@ -24,8 +25,12 @@ export function datMoiTruong() {
   vi.stubGlobal('scrollTo', () => {})
 }
 
-/** Mở router bộ nhớ ở đường dẫn; chờ lượt hỏi /api/meta đầu tiên xong để không có cập nhật trễ. */
+/**
+ * Mở router bộ nhớ ở đường dẫn như vừa tải tài liệu; chờ lượt hỏi /api/meta đầu tiên xong để không có cập
+ * nhật trễ.
+ */
 export async function moTrang(duongDan: string) {
+  datLaiTaiDau()
   const router = createMemoryRouter(cacRoute, { initialEntries: [duongDan] })
   const ketQua = await act(async () => render(<RouterProvider router={router} />))
   return { router, ...ketQua }

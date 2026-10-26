@@ -4,6 +4,7 @@ import TenMuc from '../components/TenMuc'
 import { timNut } from './chung'
 import KhongTimThay from './KhongTimThay'
 import TrangSapCo from './TrangSapCo'
+import { MO_TA_SAP_CO } from '../copy/cho-duyet'
 
 export default function TrangPhan() {
   const phan = timNut(useParams().slug, 'part')
@@ -17,7 +18,7 @@ export default function TrangPhan() {
         </>
       }
       phase="10"
-      moTa="Tiến độ và độ phủ nội dung của phần, các nhóm và mục học, phần tổng quan do bạn soạn."
+      moTa={MO_TA_SAP_CO.phan}
     />
   )
 }

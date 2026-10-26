@@ -2,8 +2,10 @@
 // - Gốc: GocApp (provider) + ErrorBoundary toàn app (không cần khung).
 // - Khung app: KhungApp; ErrorBoundary của route con nằm ở route không đường dẫn bên trong, nên lỗi một
 //   trang vẫn hiện trong khung (sidebar còn dùng được). KhungApp hỏng → trang lỗi không khung.
-// - /hoc/:slug/soan nằm ngoài khung (D27, F20); slug sai thì TrangSoan dựng khung app và route con index
-//   (KhongTimThay) hiện trong <Outlet/> của khung, nên 404 vẫn ở trong khung (D24).
+// - Trình soạn /hoc/:slug/soan, /linh-vuc/:slug/soan, /phan/:slug/soan (đề xuất 4.1 "Route thêm") nằm ngoài
+//   khung (D27, F20); slug sai thì trang soạn dựng khung app và route con index (KhongTimThay) hiện trong
+//   <Outlet/> của khung, nên 404 vẫn ở trong khung (D24).
+// - /hoc/:slug/ban-cua-toi/:id (Bản của tôi, phase 7c) ở trong khung.
 // - /_dev/* chỉ có ở bản dev; bản build loại bỏ nhánh này (scripts/kiem-bundle.ts).
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import DangTai from '../pages/DangTai'
@@ -14,7 +16,8 @@ import TrangLinhVuc from '../pages/TrangLinhVuc'
 import TrangMucHoc from '../pages/TrangMucHoc'
 import TrangPhan from '../pages/TrangPhan'
 import TrangSapCo from '../pages/TrangSapCo'
-import TrangSoan from '../pages/TrangSoan'
+import TrangBanCuaToi from '../pages/TrangBanCuaToi'
+import TrangSoan, { TrangSoanTongQuan } from '../pages/TrangSoan'
 import { CAC_TRANG_TINH } from '../pages/cac-trang'
 import GocApp from './GocApp'
 import KhungApp from './khung/KhungApp'
@@ -52,6 +55,17 @@ const trangDev: RouteObject[] = import.meta.env.DEV
     ]
   : []
 
+/** Trang soạn ngoài khung; route con index là 404 hiện trong khung khi slug sai. */
+const trangSoan: RouteObject[] = [
+  { path: 'hoc/:slug/soan', element: <TrangSoan /> },
+  { path: 'linh-vuc/:slug/soan', element: <TrangSoanTongQuan loai="area" /> },
+  { path: 'phan/:slug/soan', element: <TrangSoanTongQuan loai="part" /> },
+].map((route) => ({
+  ...route,
+  ErrorBoundary: LoiUngDung,
+  children: [{ index: true, Component: KhongTimThay }],
+}))
+
 export const cacRoute: RouteObject[] = [
   {
     Component: GocApp,
@@ -67,6 +81,7 @@ export const cacRoute: RouteObject[] = [
             children: [
               ...trangTinh,
               { path: 'hoc/:slug', Component: TrangMucHoc },
+              { path: 'hoc/:slug/ban-cua-toi/:id', Component: TrangBanCuaToi },
               { path: 'linh-vuc/:slug', Component: TrangLinhVuc },
               { path: 'phan/:slug', Component: TrangPhan },
               { path: '*', Component: KhongTimThay },
@@ -74,12 +89,7 @@ export const cacRoute: RouteObject[] = [
           },
         ],
       },
-      {
-        path: 'hoc/:slug/soan',
-        Component: TrangSoan,
-        ErrorBoundary: LoiUngDung,
-        children: [{ index: true, Component: KhongTimThay }],
-      },
+      ...trangSoan,
       ...trangDev,
     ],
   },

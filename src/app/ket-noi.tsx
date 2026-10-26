@@ -1,6 +1,9 @@
 // Kết nối với máy chủ cục bộ (đề xuất 1.10, §5 "Không trắng màn hình", F26): hỏi GET /api/meta mỗi 5 giây,
 // đồng bộ đồng hồ (shared/clock) theo giờ server nên qua nửa đêm tự cập nhật; lỗi → banner mất kết nối
 // dính đầu trang, vẫn tự thử lại mỗi 5 giây, có nút "Thử ngay".
+// - Tab ẩn thì nghỉ hỏi; hiện lại thì hỏi ngay. Mỗi lúc chỉ một lượt hỏi: hỏi khi lượt trước chưa xong
+//   (hiện lại tab, "Thử ngay") thì chờ chung lượt đó.
+// - "Nội dung đang gõ được giữ nguyên." dựa vào src/app/nhap-tam.ts (ô nhập ghi lên máy chủ từ phase 2a).
 import {
   createContext,
   useCallback,
@@ -17,6 +20,8 @@ import { datLech, layLech, now } from '../../shared/clock'
 import Banner from '../components/Banner'
 import Nut from '../components/Nut'
 import { useToast } from '../components/Toast'
+import { focusDauTrang } from './khung/focus'
+import { DA_KET_NOI_LAI } from '../copy/cho-duyet'
 
 export type TrangThaiKetNoi = 'dang-ket-noi' | 'on-dinh' | 'mat-ket-noi'
 
@@ -77,6 +82,18 @@ const MAC_DINH: GiaTriKetNoi = {
 
 const NguCanhKetNoi = createContext<GiaTriKetNoi>(MAC_DINH)
 
+/** Vùng banner mất kết nối (thuộc tính data-banner-ket-noi), để biết focus có đang nằm trong banner. */
+const CHON_BANNER = '[data-banner-ket-noi]'
+
+/**
+ * Có lại kết nối lúc focus đang trong banner (vd. vừa bấm "Thử ngay"): đưa focus về H1 / <main> trước khi
+ * banner gỡ khỏi DOM, để focus không rơi về <body>.
+ */
+function roiFocusKhoiBanner(): void {
+  const dangFocus = document.activeElement
+  if (dangFocus instanceof Element && dangFocus.closest(CHON_BANNER)) focusDauTrang()
+}
+
 export function KetNoiProvider({ children }: { children: ReactNode }) {
   const [trangThai, datTrangThai] = useState<TrangThaiKetNoi>('dang-ket-noi')
   const [meta, datMeta] = useState<Meta | null>(null)
@@ -86,42 +103,61 @@ export function KetNoiProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let daHuy = false
     let hen: ReturnType<typeof setTimeout> | undefined
-    let hienTai: AbortController | undefined
+    let dangHoi: Promise<void> | null = null
+    let dkHienTai: AbortController | undefined
 
-    async function hoi() {
+    function henLanSau() {
       clearTimeout(hen)
-      hienTai?.abort()
+      // Tab ẩn: không hẹn; khiDoiHienThi hỏi ngay khi tab hiện lại.
+      if (daHuy || document.hidden) return
+      hen = setTimeout(() => void hoi(), CHU_KY_HOI)
+    }
+
+    async function motLuot() {
       const dk = new AbortController()
-      hienTai = dk
+      dkHienTai = dk
       const hetHan = setTimeout(() => dk.abort(), HET_HAN_HOI)
       try {
         const m = await hoiMeta(dk.signal)
-        if (daHuy || dk !== hienTai) return
+        if (daHuy) return
         dongBoDongHo(m)
         datMeta(m)
+        roiFocusKhoiBanner()
         datTrangThai('on-dinh')
       } catch {
-        // Lần hỏi bị thay bằng lần mới ("Thử ngay") thì bỏ qua; quá hạn vẫn tính là mất kết nối.
-        if (daHuy || dk !== hienTai) return
+        // Quá hạn (abort) cũng tính là mất kết nối; tháo provider thì thôi.
+        if (daHuy) return
         datTrangThai('mat-ket-noi')
       } finally {
         clearTimeout(hetHan)
-        if (!daHuy && dk === hienTai) hen = setTimeout(hoi, CHU_KY_HOI)
       }
     }
 
-    function khiHienLai() {
-      if (document.visibilityState === 'visible') void hoi()
+    /** Hỏi ngay; đang có lượt chưa xong thì trả lượt đó (không hỏi chồng). */
+    function hoi(): Promise<void> {
+      if (!dangHoi) {
+        clearTimeout(hen)
+        dangHoi = motLuot().finally(() => {
+          dangHoi = null
+          henLanSau()
+        })
+      }
+      return dangHoi
+    }
+
+    function khiDoiHienThi() {
+      if (document.hidden) clearTimeout(hen)
+      else void hoi()
     }
 
     hoiRef.current = hoi
     void hoi()
-    document.addEventListener('visibilitychange', khiHienLai)
+    document.addEventListener('visibilitychange', khiDoiHienThi)
     return () => {
       daHuy = true
       clearTimeout(hen)
-      hienTai?.abort()
-      document.removeEventListener('visibilitychange', khiHienLai)
+      dkHienTai?.abort()
+      document.removeEventListener('visibilitychange', khiDoiHienThi)
     }
   }, [])
 
@@ -147,27 +183,37 @@ export function useKetNoi(): GiaTriKetNoi {
 }
 
 /**
- * Banner dính đầu trang khi mất kết nối (F26, C26 biến thể lỗi D30): role=alert, câu phụ aria-live.
- * Khung app đặt ở đầu cột nội dung; trang ngoài khung (trình soạn) tự đặt.
+ * Banner mất kết nối (F26, C26 biến thể lỗi D30): role=alert (không lồng thêm vùng aria-live). Chỉ dựng khi mất kết nối.
+ * - `className`: lớp của vùng bọc (khung app đặt vùng dính đầu cột nội dung, có nền và lề trang để banner
+ *   là thẻ bo góc như F26, nội dung cuộn không lộ qua góc bo);
+ * - `lopBanner`: lớp của chính banner (vd. canh giữa, rộng tối đa trong trang tập trung).
  */
-export function BannerMatKetNoi({ className = '' }: { className?: string }) {
+export function BannerMatKetNoi({
+  className = '',
+  lopBanner = '',
+}: {
+  className?: string
+  lopBanner?: string
+}) {
   const { trangThai, thuNgay, dangThu } = useKetNoi()
   if (trangThai !== 'mat-ket-noi') return null
   return (
-    <Banner
-      loai="loi"
-      dinh
-      icon={WifiOff}
-      tieuDe="Mất kết nối với máy chủ cục bộ."
-      moTa="Tự thử lại sau 5 giây… Nội dung đang gõ được giữ nguyên."
-      moTaLive
-      hanhDong={
-        <Nut bien="phu" dangXuLy={dangThu} onClick={() => void thuNgay()}>
-          Thử ngay
-        </Nut>
-      }
-      className={className}
-    />
+    <div data-banner-ket-noi="" className={className}>
+      <Banner
+        loai="loi"
+        dinh
+        icon={WifiOff}
+        tieuDe="Mất kết nối với máy chủ cục bộ."
+        moTa="Tự thử lại sau 5 giây… Nội dung đang gõ được giữ nguyên."
+        moTaLive
+        hanhDong={
+          <Nut bien="phu" dangXuLy={dangThu} onClick={() => void thuNgay()}>
+            Thử ngay
+          </Nut>
+        }
+        className={lopBanner}
+      />
+    </div>
   )
 }
 
@@ -178,7 +224,7 @@ export function ThongBaoKetNoiLai() {
   const truoc = useRef(trangThai)
   useEffect(() => {
     if (truoc.current === 'mat-ket-noi' && trangThai === 'on-dinh') {
-      toast({ noiDung: 'Đã kết nối lại với máy chủ cục bộ.' })
+      toast({ noiDung: DA_KET_NOI_LAI })
     }
     truoc.current = trangThai
   }, [trangThai, toast])

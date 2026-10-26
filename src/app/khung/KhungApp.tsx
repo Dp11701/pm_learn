@@ -1,38 +1,23 @@
 // Khung app (§6.1, §5.2, §11; đề xuất 4.4): link "Chuyển tới nội dung chính", điều hướng theo bề rộng
 // (≥ 1280 sidebar 264 · 1024–1279 rail 72 · < 1024 top bar mobile + drawer 312), banner mất kết nối dính
-// đầu cột nội dung, <main id="noi-dung-chinh"> chứa trang, chân trang ghi nguồn. Sau mỗi lần chuyển
-// trang phía client, focus về H1 (#tieu-de-trang) hoặc <main>.
+// đầu cột nội dung (thẻ bo góc trong lề trang như F26, vùng dính có nền nên nội dung cuộn không lộ qua góc
+// bo), <main id="noi-dung-chinh"> chứa trang, chân trang ghi nguồn. Sau mỗi lần chuyển trang phía client,
+// focus về H1 (#tieu-de-trang) hoặc <main>.
 // Provider dùng chung (toast, kết nối, tìm kiếm, phím tắt) và ScrollRestoration nằm ở GocApp — khung
 // không gắn lại (gắn hai lần sẽ nghe phím hai lần).
-import { useCallback, useRef, useState, type MouseEvent } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Outlet } from 'react-router'
 import { BannerMatKetNoi } from '../ket-noi'
 import { useBeRong } from './be-rong'
 import ChanTrang from './ChanTrang'
 import Drawer, { type LyDoDongDrawer } from './Drawer'
 import { ID_NOI_DUNG_CHINH, useFocusSauDieuHuong } from './focus'
+import { LE_NGANG_TRANG } from './le-trang'
+import LinkBoQua from './LinkBoQua'
 import Rail from './Rail'
 import Sidebar from './Sidebar'
 import ThanhTrenMobile from './ThanhTrenMobile'
 import { ThanhTrenProvider, type CauHinhThanhTren } from './thanh-tren'
-
-/** Link bỏ qua: phần tử focus được đầu tiên; ẩn tới khi được focus (F11). */
-function LinkBoQua() {
-  function khiBam(e: MouseEvent<HTMLAnchorElement>) {
-    // Tự focus <main> thay vì đổi #hash (không tạo lượt điều hướng của router).
-    e.preventDefault()
-    document.getElementById(ID_NOI_DUNG_CHINH)?.focus()
-  }
-  return (
-    <a
-      href={`#${ID_NOI_DUNG_CHINH}`}
-      onClick={khiBam}
-      className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:flex focus:h-11 focus:items-center focus:rounded-[var(--radius-sm)] focus:border focus:border-border-input focus:bg-surface focus:px-4 focus:font-medium focus:text-text focus:underline focus:shadow-[var(--shadow-2)]"
-    >
-      Chuyển tới nội dung chính
-    </a>
-  )
-}
 
 export default function KhungApp() {
   const beRong = useBeRong()
@@ -61,7 +46,7 @@ export default function KhungApp() {
   const hep = beRong === 'hep'
 
   return (
-    <ThanhTrenProvider dat={datCauHinhThanhTren}>
+    <ThanhTrenProvider cauHinh={cauHinhThanhTren} dat={datCauHinhThanhTren}>
       <LinkBoQua />
       <div className="flex min-h-dvh bg-bg text-text">
         {beRong === 'day-du' && (
@@ -85,10 +70,12 @@ export default function KhungApp() {
               refNutMenu={nutMenuRef}
             />
           )}
-          {/* Bọc dính để banner nằm ngay dưới top bar mobile (banner tự dính chỉ có tác dụng trong bọc). */}
-          <div className={`sticky z-30 ${hep ? 'top-[var(--topbar-h)]' : 'top-0'}`}>
-            <BannerMatKetNoi />
-          </div>
+          {/* Vùng bọc dính ngay dưới top bar mobile; chỉ có khi mất kết nối. */}
+          <BannerMatKetNoi
+            className={`sticky z-30 bg-bg pt-4 pb-2 ${LE_NGANG_TRANG} ${
+              hep ? 'top-[var(--topbar-h)]' : 'top-0'
+            }`}
+          />
           <main
             id={ID_NOI_DUNG_CHINH}
             tabIndex={-1}

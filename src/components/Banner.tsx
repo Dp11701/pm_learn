@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import { CircleAlert, Info, X, type LucideIcon } from 'lucide-react'
 import Nut from './Nut'
+import { DONG_THONG_BAO } from '../copy/cho-duyet'
 
 export type LoaiBanner = 'thong-tin' | 'loi'
 
@@ -14,7 +15,9 @@ export interface PropsBanner {
   tieuDe: ReactNode
   /** Dòng phụ 13/20 muted. */
   moTa?: ReactNode
-  /** moTa là vùng aria-live polite (vd. "Tự thử lại sau 5 giây…" đổi theo thời gian). */
+  /** moTa đổi theo thời gian (vd. "Tự thử lại sau 5 giây…") và cần được đọc lại. Banner có vai trò
+   *  status / alert đã là vùng live nên moTa không gắn thêm aria-live (lồng vùng live → đọc hai lần);
+   *  chỉ khi vaiTro="none" thì moTa mới là vùng aria-live polite. */
   moTaLive?: boolean
   /** Nút hành động (C35, thường là `bien="phu"`). */
   hanhDong?: ReactNode
@@ -37,7 +40,7 @@ export default function Banner({
   moTaLive,
   hanhDong,
   khiDong,
-  nhanDong = 'Đóng thông báo',
+  nhanDong = DONG_THONG_BAO,
   icon,
   dinh,
   voHieu,
@@ -47,6 +50,8 @@ export default function Banner({
   const loi = loai === 'loi' && !voHieu
   const Icon = icon ?? (loai === 'loi' ? CircleAlert : Info)
   const role = vaiTro ?? (voHieu ? 'none' : loi ? 'alert' : 'status')
+  // Live chỉ ở một tầng: cả banner (status / alert) hoặc riêng moTa.
+  const moTaLaVungLive = moTaLive && role === 'none'
   const mau = voHieu
     ? 'border-border text-muted'
     : loi
@@ -69,7 +74,7 @@ export default function Banner({
         <strong className={`font-semibold ${loi ? 'text-danger' : ''}`}>{tieuDe}</strong>
         {moTa != null && (
           <span
-            aria-live={moTaLive ? 'polite' : undefined}
+            aria-live={moTaLaVungLive ? 'polite' : undefined}
             className={`text-[length:var(--fs-meta)] leading-[var(--lh-meta)] ${voHieu ? '' : 'text-muted'}`}
           >
             {moTa}

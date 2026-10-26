@@ -1,6 +1,7 @@
 // Phần dùng chung của các trang: lề trang, cỡ H1, tra slug trên cây.
 import type { ReactNode } from 'react'
 import { layCay, type MucHoc, type Nut } from '../../shared/roadmap'
+import { LE_NGANG_TRANG } from '../app/khung/le-trang'
 
 /** H1 28/40, mobile 24/34, đậm 700 như mọi frame (D17). */
 export const LOP_H1 =
@@ -19,7 +20,7 @@ export function KhungTrang({
 }) {
   return (
     <div
-      className={`flex min-w-0 flex-col gap-6 px-10 pt-8 pb-12 max-lg:px-6 max-md:gap-4 max-md:px-4 max-md:pt-4 max-md:pb-6 ${className}`}
+      className={`flex min-w-0 flex-col gap-6 pt-8 pb-12 max-md:gap-4 max-md:pt-4 max-md:pb-6 ${LE_NGANG_TRANG} ${className}`}
     >
       {children}
     </div>

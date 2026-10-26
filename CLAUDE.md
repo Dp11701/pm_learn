@@ -90,5 +90,7 @@ Bản dev có `/_dev/thanh-phan` (F01, F02, F02b). Trên Mac của người dùn
 ## Trạng thái
 
 - Phase 0 — nền móng: xong (`aeb047d`, báo cáo `docs/bao-cao/phase-0.md`).
-- Phase 1 — component + khung app: **tạm dừng giữa chừng** trên nhánh `wip/phase-1`. Đọc
-  `docs/bao-cao/phase-1-dang-do.md` để biết phần nào xong, phần nào còn lại; code ở đó chưa review.
+- Phase 1 — component + khung app: xong 26/10/2026, báo cáo `docs/bao-cao/phase-1.md`. **Đang chờ người dùng
+  duyệt** mục "Chờ bạn duyệt" của báo cáo; chưa bắt đầu phase 2a khi chưa được duyệt.
+- Câu chữ UI tự đặt (không có trong đặc tả / frame / đề xuất) nằm trong `src/copy/cho-duyet.ts`.
+- Ô nhập ghi về server (từ phase 2a) dùng `src/app/nhap-tam.ts` để giữ chữ đang gõ khi mất kết nối.

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Bộ xử lý phím toàn cục (§11, đề xuất 5): so theo e.code, bỏ qua khi đang gõ / IME ghép chữ /
 // giữ Alt-Ctrl-⌘, Shift chỉ cho "?"; usePhimTat đăng ký theo lớp; PhimTatProvider mở F27.
-import { useState, type ReactNode } from 'react'
+import { StrictMode, useState, type ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -261,6 +261,86 @@ describe('usePhimTat', () => {
     rerender(<Thu coTren={false} />)
     go({ key: '1', code: 'Digit1' })
     expect(duoi).toHaveBeenCalledTimes(1)
+  })
+
+  // React chạy effect của con trước cha: trước đây trang (cha) gắn cùng lúc với panel (con) lại đè panel.
+  it('cha và con gắn cùng lúc: con (lớp trên) nhận, dù effect của con chạy trước', () => {
+    const trang = vi.fn<XuLy>()
+    const panel = vi.fn<XuLy>()
+    function Trang({ children }: { children?: ReactNode }) {
+      usePhimTat('BracketLeft', trang)
+      return <>{children}</>
+    }
+    const { rerender } = render(
+      <PhimTatProvider>
+        <Trang>
+          <DangKy ma="BracketLeft" xuLy={panel} />
+        </Trang>
+      </PhimTatProvider>,
+    )
+    go({ key: '[', code: 'BracketLeft' })
+    expect(panel).toHaveBeenCalledTimes(1)
+    expect(trang).not.toHaveBeenCalled()
+    // Đóng panel: trang nhận lại
+    rerender(
+      <PhimTatProvider>
+        <Trang />
+      </PhimTatProvider>,
+    )
+    go({ key: '[', code: 'BracketLeft' })
+    expect(trang).toHaveBeenCalledTimes(1)
+    expect(panel).toHaveBeenCalledTimes(1)
+  })
+
+  it('tắt rồi bật lại giữ lớp cũ: lớp dưới bật lại không đè lớp trên đang mở', () => {
+    const trang = vi.fn<XuLy>()
+    const panel = vi.fn<XuLy>()
+    function Thu({ trangBat, panelBat }: { trangBat: boolean; panelBat: boolean }) {
+      return (
+        <PhimTatProvider>
+          <DangKy ma="Digit2" xuLy={trang} enabled={trangBat} />
+          <DangKy ma="Digit2" xuLy={panel} enabled={panelBat} />
+        </PhimTatProvider>
+      )
+    }
+    const { rerender } = render(<Thu trangBat panelBat />)
+    go({ key: '2', code: 'Digit2' })
+    expect(panel).toHaveBeenCalledTimes(1)
+    // Lớp dưới tắt rồi bật lại (vd. trang đổi trạng thái): trước đây bị dời lên cuối sổ và đè lớp trên
+    rerender(<Thu trangBat={false} panelBat />)
+    rerender(<Thu trangBat panelBat />)
+    go({ key: '2', code: 'Digit2' })
+    expect(panel).toHaveBeenCalledTimes(2)
+    expect(trang).not.toHaveBeenCalled()
+    // Lớp trên tắt: nhường cho lớp dưới; bật lại thì lấy lại phím
+    rerender(<Thu trangBat panelBat={false} />)
+    go({ key: '2', code: 'Digit2' })
+    expect(trang).toHaveBeenCalledTimes(1)
+    rerender(<Thu trangBat panelBat />)
+    go({ key: '2', code: 'Digit2' })
+    expect(panel).toHaveBeenCalledTimes(3)
+    expect(trang).toHaveBeenCalledTimes(1)
+  })
+
+  it('StrictMode (effect chạy hai lần) không đổi thứ tự lớp', () => {
+    const trang = vi.fn<XuLy>()
+    const panel = vi.fn<XuLy>()
+    function Trang({ children }: { children?: ReactNode }) {
+      usePhimTat('KeyT', trang)
+      return <>{children}</>
+    }
+    render(
+      <StrictMode>
+        <PhimTatProvider>
+          <Trang>
+            <DangKy ma="KeyT" xuLy={panel} />
+          </Trang>
+        </PhimTatProvider>
+      </StrictMode>,
+    )
+    go({ key: 't', code: 'KeyT' })
+    expect(panel).toHaveBeenCalledTimes(1)
+    expect(trang).not.toHaveBeenCalled()
   })
 
   it('luôn gọi hàm xử lý mới nhất (không cần useCallback)', () => {

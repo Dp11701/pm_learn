@@ -1,16 +1,19 @@
 // Rail 72px cho 1024–1279 (§5.2, đề xuất 4.4; không có frame, dựng từ C34): logo, tìm, menu chỉ icon
 // (tooltip + aria-label, badge thu nhỏ), chân ghim đáy: đồng hồ (phase 3, có chấm khi chạy), Giao diện, "?".
 import type { ReactElement } from 'react'
-import { Link, useLocation } from 'react-router'
+import { Link } from 'react-router'
 import { Tooltip } from 'radix-ui'
 import { Search } from 'lucide-react'
+import Badge from '../../components/trang-thai/Badge'
 import { useTimKiem } from '../../components/tim-kiem/TimKiem'
 import { useMoBangPhimTat } from '../phim-tat'
 import { useGiaoDien } from '../giao-dien'
 import { useDuLieuKhung } from './du-lieu-khung'
-import { MENU, TEN_APP, ariaCurrent, badgeCua, menuDangMo, type BadgeMenu } from './menu'
+import { MENU, TEN_APP, ariaCurrent, badgeCua, type BadgeMenu } from './menu'
+import { useMenuDangMo } from './thanh-tren'
 import NutGiaoDien, { nhanGiaoDien } from './NutGiaoDien'
 import Logo from './Logo'
+import { GOI_Y_RAIL_PHIM_TAT, GOI_Y_RAIL_TIM } from '../../copy/cho-duyet'
 
 /** Tooltip bên phải ô rail: nền mực, 13/20 (cùng kiểu nút chính). */
 export function GoiYRail({ nhan, children }: { nhan: string; children: ReactElement }) {
@@ -30,32 +33,32 @@ export function GoiYRail({ nhan, children }: { nhan: string; children: ReactElem
   )
 }
 
+/** Badge C7 bản nhỏ ở góc ô (đề xuất 4.4). Nền surface để không lộ icon phía sau; ô đang mở thì đảo màu. */
 function BadgeRail({ badge, dangMo }: { badge: BadgeMenu; dangMo: boolean }) {
   const mau =
     badge.kieu === 'dac'
       ? dangMo
-        ? 'bg-on-primary text-primary'
-        : 'bg-primary text-on-primary'
-      : `border bg-surface text-text ${dangMo ? 'border-on-primary' : 'border-border-input'}`
+        ? 'bg-on-primary! text-primary!'
+        : ''
+      : `bg-surface ${dangMo ? 'border-on-primary!' : ''}`
   return (
-    <span
-      aria-hidden="true"
-      className={`absolute -top-1 -right-1 box-border flex h-[var(--badge-nho-h)] min-w-[var(--badge-nho-h)] items-center justify-center rounded-[calc(var(--badge-nho-h)/2)] px-1 text-[length:var(--fs-chip)] leading-none font-semibold tabular-nums ${mau}`}
-    >
-      {badge.so}
-    </span>
+    <Badge
+      so={badge.so}
+      kieu={badge.kieu}
+      nho
+      className={`pointer-events-none absolute -top-1 -right-1 ${mau}`}
+    />
   )
 }
 
 const O = 'h-[var(--rail-o-h)] w-[var(--rail-o-w)] rounded-[var(--radius-sm)]'
 
 export default function Rail() {
-  const { pathname } = useLocation()
   const duLieu = useDuLieuKhung()
   const { mo: moTimKiem } = useTimKiem()
   const moBangPhimTat = useMoBangPhimTat()
   const [giaoDien] = useGiaoDien()
-  const dangMo = menuDangMo(pathname)
+  const dangMo = useMenuDangMo()
 
   return (
     <Tooltip.Provider delayDuration={300}>
@@ -74,7 +77,7 @@ export default function Rail() {
           </Link>
         </GoiYRail>
 
-        <GoiYRail nhan="Tìm mục (/)">
+        <GoiYRail nhan={GOI_Y_RAIL_TIM}>
           <button
             type="button"
             aria-label="Tìm mục"
@@ -122,7 +125,7 @@ export default function Rail() {
           <GoiYRail nhan={nhanGiaoDien(giaoDien)}>
             <NutGiaoDien chiIcon className={`shrink-0 ${O}`} />
           </GoiYRail>
-          <GoiYRail nhan="Bảng phím tắt (?)">
+          <GoiYRail nhan={GOI_Y_RAIL_PHIM_TAT}>
             <button
               type="button"
               aria-label="Bảng phím tắt"

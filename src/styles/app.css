@@ -1,10 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
 @import './tokens-them.css';
-@import './tokens-trang-thai.css';
-@import './tokens-khung.css';
-@import './tokens-he-thong.css';
-@import './tokens-phim-tat.css';
 
 /* Ánh xạ token sang tiện ích Tailwind (bg-surface, text-muted, border-input…). */
 @theme inline {
@@ -22,29 +18,36 @@
   --color-on-danger: var(--on-danger);
 }
 
-:root {
-  color-scheme: light;
-}
-:root[data-theme='dark'] {
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+/* Kiểu nền của phần tử nằm trong @layer base (sau preflight của Tailwind) để mọi tiện ích (@layer
+   utilities) ghi đè được: outline-none ở H1 / <main> / khung dialog (chỉ nhận focus bằng code),
+   focus-visible:outline-on-primary của nút trong toast nền mực. Luật ngoài layer luôn thắng mọi layer,
+   nên không đặt kiểu phần tử ở ngoài layer. */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  :root[data-theme='dark'] {
     color-scheme: dark;
   }
-}
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      color-scheme: dark;
+    }
+  }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: var(--fs-ui);
-  line-height: var(--lh-ui);
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-ui);
+    line-height: var(--lh-ui);
+    -webkit-font-smoothing: antialiased;
+  }
 
-:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
+  /* Vòng focus mặc định (§11): 2px màu mực, cách 2px. */
+  :focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
 }

@@ -1,10 +1,13 @@
 // Môi trường test khung app: matchMedia theo bề rộng giả (đổi được giữa chừng), router bộ nhớ với các
-// trang giả có H1 (TieuDeTrang), bọc DuLieuKhungProvider khi cần dữ liệu học.
+// trang giả có H1 (TieuDeTrang), bọc DuLieuKhungProvider khi cần dữ liệu học. Gốc router giả làm việc của
+// GocApp với focus: khép "lần tải đầu" sau lần gắn đầu; mỗi moKhung coi như tải lại tài liệu.
 import { act, render } from '@testing-library/react'
 import { Link, Outlet, RouterProvider, createMemoryRouter, type RouteObject } from 'react-router'
 import { vi } from 'vitest'
 import TieuDeTrang from '../../../src/components/TieuDeTrang'
 import KhungApp from '../../../src/app/khung/KhungApp'
+import { datLaiTaiDau, useFocusSauDieuHuong, useKetThucTaiDau } from '../../../src/app/khung/focus'
+import TrangMucHoc from '../../../src/pages/TrangMucHoc'
 import { DuLieuKhungProvider, type DuLieuKhung } from '../../../src/app/khung/du-lieu-khung'
 import { useThanhTrenMobile, type CapCha } from '../../../src/app/khung/thanh-tren'
 
@@ -66,26 +69,53 @@ export function TrangCoCapCha({ capCha }: { capCha: CapCha }) {
   return <Trang ten="Trang có cấp cha" />
 }
 
+/** Trang tập trung ngoài khung (như trình soạn): tự đưa focus về H1 khi vào bằng điều hướng. */
+function TrangNgoaiKhung() {
+  useFocusSauDieuHuong()
+  return (
+    <main id="noi-dung-chinh" tabIndex={-1}>
+      <TieuDeTrang tenTrang="Trang ngoài khung">Trang ngoài khung</TieuDeTrang>
+      <Link to="/">Về khung</Link>
+    </main>
+  )
+}
+
+function GocThu() {
+  useKetThucTaiDau()
+  return <Outlet />
+}
+
 export function cacRouteThu(capCha?: CapCha): RouteObject[] {
   return [
-    { path: '/ngoai', element: <Link to="/">Về khung</Link> },
     {
-      Component: KhungApp,
+      Component: GocThu,
       children: [
-        { index: true, element: <Trang ten="Tổng quan" />, handle: { tenTrang: 'Tổng quan' } },
-        { path: 'lo-trinh', element: <Trang ten="Lộ trình" />, handle: { tenTrang: 'Lộ trình' } },
-        { path: 'on-tap', element: <Trang ten="Ôn tập" />, handle: { tenTrang: 'Ôn tập' } },
+        { path: '/ngoai', Component: TrangNgoaiKhung },
         {
-          path: 'on-tap/phien',
-          element: <Trang ten="Phiên ôn" />,
-          handle: { tenTrang: 'Phiên ôn' },
+          Component: KhungApp,
+          children: [
+            { index: true, element: <Trang ten="Tổng quan" />, handle: { tenTrang: 'Tổng quan' } },
+            {
+              path: 'lo-trinh',
+              element: <Trang ten="Lộ trình" />,
+              handle: { tenTrang: 'Lộ trình' },
+            },
+            { path: 'on-tap', element: <Trang ten="Ôn tập" />, handle: { tenTrang: 'Ôn tập' } },
+            {
+              path: 'on-tap/phien',
+              element: <Trang ten="Phiên ôn" />,
+              handle: { tenTrang: 'Phiên ôn' },
+            },
+            { path: 'khong-h1', element: <p>Trang không có tiêu đề</p> },
+            {
+              path: 'cap-cha',
+              element: capCha ? <TrangCoCapCha capCha={capCha} /> : <Outlet />,
+            },
+            // Bài học thật: slug sai → KhongTimThay thật trong khung (404 không tô mục menu).
+            { path: 'hoc/:slug', Component: TrangMucHoc },
+            { path: '*', element: <Trang ten="Trang khác" /> },
+          ],
         },
-        { path: 'khong-h1', element: <p>Trang không có tiêu đề</p> },
-        {
-          path: 'cap-cha',
-          element: capCha ? <TrangCoCapCha capCha={capCha} /> : <Outlet />,
-        },
-        { path: '*', element: <Trang ten="Trang khác" /> },
       ],
     },
   ]
@@ -95,6 +125,7 @@ export function moKhung(
   duongDan = '/',
   { duLieu, capCha }: { duLieu?: DuLieuKhung; capCha?: CapCha } = {},
 ) {
+  datLaiTaiDau()
   const router = createMemoryRouter(cacRouteThu(capCha), { initialEntries: [duongDan] })
   const ui = <RouterProvider router={router} />
   const ketQua = render(

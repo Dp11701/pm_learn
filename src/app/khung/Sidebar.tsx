@@ -3,6 +3,7 @@
 import { useId, type MouseEvent } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Award, FileText, Search, X, type LucideIcon } from 'lucide-react'
+import Badge, { type KieuBadge } from '../../components/trang-thai/Badge'
 import IconTrangThai from '../../components/trang-thai/IconTrangThai'
 import TenMuc from '../../components/TenMuc'
 import { useTimKiem } from '../../components/tim-kiem/TimKiem'
@@ -11,16 +12,8 @@ import { layCay, type MauBai, type MucHoc } from '../../../shared/roadmap'
 import { TEN_LOAI } from '../../../shared/domain/trang-thai'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import { useDuLieuKhung } from './du-lieu-khung'
-import {
-  DEN_TAT_CA_DANG_HOC,
-  MENU,
-  TEN_APP,
-  ariaCurrent,
-  badgeCua,
-  laClickRaNgoai,
-  menuDangMo,
-  type BadgeMenu,
-} from './menu'
+import { DEN_TAT_CA_DANG_HOC, MENU, TEN_APP, ariaCurrent, badgeCua, laClickRaNgoai } from './menu'
+import { useMenuDangMo } from './thanh-tren'
 import NutGiaoDien from './NutGiaoDien'
 import Logo from './Logo'
 
@@ -48,25 +41,13 @@ function mucDangHoc(ids: readonly string[]): MucHoc[] {
   }
 }
 
-/** Badge 20px (C34): đặc nền mực / viền; trên hàng đang mở thì đảo màu. */
-export function BadgeSidebar({ badge, dangMo }: { badge: BadgeMenu; dangMo: boolean }) {
-  const mau =
-    badge.kieu === 'dac'
-      ? dangMo
-        ? 'bg-on-primary text-primary leading-[var(--badge-h)]'
-        : 'bg-primary text-on-primary leading-[var(--badge-h)]'
-      : `border leading-[calc(var(--badge-h)-2px)] ${dangMo ? 'border-on-primary' : 'border-border-input'}`
-  return (
-    <>
-      <span
-        aria-hidden="true"
-        className={`box-border h-[var(--badge-h)] min-w-[var(--badge-h)] rounded-[calc(var(--badge-h)/2)] px-1.5 text-center text-[length:var(--fs-chip)] font-semibold tabular-nums ${mau}`}
-      >
-        {badge.so}
-      </span>
-      <span className="sr-only">, {badge.moTa}</span>
-    </>
-  )
+/**
+ * Badge C7 trên hàng đang mở (nền mực): đảo màu để còn thấy. `!` thắng lớp màu mặc định của C7 bất kể thứ
+ * tự CSS sinh ra.
+ */
+export const BADGE_DAO_MAU: Record<KieuBadge, string> = {
+  dac: 'bg-on-primary! text-primary!',
+  vien: 'border-on-primary! text-on-primary!',
 }
 
 const NUT_VIEN =
@@ -78,7 +59,7 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
   const { mo: moTimKiem } = useTimKiem()
   const moBangPhimTat = useMoBangPhimTat()
   const idDangHoc = useId()
-  const dangMo = menuDangMo(pathname)
+  const dangMo = useMenuDangMo()
   const dsDangHoc = mucDangHoc(duLieu.dangHoc)
   const tongDangHoc = duLieu.tongDangHoc ?? duLieu.dangHoc.length
   // ⌘/Ctrl/Shift + click mở tab mới: drawer giữ nguyên.
@@ -158,7 +139,15 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
                 >
                   <Icon size={18} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
                   <span className="min-w-0 flex-1 truncate">{m.nhan}</span>
-                  {badge && <BadgeSidebar badge={badge} dangMo={current !== undefined} />}
+                  {badge && (
+                    // Số hiện ra aria-hidden; câu đủ số đọc liền sau tên mục: "Ôn tập, 12 thẻ đến hạn".
+                    <Badge
+                      so={badge.so}
+                      kieu={badge.kieu}
+                      nhan={`, ${badge.moTa}`}
+                      className={current ? BADGE_DAO_MAU[badge.kieu] : ''}
+                    />
+                  )}
                 </Link>
               </li>
             )
@@ -230,7 +219,7 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
           )}
         </div>
         <div className="flex gap-2">
-          <NutGiaoDien hep={!mobile} className={`flex-1 ${hang} px-1.5`} />
+          <NutGiaoDien className={`flex-1 ${hang} px-1.5`} />
           <button
             type="button"
             aria-label="Bảng phím tắt"

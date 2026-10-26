@@ -2,7 +2,9 @@
 // tên, tên gốc, viết tắt, giải nghĩa (nếu có). Nhóm "Phần · Lĩnh vực · Nhóm", "Trong bài và ghi chú",
 // /api/tim có ở phase 4. ≥ 768: popover 560px cách đỉnh 80, giữa vùng nội dung bên phải sidebar/rail;
 // < 768: sheet toàn màn hình (đề xuất 4.3). Combobox + listbox aria-activedescendant, mặc định chọn kết
-// quả đầu; ↑/↓ di chuyển, Enter mở /hoc/:slug, Esc đóng — bỏ qua khi Telex/VNI đang ghép chữ.
+// quả đầu; ↑/↓ di chuyển, Enter mở /hoc/:slug, Esc đóng — bỏ qua khi Telex/VNI đang ghép chữ. id của
+// option theo id nút, nên kết quả đầu đổi khi gõ thì aria-activedescendant đổi và trình đọc đọc mục
+// Enter sẽ mở; số kết quả / "Không có kết quả" báo qua vùng status khi ngừng gõ (ThongBaoKetQua).
 import {
   Fragment,
   useEffect,
@@ -33,12 +35,15 @@ import {
   type TrangThaiNoiDung,
 } from '../../../shared/domain/trang-thai'
 import Nut from '../Nut'
+import TenMuc from '../TenMuc'
 import { dangGhepChu } from '../TruongNhap'
 import { ID_TIEU_DE_TRANG } from '../TieuDeTrang'
 import IconTrangThai from '../trang-thai/IconTrangThai'
 import ChipLoai from '../trang-thai/ChipLoai'
 import ChipNoiDung from '../trang-thai/ChipNoiDung'
 import { LOP_ICON } from '../trang-thai/mau-trang-thai'
+import ThongBaoKetQua, { GOI_Y_KHONG_CO_KET_QUA } from './ThongBaoKetQua'
+import { viDuTimKiem, type ViDuTimKiem } from './vi-du'
 
 /** Dữ liệu học của một mục cho hàng kết quả. Không có (phase 1) → Chưa học, không chip nội dung. */
 export interface ThongTinMucTim {
@@ -153,8 +158,8 @@ function NoiDungTim({
   const ketQua = useMemo(() => timKiem(chiMuc, truyVan).mucHoc, [chiMuc, truyVan])
   const coTruyVan = foldVi(truyVan).folded !== ''
   const dangChon = ketQua.length > 0 ? Math.min(chon, ketQua.length - 1) : -1
-  const idKetQua = (i: number) => `${id}kq${i}`
-  const idDangChon = dangChon >= 0 ? `${id}kq${dangChon}` : undefined
+  const idKetQua = (muc: MucHoc) => `${id}kq-${muc.id}`
+  const idDangChon = dangChon >= 0 ? idKetQua(ketQua[dangChon].nut) : undefined
 
   useEffect(() => {
     if (idDangChon) document.getElementById(idDangChon)?.scrollIntoView?.({ block: 'nearest' })
@@ -230,7 +235,7 @@ function NoiDungTim({
               {ketQua.map((kq, i) => (
                 <HangKetQua
                   key={kq.nut.id}
-                  id={idKetQua(i)}
+                  id={idKetQua(kq.nut)}
                   kq={kq}
                   chon={i === dangChon}
                   thongTin={traMuc?.(kq.nut.id)}
@@ -244,10 +249,11 @@ function NoiDungTim({
           <div className="flex flex-col items-center gap-1.5 px-4 py-6 text-center">
             <strong className="font-semibold">{`Không có kết quả cho "${truyVan.trim()}"`}</strong>
             <span className={LOP_GOI_Y}>
-              {'Thử tên tiếng Anh hoặc viết tắt, vd. "test pyramid" hoặc "ccb".'}
+              <GoiYViDu viDu={viDuTimKiem(chiMuc)} />
             </span>
           </div>
         )}
+        <ThongBaoKetQua truyVan={coTruyVan ? truyVan : ''} soKetQua={ketQua.length} />
       </div>
 
       <div
@@ -259,6 +265,23 @@ function NoiDungTim({
         <span className="max-md:hidden">Esc đóng</span>
         <span className="ml-auto">Không phân biệt dấu, hoa/thường</span>
       </div>
+    </>
+  )
+}
+
+/** "Thử tên tiếng Anh hoặc viết tắt, vd. "…" hoặc "…"." — ví dụ lấy từ cây (vi-du.ts). */
+function GoiYViDu({ viDu }: { viDu: ViDuTimKiem }) {
+  const cac = [viDu.ten, viDu.vietTat].filter((v) => v !== undefined)
+  return (
+    <>
+      {GOI_Y_KHONG_CO_KET_QUA}
+      {cac.length > 0 && ', vd. '}
+      {cac.map((v, i) => (
+        <Fragment key={v}>
+          {i > 0 && ' hoặc '}"<TenMuc>{v}</TenMuc>"
+        </Fragment>
+      ))}
+      .
     </>
   )
 }

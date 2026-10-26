@@ -7,6 +7,7 @@ import { layCay } from '../../shared/roadmap'
 import { ToastProvider } from '../components/Toast'
 import { TimKiemProvider } from '../components/tim-kiem/TimKiem'
 import { KetNoiProvider, ThongBaoKetNoiLai } from './ket-noi'
+import { useKetThucTaiDau } from './khung/focus'
 import { PhimTatProvider } from './phim-tat'
 
 /**
@@ -26,6 +27,8 @@ export default function GocApp() {
   // Cây lỗi → ném LoiCay ngay ở gốc → trang "Không đọc được cây roadmap" (bất biến 1).
   layCay()
   const [queryClient] = useState(taoQueryClient)
+  // Khép "lần tải đầu của tài liệu" sau lần gắn đầu: từ đó mọi lần đổi trang đều đưa focus về H1 (§11).
+  useKetThucTaiDau()
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>

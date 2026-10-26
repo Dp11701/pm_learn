@@ -3,17 +3,21 @@
 // aria-activedescendant, ↑/↓, Enter mở /hoc/:slug, Esc đóng, bỏ qua phím khi Telex/VNI ghép chữ.
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PhimTatProvider } from '../../../src/app/phim-tat'
 import {
   TimKiemProvider,
   useTimKiem,
   type DuLieuTimKiem,
 } from '../../../src/components/tim-kiem/TimKiem'
+import { TRE_THONG_BAO } from '../../../src/components/tim-kiem/ThongBaoKetQua'
 import { layCay } from '../../../shared/roadmap'
 import { expectNoAxeViolations } from '../../ho-tro/axe'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
 
 const choMotNhip = () => act(() => new Promise((r) => setTimeout(r, 0)))
 
@@ -206,7 +210,7 @@ describe('kết quả', () => {
     expect(opts[1].textContent).toContain('Certifications')
   })
 
-  it('không có kết quả: câu của frame, không có listbox', () => {
+  it('không có kết quả: câu của frame, ví dụ lấy từ cây (không gõ cứng), không có listbox', () => {
     khoiDong()
     const o = moBangPhim()
     go(o, 'kiểm thử tự động')
@@ -214,7 +218,20 @@ describe('kết quả', () => {
     expect(o.getAttribute('aria-expanded')).toBe('false')
     const text = screen.getByRole('dialog').textContent
     expect(text).toContain('Không có kết quả cho "kiểm thử tự động"')
-    expect(text).toContain('Thử tên tiếng Anh hoặc viết tắt, vd. "test pyramid" hoặc "ccb".')
+    // Ví dụ: tên 2 từ đầu tiên không có viết tắt; viết tắt đầu tiên không đứng đầu tên ("… (CCB)")
+    const goiY = screen.getByText(/^Thử tên tiếng Anh hoặc viết tắt/)
+    expect(goiY.textContent).toBe(
+      'Thử tên tiếng Anh hoặc viết tắt, vd. "iterative approach" hoặc "ccb".',
+    )
+    expect([...goiY.querySelectorAll('[lang="en"]')].map((x) => x.textContent)).toEqual([
+      'iterative approach',
+      'ccb',
+    ])
+    // Hai ví dụ gõ vào thì có kết quả
+    go(o, 'iterative approach')
+    expect(cacKetQua().map(tenKetQua)).toEqual(['Iterative approach'])
+    go(o, 'ccb')
+    expect(cacKetQua().map(tenKetQua)).toEqual(['Change Control Board (CCB)'])
   })
 
   it('tối đa 30 mục học', () => {
@@ -323,6 +340,62 @@ describe('bàn phím', () => {
     const o = moBangPhim()
     const e = fireEvent.keyDown(o, { key: '/', code: 'Slash' })
     expect(e).toBe(true)
+  })
+})
+
+describe('trình đọc màn hình', () => {
+  const vungStatus = () => screen.getByRole('status')
+
+  it('số kết quả báo qua role="status" khi ngừng gõ, không theo từng phím', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    khoiDong()
+    const o = moBangPhim()
+    expect(within(screen.getByRole('dialog')).getByRole('status')).toBe(vungStatus())
+    expect(vungStatus().textContent).toBe('')
+    for (const chu of ['r', 'ri', 'ris', 'risk']) {
+      go(o, chu)
+      act(() => vi.advanceTimersByTime(TRE_THONG_BAO - 100))
+      expect(vungStatus().textContent).toBe('')
+    }
+    act(() => vi.advanceTimersByTime(100))
+    expect(vungStatus().textContent).toBe('7 kết quả.')
+    // Gõ tiếp: vùng trống lại (không đọc số cũ), ngừng gõ thì báo số mới
+    go(o, 'risk register')
+    expect(vungStatus().textContent).toBe('')
+    act(() => vi.advanceTimersByTime(TRE_THONG_BAO))
+    expect(vungStatus().textContent).toBe('1 kết quả.')
+  })
+
+  it('không có kết quả: báo cả câu; xoá hết chữ thì vùng trống ngay', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    khoiDong()
+    const o = moBangPhim()
+    go(o, 'kiểm thử tự động ')
+    act(() => vi.advanceTimersByTime(TRE_THONG_BAO))
+    expect(vungStatus().textContent).toBe(
+      'Không có kết quả cho "kiểm thử tự động". Thử tên tiếng Anh hoặc viết tắt.',
+    )
+    go(o, '')
+    expect(vungStatus().textContent).toBe('')
+    act(() => vi.advanceTimersByTime(TRE_THONG_BAO * 2))
+    expect(vungStatus().textContent).toBe('')
+  })
+
+  it('kết quả đầu đổi khi gõ thì aria-activedescendant đổi theo (trình đọc đọc mục Enter mở)', () => {
+    khoiDong()
+    const o = moBangPhim()
+    go(o, 'risk')
+    const truoc = o.getAttribute('aria-activedescendant')
+    expect(tenKetQua(dangChon(o)!)).toBe('Risk and Issue Reports')
+    go(o, 'risk reg')
+    const sau = o.getAttribute('aria-activedescendant')
+    expect(sau).not.toBe(truoc)
+    expect(dangChon(o)).toBe(cacKetQua()[0])
+    expect(tenKetQua(dangChon(o)!)).toBe('Risk Register')
+    // id option không trùng nhau
+    go(o, 'safe')
+    const ids = cacKetQua().map((x) => x.id)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 })
 

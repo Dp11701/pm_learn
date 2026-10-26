@@ -30,6 +30,8 @@ function dung(khoangDay?: number) {
 }
 
 const vung = () => screen.getByRole('status', { name: 'Thông báo' })
+/** Khu toast (định vị fixed, chứa vùng polite và các toast lỗi). */
+const khu = () => vung().parentElement as HTMLElement
 const hien = (t: TuyChonToast) => {
   let id = ''
   act(() => {
@@ -163,19 +165,180 @@ describe('Toast (C33)', () => {
         <TrangCoThanhDay />
       </ToastProvider>,
     )
-    expect(vung().style.getPropertyValue('--day-toast')).toBe('64px')
-    expect(vung().className).toContain('max-md:bottom-[calc(16px+var(--day-toast))]')
+    expect(khu().style.getPropertyValue('--day-toast')).toBe('64px')
+    expect(khu().className).toContain('max-md:bottom-[calc(16px+var(--day-toast))]')
+    expect(khu().className).toContain('max-md:left-4')
+    expect(khu().className).toContain('max-md:right-4')
     rerender(<ToastProvider>{null}</ToastProvider>)
-    expect(vung().style.getPropertyValue('--day-toast')).toBe('0px')
+    expect(khu().style.getPropertyValue('--day-toast')).toBe('0px')
     cleanup()
     dung(64)
-    expect(vung().style.getPropertyValue('--day-toast')).toBe('64px')
+    expect(khu().style.getPropertyValue('--day-toast')).toBe('64px')
+  })
+
+  it('không che chân sidebar / rail: ≥ 1280 lùi sau sidebar, 1024–1279 lùi sau rail, < 1024 lề 24', () => {
+    dung()
+    const lop = khu().className.split(/\s+/)
+    expect(lop).toEqual(
+      expect.arrayContaining([
+        'fixed',
+        'bottom-6',
+        'left-6',
+        'lg:left-[calc(var(--rail-w)+24px)]',
+        'xl:left-[calc(var(--sidebar-w)+24px)]',
+        'lg:max-w-[calc(100vw-var(--rail-w)-48px)]',
+        'xl:max-w-[calc(100vw-var(--sidebar-w)-48px)]',
+      ]),
+    )
+  })
+
+  it('toast lỗi là role=alert (F26), nằm ngoài vùng polite; toast thường ở vùng polite', () => {
+    dung()
+    hien({ noiDung: 'Đã lưu' })
+    hien({ noiDung: 'Lỗi lưu', loai: 'loi' })
+    const canhBao = screen.getByRole('alert')
+    expect(canhBao.textContent).toContain('Lỗi lưu')
+    expect(vung().contains(canhBao)).toBe(false)
+    expect(vung().textContent).toContain('Đã lưu')
+    expect(vung().textContent).not.toContain('Lỗi lưu')
+    // Không lồng vùng live: trong vùng polite không có alert / aria-live con, alert không nằm trong vùng live nào.
+    expect(vung().querySelector('[role="alert"],[role="status"],[aria-live]')).toBeNull()
+    expect(canhBao.parentElement?.closest('[role="alert"],[role="status"],[aria-live]')).toBeNull()
+    // Vùng polite vẫn duy nhất và luôn có mặt.
+    expect(screen.getAllByRole('status')).toHaveLength(1)
+  })
+
+  it('toast thường + toast lỗi: vẫn theo thứ tự thời gian, mới nhất ở dưới', () => {
+    dung()
+    hien({ noiDung: 'Thường' })
+    hien({ noiDung: 'Lỗi', loai: 'loi' })
+    const nhomLoi = screen.getByRole('alert').parentElement as HTMLElement
+    expect(Number(nhomLoi.style.order)).toBeGreaterThan(Number(vung().style.order))
+    // Toast thứ 3 đẩy toast cũ nhất (Thường) ra: còn Lỗi (trên) rồi Thường mới (dưới).
+    hien({ noiDung: 'Thường mới' })
+    expect(screen.queryByText('Thường')).toBeNull()
+    expect(Number(vung().style.order)).toBeGreaterThan(Number(nhomLoi.style.order))
+    // Toast trên cùng không có lề trên, toast sau cách 8px.
+    expect(screen.getByRole('alert').className).not.toContain('mt-2')
+    expect((screen.getByText('Thường mới').parentElement as HTMLElement).className).toContain(
+      'mt-2',
+    )
   })
 
   it('useToast ngoài provider báo lỗi rõ ràng', () => {
     const loi = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(() => render(<LayApi />)).toThrow(/ToastProvider/)
     loi.mockRestore()
+  })
+})
+
+describe('Toast — trả focus khi toast đang giữ focus bị đóng', () => {
+  function dungTrang({ h1 = true, ngoai = true } = {}) {
+    return render(
+      <ToastProvider>
+        <LayApi />
+        <main tabIndex={-1}>
+          {h1 && (
+            <h1 id="tieu-de-trang" tabIndex={-1}>
+              Trang
+            </h1>
+          )}
+          {ngoai && <button type="button">Ngoài</button>}
+        </main>
+      </ToastProvider>,
+    )
+  }
+  const nut = (ten: string) => screen.getByRole('button', { name: ten })
+  /** Focus vào nút trong toast, đến từ nút "Ngoài" (như Tab từ trang xuống toast). */
+  function vaoToast(ten: string) {
+    act(() => nut('Ngoài').focus())
+    act(() => nut(ten).focus())
+    expect(document.activeElement).toBe(nut(ten))
+  }
+
+  it('bấm X: focus về phần tử có focus trước khi vào toast', () => {
+    dungTrang()
+    hien({ noiDung: 'Một' })
+    vaoToast('Đóng thông báo')
+    fireEvent.click(nut('Đóng thông báo'))
+    expect(screen.queryByText('Một')).toBeNull()
+    expect(document.activeElement).toBe(nut('Ngoài'))
+  })
+
+  it('bấm hành động (Hoàn tác): focus cũng về phần tử trước đó', () => {
+    dungTrang()
+    hien({ noiDung: 'Hai', hanhDong: { nhan: 'Hoàn tác', chay: () => {} } })
+    vaoToast('Hoàn tác')
+    fireEvent.click(nut('Hoàn tác'))
+    expect(document.activeElement).toBe(nut('Ngoài'))
+  })
+
+  it('toast thứ 3 đẩy toast đang giữ focus ra: focus về phần tử trước đó', () => {
+    dungTrang()
+    hien({ noiDung: 'A', hanhDong: { nhan: 'Hoàn tác A', chay: () => {} } })
+    vaoToast('Hoàn tác A')
+    hien({ noiDung: 'B' })
+    hien({ noiDung: 'C' })
+    expect(screen.queryByText('A')).toBeNull()
+    expect(document.activeElement).toBe(nut('Ngoài'))
+  })
+
+  it('api.dong(id) khi focus đang ở trong toast cũng trả focus', () => {
+    dungTrang()
+    const id = hien({ noiDung: 'Ba' })
+    vaoToast('Đóng thông báo')
+    act(() => api.dong(id))
+    expect(document.activeElement).toBe(nut('Ngoài'))
+  })
+
+  it('phần tử trước đó đã mất: về H1 #tieu-de-trang; không có H1 thì về <main>', () => {
+    const { rerender } = dungTrang()
+    hien({ noiDung: 'Bốn' })
+    vaoToast('Đóng thông báo')
+    // Trang đổi, nút "Ngoài" bị gỡ khi focus đang ở toast.
+    rerender(
+      <ToastProvider>
+        <LayApi />
+        <main tabIndex={-1}>
+          <h1 id="tieu-de-trang" tabIndex={-1}>
+            Trang
+          </h1>
+        </main>
+      </ToastProvider>,
+    )
+    fireEvent.click(nut('Đóng thông báo'))
+    expect(document.activeElement?.id).toBe('tieu-de-trang')
+
+    cleanup()
+    dungTrang({ h1: false })
+    hien({ noiDung: 'Năm' })
+    vaoToast('Đóng thông báo')
+    act(() => nut('Ngoài').setAttribute('disabled', ''))
+    fireEvent.click(nut('Đóng thông báo'))
+    expect(document.activeElement?.tagName).toBe('MAIN')
+  })
+
+  it('focus không ở trong toast: đóng toast không kéo focus đi', () => {
+    dungTrang()
+    hien({ noiDung: 'Sáu' })
+    act(() => nut('Ngoài').focus())
+    fireEvent.click(nut('Đóng thông báo'))
+    expect(document.activeElement).toBe(nut('Ngoài'))
+    hien({ noiDung: 'Bảy' })
+    act(() => (document.activeElement as HTMLElement).blur())
+    fireEvent.click(nut('Đóng thông báo'))
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it('hành động tự chuyển focus đi (vd. mở dialog): không giành lại focus', () => {
+    dungTrang()
+    hien({
+      noiDung: 'Tám',
+      hanhDong: { nhan: 'Mở', chay: () => document.getElementById('tieu-de-trang')?.focus() },
+    })
+    vaoToast('Mở')
+    fireEvent.click(nut('Mở'))
+    expect(document.activeElement?.id).toBe('tieu-de-trang')
   })
 })
 

@@ -1,7 +1,7 @@
 // C5 Status pill (F02, F01 mục 3) và C7 cờ "Cần ôn lại · 2 thẻ đến hạn": cao 24, padding 0 10,
 // bo 6, chữ 12/18/600, icon 14 + chữ (D2). Bản bấm được (F08: mở menu đổi trạng thái) có chevron,
 // hover viền 1px màu trạng thái, disabled "đang lưu", lỗi viền danger.
-import type { ComponentProps } from 'react'
+import type { ComponentProps, KeyboardEvent, MouseEvent, PointerEvent } from 'react'
 import { ChevronDown, RotateCcw } from 'lucide-react'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import {
@@ -17,6 +17,7 @@ import {
   VUNG_CHAM,
   type TrangThaiHien,
 } from './mau-trang-thai'
+import { PILL_DANG_LUU, PILL_LOI_LUU } from '../../copy/cho-duyet'
 
 const NEN =
   'inline-flex h-[var(--h-chip)] shrink-0 items-center gap-1.5 rounded-[var(--radius-sm)] whitespace-nowrap'
@@ -61,7 +62,9 @@ export function CoCanOnLai({ soThe, className }: { soThe?: number; className?: s
 
 export type PropsNutPillTrangThai = {
   trangThai: TrangThaiHoc
-  /** Đang lưu: nền surface-2, chữ muted, không chevron, không bấm được. */
+  /** Đang lưu: nền surface-2, chữ muted, không chevron, không mở menu được — nhưng vẫn giữ focus
+   *  (aria-disabled, không dùng `disabled`): Radix trả focus về trigger sau khi chọn trong menu, trigger
+   *  mà `disabled` thì focus rơi về <body> (như Nut C35 lúc đang xử lý). */
   dangLuu?: boolean
   /** Lưu lỗi: viền trong 1px màu danger (câu lỗi do nơi dùng hiện, vd. toast). */
   loi?: boolean
@@ -70,6 +73,9 @@ export type PropsNutPillTrangThai = {
 
 /** Pill bấm được mở menu đổi trạng thái (F08, F13). Nhận mọi prop của <button> (kể cả ref) để
  *  dùng làm `asChild` của Radix DropdownMenu.Trigger / Popover.Trigger. */
+// Phím mở menu của Radix DropdownMenu.Trigger (Enter / Space / mũi tên); Tab vẫn đi qua bình thường.
+const PHIM_MO = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp'])
+
 export function NutPillTrangThai({
   trangThai,
   dangLuu = false,
@@ -77,9 +83,18 @@ export function NutPillTrangThai({
   className = '',
   disabled,
   type = 'button',
+  onClick,
+  onPointerDown,
+  onKeyDown,
   ...khac
 }: PropsNutPillTrangThai) {
   const tat = dangLuu || disabled
+  // Đang lưu: chặn mọi đường mở menu. preventDefault chạy trước handler của Radix (Slot gọi handler
+  // của phần tử con trước), và Radix bỏ qua sự kiện đã defaultPrevented.
+  const chan = <E extends { preventDefault: () => void }>(e: E, goc?: (e: E) => void) => {
+    if (dangLuu) e.preventDefault()
+    else goc?.(e)
+  }
   const mau = tat
     ? 'bg-surface-2 text-muted shadow-[inset_0_0_0_1px_var(--border)] cursor-not-allowed'
     : `${LOP_PILL[trangThai]} cursor-pointer ${
@@ -90,16 +105,23 @@ export function NutPillTrangThai({
       aria-haspopup="menu"
       {...khac}
       type={type}
-      disabled={tat}
+      disabled={disabled}
+      aria-disabled={dangLuu || khac['aria-disabled'] || undefined}
       aria-busy={dangLuu || undefined}
+      onClick={(e: MouseEvent<HTMLButtonElement>) => chan(e, onClick)}
+      onPointerDown={(e: PointerEvent<HTMLButtonElement>) => chan(e, onPointerDown)}
+      onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
+        if (PHIM_MO.has(e.key)) chan(e, onKeyDown)
+        else onKeyDown?.(e)
+      }}
       data-trang-thai={trangThai}
       className={`${NEN} relative justify-between ${tat ? 'px-2.5' : 'pr-2 pl-2.5'} ${LOP_CHU_CHIP} transition-shadow duration-150 ${VUNG_CHAM} ${mau} ${className}`}
     >
       <span className="inline-flex items-center gap-1.5">
         <IconPill trangThai={trangThai} size={12} />
         {TEN_TRANG_THAI_HOC[trangThai]}
-        {dangLuu && <span className="sr-only">, đang lưu</span>}
-        {loi && !tat && <span className="sr-only">, lỗi lưu</span>}
+        {dangLuu && <span className="sr-only">{PILL_DANG_LUU}</span>}
+        {loi && !tat && <span className="sr-only">{PILL_LOI_LUU}</span>}
       </span>
       {!tat && <ChevronDown size={12} strokeWidth={2.5} aria-hidden="true" className="shrink-0" />}
     </button>

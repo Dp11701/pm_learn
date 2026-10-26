@@ -8,6 +8,7 @@ import { CircleAlert } from 'lucide-react'
 import { dinhDangPhanTram, dinhDangSo, tinhPhanTram } from '../../../shared/dinh-dang'
 import { DongCho } from '../TrangThaiTrong'
 import { LOP_CHU_META } from './mau-trang-thai'
+import { TIEN_DO_CHUA_TINH_DUOC } from '../../copy/cho-duyet'
 
 /** Số đếm theo trạng thái học của một tập mục (cả roadmap, một phần, lĩnh vực, nhóm). */
 export interface SoTienDo {
@@ -55,7 +56,7 @@ export function chuTienDoChiTiet(s: SoTienDo): string {
 /** aria của vòng (F03): "Tiến độ 19%, 37 trên 195 mục, 4 bỏ qua". */
 export function nhanVongTienDo(s: SoPhanSo): string {
   const p = tinhPhanTram(s.xong, s.tong - s.boQua)
-  const dau = p === null ? 'Tiến độ chưa tính được phần trăm' : `Tiến độ ${p}%`
+  const dau = p === null ? TIEN_DO_CHUA_TINH_DUOC : `Tiến độ ${p}%`
   return `${dau}, ${so(s.xong)} trên ${so(s.tong - s.boQua)} mục, ${so(s.boQua)} bỏ qua`
 }
 

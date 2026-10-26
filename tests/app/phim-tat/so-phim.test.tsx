@@ -171,6 +171,10 @@ describe('F27 — bảng phím tắt', () => {
     expect(dialog.textContent).toContain(
       'Phím tắt không chạy khi bạn đang gõ, kể cả lúc Telex/VNI đang ghép chữ. Phím được nhận theo vị trí vật lý trên bàn phím.',
     )
+    // "?" và "/" so theo e.code: trên AZERTY, QWERTZ là phím ở vị trí của chúng trên bàn phím Mỹ
+    expect(dialog.textContent).toContain(
+      'Chữ trên phím theo bàn phím kiểu Mỹ; với AZERTY, QWERTZ hãy bấm phím ở cùng vị trí.',
+    )
     // Chỉ một nút đóng (không có thêm nút X mặc định của C32)
     expect(within(dialog).getAllByRole('button')).toHaveLength(1)
   })

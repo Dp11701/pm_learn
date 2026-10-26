@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { useState } from 'react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { DropdownMenu } from 'radix-ui'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import PillTrangThai, {
   CoCanOnLai,
   NutPillTrangThai,
@@ -68,10 +70,24 @@ describe('NutPillTrangThai (C5 bấm được)', () => {
     expect(bam).toHaveBeenCalledTimes(1)
   })
 
-  it('đang lưu: disabled, aria-busy, nền surface-2, không chevron', () => {
-    render(<NutPillTrangThai trangThai="da-xong" dangLuu />)
+  it('đang lưu: aria-disabled (không disabled thật, vẫn focus được), aria-busy, nền surface-2, không chevron', () => {
+    const bam = vi.fn()
+    const phim = vi.fn()
+    render(<NutPillTrangThai trangThai="da-xong" dangLuu onClick={bam} onKeyDown={phim} />)
     const nut = screen.getByRole('button', { name: 'Đã xong, đang lưu' })
-    expect(nut).toHaveProperty('disabled', true)
+    expect(nut).toHaveProperty('disabled', false)
+    expect(nut.getAttribute('aria-disabled')).toBe('true')
+    act(() => nut.focus())
+    expect(document.activeElement).toBe(nut)
+    // Bấm / pointerdown / Enter / Space / ↓ bị chặn (preventDefault để Radix không mở menu).
+    expect(fireEvent.click(nut)).toBe(false)
+    expect(fireEvent.pointerDown(nut)).toBe(false)
+    for (const key of ['Enter', ' ', 'ArrowDown', 'ArrowUp'])
+      expect(fireEvent.keyDown(nut, { key }), key).toBe(false)
+    expect(bam).not.toHaveBeenCalled()
+    // Tab và phím khác không bị chặn.
+    expect(fireEvent.keyDown(nut, { key: 'Tab' })).toBe(true)
+    expect(phim).toHaveBeenCalledTimes(1)
     expect(nut.getAttribute('aria-busy')).toBe('true')
     expect(nut.className).toContain('bg-surface-2')
     // F02 "Disabled · đang lưu": padding 0 10 (không còn chevron)
@@ -108,6 +124,11 @@ describe('NutPillTrangThai (C5 bấm được)', () => {
     expect(nutRef).toBe(screen.getByRole('button', { name: 'Đổi trạng thái' }))
   })
 
+  it('disabled thật của nơi dùng vẫn giữ nguyên', () => {
+    render(<NutPillTrangThai trangThai="chua-hoc" disabled />)
+    expect(screen.getByRole('button')).toHaveProperty('disabled', true)
+  })
+
   it('không vi phạm axe', async () => {
     const { container } = render(
       <div>
@@ -120,5 +141,49 @@ describe('NutPillTrangThai (C5 bấm được)', () => {
       </div>,
     )
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('NutPillTrangThai làm trigger Radix DropdownMenu', () => {
+  beforeAll(() => {
+    // jsdom không có ResizeObserver (Radix Popper đo kích thước nội dung menu).
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  })
+
+  function MenuTrangThai() {
+    const [dangLuu, datDangLuu] = useState(false)
+    return (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <NutPillTrangThai trangThai="dang-hoc" dangLuu={dangLuu} />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={() => datDangLuu(true)}>Đã xong</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    )
+  }
+
+  it('chọn trạng thái → đang lưu: Radix trả focus về pill (không rơi về body), menu không mở lại', async () => {
+    render(<MenuTrangThai />)
+    const nut = screen.getByRole('button', { name: 'Đang học' })
+    act(() => nut.focus())
+    fireEvent.keyDown(nut, { key: 'Enter' })
+    const muc = screen.getByRole('menuitem', { name: 'Đã xong' })
+    fireEvent.keyDown(muc, { key: 'Enter' })
+    expect(screen.queryByRole('menu')).toBeNull()
+    const dangLuu = screen.getByRole('button', { name: 'Đang học, đang lưu' })
+    // FocusScope của Radix trả focus trong setTimeout(0) sau khi menu đóng.
+    await act(() => new Promise((xong) => setTimeout(xong, 0)))
+    expect(document.activeElement).toBe(dangLuu)
+    fireEvent.keyDown(dangLuu, { key: 'Enter' })
+    fireEvent.pointerDown(dangLuu, { button: 0 })
+    expect(screen.queryByRole('menu')).toBeNull()
   })
 })

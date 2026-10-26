@@ -4,6 +4,7 @@
 import { Fragment, useMemo } from 'react'
 import { Link, useLocation } from 'react-router'
 import { layCay, type Cay } from '../../shared/roadmap'
+import { LE_NGANG_TRANG } from '../app/khung/le-trang'
 import { TEN_APP } from '../app/khung/menu'
 import { useThanhTrenMobile } from '../app/khung/thanh-tren'
 import { NutLink } from '../components/Nut'
@@ -61,10 +62,13 @@ export default function KhongTimThay() {
   const { pathname } = useLocation()
   const cay = docCay()
   const goiY = useMemo(() => (cay ? goiYChoDuongDan(cay, pathname) : []), [cay, pathname])
-  // F26b: top bar mobile ghi tên app, không phải mục menu đoán từ đường dẫn (vd. /hoc/… → Lộ trình).
-  useThanhTrenMobile({ tieuDe: TEN_APP })
+  // F26b: top bar mobile ghi tên app, không phải mục menu đoán từ đường dẫn (vd. /hoc/… → Lộ trình);
+  // cùng lý do, sidebar / rail / drawer không tô mục menu nào.
+  useThanhTrenMobile({ tieuDe: TEN_APP, ngoaiMenu: true })
   return (
-    <div className="flex flex-col items-center gap-4 px-10 pt-16 pb-12 text-center max-lg:px-6 max-md:px-4 max-md:text-[length:var(--fs-body-m)] max-md:leading-[var(--lh-body-m)]">
+    <div
+      className={`flex flex-col items-center gap-4 pt-16 pb-12 text-center max-md:text-[length:var(--fs-body-m)] max-md:leading-[var(--lh-body-m)] ${LE_NGANG_TRANG}`}
+    >
       <span className="font-mono text-[length:var(--fs-meta)] leading-[var(--lh-meta)] break-all text-muted">
         {giaiMa(pathname)}
       </span>

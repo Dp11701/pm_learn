@@ -1,5 +1,7 @@
 /* Token bổ sung cho giá trị frame dùng ngoài tokens.css (đề xuất 1.2). Thêm dần theo phase; mỗi token ghi frame nguồn.
-   Cùng mẫu selector với tokens.css: Sáng ở :root, Tối ở [data-theme="dark"] và ở "Theo hệ thống" khi máy để tối. */
+   Cùng mẫu selector với tokens.css: Sáng ở :root, Tối ở [data-theme="dark"] và ở "Theo hệ thống" khi máy để tối.
+   Đây là file token thêm DUY NHẤT: cổng tương phản (scripts/kiem-tuong-phan.ts) chỉ đọc tokens.css + file này,
+   nên token mới phải vào đây (phase 1 đã gộp tokens-trang-thai / -khung / -he-thong / -phim-tat). */
 :root {
   /* §5.2, D17: cỡ chữ mobile (< 768px) — h1 24/34, h2 20/30, thân bài 16/26. */
   --fs-h1-m: 24px;
@@ -27,6 +29,63 @@
   --skeleton-bg: #f1f5f9;
   /* D18 — hàng full-width: vòng focus 2px nằm bên trong, cách mép 2px (offset −(2 + 2)) để không bị cắt. */
   --focus-offset-trong: -4px;
+
+  /* --- Trạng thái học (C5, C6, C34, D19) --- */
+
+  /* Màu icon trạng thái đứng riêng (hàng, sidebar, chú giải bản đồ): F02/F06 lrIc, dnIc; C34 lrIc.
+     Sáng trùng màu chữ pill; Tối sáng hơn chữ pill (F02-toi, F06 Tối #D8B4FE / #86EFAC). */
+  --st-learning-ic: #6b21a8;
+  --st-done-ic: #166534;
+  /* F06, F10: icon Chưa học màu muted; Bỏ qua theo chữ pill; Cần ôn lại màu đặc (F03, F31). */
+  --st-none-ic: var(--text-muted);
+  --st-skip-ic: var(--st-skip-fg);
+  --st-review-ic: var(--st-review-solid);
+
+  /* Viền 1,5px của đoạn đang chọn (C6, quyết định 2) và viền hover 1px của pill bấm được (C5).
+     Đang học / Đã xong: màu đặc (F02, F11). Chưa học: border-input vì màu đặc trùng nền (F17).
+     Bỏ qua: không có màu đặc (là sọc), frame không vẽ — tự đặt bằng màu chữ pill Bỏ qua. */
+  --st-none-vien: var(--border-input);
+  --st-learning-vien: var(--st-learning-solid);
+  --st-done-vien: var(--st-done-solid);
+  --st-skip-vien: var(--st-skip-fg);
+  --st-review-vien: var(--st-review-solid);
+
+  /* Thanh độ phủ nội dung (D19): phần Đã duyệt màu chữ (F06 t.text, F10 #0F172A); phần Bản nháp
+     F03, F10 #94A3B8 (Sáng), F06 Tối t.muted #94A3B8. Phần Chưa có để trống trong viền nét đứt. */
+  --noi-dung-duyet: var(--text);
+  --noi-dung-nhap: #94a3b8;
+
+  /* --- Khung app (C34, F04, F13, F28): chỉ kích thước, không đổi theo giao diện --- */
+
+  /* F28: bề rộng drawer menu (< 1024px, đề xuất 4.4). */
+  --drawer-w: 312px;
+  /* F04, F13 (D6, §5.2 "top bar 56"): cao top bar mobile; banner mất kết nối dính ngay dưới. */
+  --topbar-h: 56px;
+  /* C34: ô logo "A–Z" 32×32, chữ 12/18 đậm, giãn chữ −0,2px (F11). */
+  --logo-o: 32px;
+  --logo-tracking: -0.2px;
+  /* C34: badge menu 20px (đặc = việc hôm nay, viền = số thông tin; quyết định 4 của designer). */
+  --badge-h: 20px;
+  /* Rail 72px (đề xuất 4.4, không có frame): ô icon 48×40, badge thu nhỏ 16px. */
+  --rail-o-w: 48px;
+  --rail-o-h: 40px;
+  --badge-nho-h: 16px;
+
+  /* --- Bảng phím tắt (F27) và tìm kiếm (C28) --- */
+
+  /* F27 — nền phím (kbd) và ô ghi chú cuối bảng phím tắt: một bậc "lõm" so với nền dialog.
+     Tối: F27 #111827. Sáng: frame chỉ vẽ Tối — tự đặt #F8FAFC như chân popover C28. */
+  --phim-tat-nen: #f8fafc;
+  /* F27 — vạch dưới mỗi dòng phím tắt. Tối: F27 #334155. Sáng: tự đặt = border #E2E8F0. */
+  --phim-tat-vach: #e2e8f0;
+  /* C28 — viền popover tìm kiếm, vạch dưới ô tìm, vạch trên chân, khung phím Esc.
+     Sáng: C28 #E2E8F0. Tối: frame không vẽ — theo viền dialog Tối F27 #334155. */
+  --tim-kiem-vien: #e2e8f0;
+  /* C28 — nền kết quả đang chọn / hover. Sáng: C28 #F1F5F9. Tối: tự đặt #111827, vì nền dialog
+     Tối đã là surface-2 (F27). */
+  --tim-kiem-chon: #f1f5f9;
+  /* C28 — nền chân popover (gợi ý phím). Sáng: C28 #F8FAFC. Tối: tự đặt #111827 như --phim-tat-nen. */
+  --tim-kiem-chan: #f8fafc;
 }
 
 :root[data-theme='dark'] {
@@ -37,6 +96,14 @@
   --shadow-sheet: none;
   --sheet-handle: #64748b;
   --skeleton-bg: #1e293b;
+  --st-learning-ic: #d8b4fe;
+  --st-done-ic: #86efac;
+  --noi-dung-nhap: var(--text-muted);
+  --phim-tat-nen: #111827;
+  --phim-tat-vach: #334155;
+  --tim-kiem-vien: #334155;
+  --tim-kiem-chon: #111827;
+  --tim-kiem-chan: #111827;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -48,15 +115,26 @@
     --shadow-sheet: none;
     --sheet-handle: #64748b;
     --skeleton-bg: #1e293b;
+    --st-learning-ic: #d8b4fe;
+    --st-done-ic: #86efac;
+    --noi-dung-nhap: var(--text-muted);
+    --phim-tat-nen: #111827;
+    --phim-tat-vach: #334155;
+    --tim-kiem-vien: #334155;
+    --tim-kiem-chon: #111827;
+    --tim-kiem-chan: #111827;
   }
 }
 
 /* --- Tiện ích dùng chung (phase 1, component lõi) --- */
 
-/* D18: hàng full-width (C9, hàng bảng, mục menu sát mép) dùng class này thay cho vòng focus ngoài. */
-.focus-trong:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset-trong);
+/* D18: hàng full-width (C9, hàng bảng, mục menu sát mép) dùng class này thay cho vòng focus ngoài.
+   Ở @layer components: thắng vòng focus nền (@layer base, app.css), tiện ích Tailwind vẫn ghi đè được. */
+@layer components {
+  .focus-trong:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset-trong);
+  }
 }
 
 /* Chuyển động 150–250ms (§5.2). Component chỉ gọi các keyframe trượt trong motion-safe; với

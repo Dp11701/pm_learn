@@ -6,6 +6,7 @@ import { Dialog } from 'radix-ui'
 import { Info } from 'lucide-react'
 import HopThoai from './HopThoai'
 import type { NhomBangPhimTat } from '../app/phim-tat'
+import { GHI_CHU_BO_CUC_PHIM } from '../copy/cho-duyet'
 
 export interface PropsBangPhimTat {
   mo: boolean
@@ -71,7 +72,7 @@ export default function BangPhimTat({ mo, doiMo, nhom }: PropsBangPhimTat) {
         />
         <span>
           Phím tắt không chạy khi bạn đang gõ, kể cả lúc Telex/VNI đang ghép chữ. Phím được nhận
-          theo vị trí vật lý trên bàn phím.
+          theo vị trí vật lý trên bàn phím. {GHI_CHU_BO_CUC_PHIM}
         </span>
       </div>
     </HopThoai>

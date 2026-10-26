@@ -84,7 +84,18 @@ afterEach(() => {
   vi.useRealTimers()
   vi.unstubAllGlobals()
   datLech(0)
+  datAn(false)
 })
+
+/** Giả tab ẩn / hiện (document.hidden, visibilityState) và bắn visibilitychange. */
+function datAn(an: boolean, ban = false) {
+  Object.defineProperty(document, 'hidden', { configurable: true, get: () => an })
+  Object.defineProperty(document, 'visibilityState', {
+    configurable: true,
+    get: () => (an ? 'hidden' : 'visible'),
+  })
+  if (ban) act(() => void document.dispatchEvent(new Event('visibilitychange')))
+}
 
 describe('KetNoiProvider', () => {
   it('đang kết nối → ổn định, có meta, đồng hồ lệch đúng theo giờ server', async () => {
@@ -117,7 +128,6 @@ describe('KetNoiProvider', () => {
     const banner = screen.getByRole('alert')
     expect(banner.textContent).toContain('Mất kết nối với máy chủ cục bộ.')
     expect(banner.textContent).toContain('Tự thử lại sau 5 giây… Nội dung đang gõ được giữ nguyên.')
-    expect(banner.querySelector('[aria-live="polite"]')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Thử ngay' })).toBeTruthy()
 
     await troi(CHU_KY_HOI - 1)
@@ -193,6 +203,119 @@ describe('KetNoiProvider', () => {
     unmount()
     await troi(CHU_KY_HOI * 3)
     expect(soLanHoi).toBe(1)
+  })
+
+  it('tab ẩn thì nghỉ hỏi; hiện lại thì hỏi ngay rồi tiếp chu kỳ 5 giây', async () => {
+    dung()
+    await choXong()
+    expect(soLanHoi).toBe(1)
+    datAn(true, true)
+    await troi(CHU_KY_HOI * 4)
+    expect(soLanHoi).toBe(1)
+    datAn(false, true)
+    await choXong()
+    expect(soLanHoi).toBe(2)
+    await troi(CHU_KY_HOI)
+    expect(soLanHoi).toBe(3)
+  })
+
+  it('đang mất kết nối mà tab ẩn: cũng nghỉ tự thử lại', async () => {
+    cheDo = 'loi'
+    dung()
+    await choXong()
+    expect(trangThai()).toBe('mat-ket-noi')
+    datAn(true, true)
+    await troi(CHU_KY_HOI * 3)
+    expect(soLanHoi).toBe(1)
+    cheDo = 'ok'
+    datAn(false, true)
+    await choXong()
+    expect(soLanHoi).toBe(2)
+    expect(trangThai()).toBe('on-dinh')
+  })
+
+  it('không hỏi chồng: hiện lại tab hay "Thử ngay" lúc lượt trước chưa xong thì chờ chung lượt đó', async () => {
+    cheDo = 'treo'
+    dung()
+    await choXong()
+    expect(soLanHoi).toBe(1)
+    datAn(false, true)
+    let xong = false
+    act(() => {
+      void giaTri.thuNgay().then(() => {
+        xong = true
+      })
+    })
+    await choXong()
+    expect(soLanHoi).toBe(1)
+    expect(giaTri.dangThu).toBe(true)
+    await troi(HET_HAN_HOI)
+    expect(xong).toBe(true)
+    expect(trangThai()).toBe('mat-ket-noi')
+    expect(soLanHoi).toBe(1)
+    await troi(CHU_KY_HOI)
+    expect(soLanHoi).toBe(2)
+  })
+
+  it('có lại kết nối khi focus ở "Thử ngay": focus về H1 trước khi banner mất (không rơi về body)', async () => {
+    cheDo = 'loi'
+    render(
+      <ToastProvider>
+        <KetNoiProvider>
+          <BannerMatKetNoi />
+          <main id="noi-dung-chinh" tabIndex={-1}>
+            <h1 id="tieu-de-trang" tabIndex={-1}>
+              Trang
+            </h1>
+          </main>
+        </KetNoiProvider>
+      </ToastProvider>,
+    )
+    await choXong()
+    const nut = screen.getByRole('button', { name: 'Thử ngay' })
+    nut.focus()
+    cheDo = 'ok'
+    fireEvent.click(nut)
+    await choXong()
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }))
+  })
+
+  it('có lại kết nối khi focus ở ngoài banner: không kéo focus', async () => {
+    cheDo = 'loi'
+    render(
+      <ToastProvider>
+        <KetNoiProvider>
+          <BannerMatKetNoi />
+          <h1 id="tieu-de-trang" tabIndex={-1}>
+            Trang
+          </h1>
+          <button type="button">Nút khác</button>
+        </KetNoiProvider>
+      </ToastProvider>,
+    )
+    await choXong()
+    const khac = screen.getByRole('button', { name: 'Nút khác' })
+    khac.focus()
+    cheDo = 'ok'
+    await troi(CHU_KY_HOI)
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(document.activeElement).toBe(khac)
+  })
+
+  it('banner bọc trong vùng đánh dấu: lớp vùng bọc và lớp banner truyền đúng chỗ', async () => {
+    cheDo = 'loi'
+    render(
+      <KetNoiProvider>
+        <BannerMatKetNoi className="lop-boc" lopBanner="lop-banner" />
+      </KetNoiProvider>,
+    )
+    await choXong()
+    const banner = screen.getByRole('alert')
+    expect(banner.className).toContain('lop-banner')
+    const boc = banner.parentElement!
+    expect(boc.hasAttribute('data-banner-ket-noi')).toBe(true)
+    expect(boc.className).toBe('lop-boc')
   })
 
   it('ngoài provider: trạng thái mặc định, không có banner', () => {

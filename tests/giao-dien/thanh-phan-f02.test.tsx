@@ -313,7 +313,8 @@ describe('gallery F02b (component phần 2)', () => {
     )
     expect(within(vung).getByRole('button', { name: 'Hoàn tác' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Toast lỗi' }))
-    expect(within(vung).getByRole('button', { name: 'Thử lại' })).toBeTruthy()
+    // Toast lỗi là role=alert riêng (F26), nằm ngoài vùng status của toast thường.
+    expect(within(screen.getByRole('alert')).getByRole('button', { name: 'Thử lại' })).toBeTruthy()
   })
 
   it('C28: nút "Tìm mục…" của gallery mở hộp tìm kiếm thật', async () => {

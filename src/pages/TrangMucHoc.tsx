@@ -6,6 +6,7 @@ import TenMuc from '../components/TenMuc'
 import { timMucHoc } from './chung'
 import KhongTimThay from './KhongTimThay'
 import TrangSapCo from './TrangSapCo'
+import { MO_TA_SAP_CO } from '../copy/cho-duyet'
 
 export default function TrangMucHoc() {
   const muc = timMucHoc(useParams().slug)
@@ -23,7 +24,7 @@ export default function TrangMucHoc() {
         )
       }
       phase="2a"
-      moTa="Bài học, trạng thái học, vị trí trong lĩnh vực và Trước/Tiếp theo thứ tự cây."
+      moTa={MO_TA_SAP_CO.mucHoc}
     />
   )
 }

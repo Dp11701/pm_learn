@@ -10,6 +10,7 @@ import {
   tieuDeMacDinh,
 } from '../../../src/app/khung/menu'
 import { DU_LIEU_KHUNG_TRONG } from '../../../src/app/khung/du-lieu-khung'
+import { chuBadge } from '../../../src/components/trang-thai/Badge'
 import { layCay } from '../../../shared/roadmap'
 
 const cay = layCay()
@@ -58,17 +59,20 @@ describe('menu khung (§6.1)', () => {
     expect(ariaCurrent(null, 'on-tap')).toBeUndefined()
   })
 
-  it('badge: đặc ở Ôn tập, viền ở Nội dung, 0 thì không có', () => {
+  it('badge: đặc ở Ôn tập, viền ở Nội dung, 0 (hoặc âm) thì không có; mô tả giữ đủ số', () => {
     expect(badgeCua('on-tap', DU_LIEU_KHUNG_TRONG)).toBeNull()
     expect(badgeCua('noi-dung', DU_LIEU_KHUNG_TRONG)).toBeNull()
+    expect(badgeCua('on-tap', { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: -1 })).toBeNull()
     const duLieu = { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 12, soBanNhap: 1234 }
-    expect(badgeCua('on-tap', duLieu)).toEqual({ so: '12', moTa: '12 thẻ đến hạn', kieu: 'dac' })
-    expect(badgeCua('noi-dung', duLieu)).toEqual({
-      so: '1.234',
-      moTa: '1.234 bản nháp',
-      kieu: 'vien',
-    })
+    expect(badgeCua('on-tap', duLieu)).toEqual({ so: 12, moTa: '12 thẻ đến hạn', kieu: 'dac' })
+    expect(badgeCua('noi-dung', duLieu)).toEqual({ so: 1234, moTa: '1.234 bản nháp', kieu: 'vien' })
     expect(badgeCua('thong-ke', duLieu)).toBeNull()
+  })
+
+  it('badge > 99: C7 hiện "99+" (đề xuất 3.3)', () => {
+    const duLieu = { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 99, soBanNhap: 100 }
+    expect(chuBadge(badgeCua('on-tap', duLieu)!.so)).toBe('99')
+    expect(chuBadge(badgeCua('noi-dung', duLieu)!.so)).toBe('99+')
   })
 
   it('tiêu đề top bar mặc định = tên mục menu, ngoài menu = tên app', () => {

@@ -1,4 +1,6 @@
 // Tương phản token §5.1 ở Sáng và Tối, đọc thẳng src/styles/tokens.css + tokens-them.css.
+import { readFileSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   bangGiaoDien,
@@ -10,7 +12,19 @@ import {
   tiLeTuongPhan,
   dinhDangTiLe,
 } from '../../src/dev/thanh-phan/tuong-phan'
-import { CAP_TUONG_PHAN, SAI_SO, docFileToken, kiemTuongPhan } from '../../scripts/kiem-tuong-phan'
+import {
+  CAP_TUONG_PHAN,
+  CHU_AA,
+  FILE_TOKEN,
+  MIEN_KIEM,
+  SAI_SO,
+  UI_AA,
+  docFileToken,
+  kiemTuongPhan,
+  nguongDat,
+  tokenMauChuaXet,
+  tokenMauCuaFile,
+} from '../../scripts/kiem-tuong-phan'
 
 const mau = (s: string) => {
   const m = docMau(s)
@@ -112,6 +126,53 @@ describe('đọc file token', () => {
     }
   })
 
+  it('cổng đọc đúng mọi file token app.css import; src/styles không có file token nào khác', () => {
+    const goc = join(import.meta.dirname, '../..')
+    const app = readFileSync(join(goc, 'src/styles/app.css'), 'utf8')
+    const daImport = [...app.matchAll(/@import '\.\/([^']+\.css)'/g)].map(
+      (m) => `src/styles/${m[1]}`,
+    )
+    expect(daImport).toEqual(FILE_TOKEN)
+    const trongThuMuc = readdirSync(join(goc, 'src/styles'))
+      .filter((f) => f.endsWith('.css') && f !== 'app.css')
+      .map((f) => `src/styles/${f}`)
+      .sort()
+    expect(trongThuMuc).toEqual([...FILE_TOKEN].sort())
+  })
+
+  it('đã gộp token phase 1 (trạng thái, khung, phím tắt) vào tokens-them.css', () => {
+    for (const ten of [
+      '--st-learning-ic',
+      '--st-done-vien',
+      '--noi-dung-nhap',
+      '--drawer-w',
+      '--badge-h',
+      '--phim-tat-nen',
+      '--tim-kiem-chon',
+    ])
+      expect(giaTriToken(ba.sang, ten), ten).toBeDefined()
+  })
+
+  it('mọi token màu của tokens-them.css có cặp tương phản hoặc lý do miễn', () => {
+    expect(tokenMauChuaXet(cacFile)).toEqual([])
+    const mau = tokenMauCuaFile(cacFile[1], ba)
+    // Đủ token màu phase 1 (alias var() cũng tính): danh sách không rỗng do đọc sai file.
+    expect(mau).toEqual(
+      expect.arrayContaining(['--st-learning-ic', '--st-none-ic', '--tim-kiem-chon']),
+    )
+    // Lý do miễn chỉ cho token màu có thật, không trùng token đã có cặp.
+    const coCap = new Set(CAP_TUONG_PHAN.flatMap((c) => [c.chu, c.nen]))
+    for (const ten of Object.keys(MIEN_KIEM)) {
+      expect(mau, ten).toContain(ten)
+      expect(coCap.has(ten), ten).toBe(false)
+    }
+  })
+
+  it('token màu mới chưa xét thì cổng báo', () => {
+    const them = `${cacFile[1]}\n:root { --mau-moi: #123456 }\n:root[data-theme='dark'] { --mau-moi: #654321 }`
+    expect(tokenMauChuaXet([cacFile[0], them])).toEqual(['--mau-moi'])
+  })
+
   it('đọc được màu của mọi token trong danh sách cặp', () => {
     for (const c of CAP_TUONG_PHAN) {
       for (const ten of [c.chu, c.nen]) {
@@ -130,8 +191,22 @@ describe('tương phản theo §5.1 (cho phép thấp hơn số làm tròn 0,1)'
     for (const c of CAP_TUONG_PHAN) for (const t of c.toiThieu) expect(t).toBeGreaterThanOrEqual(3)
   })
 
+  it('ngưỡng AA là sàn cứng; chỉ số §5.1 làm tròn mới được trừ sai số', () => {
+    expect(nguongDat(CHU_AA)).toBe(4.5)
+    expect(nguongDat(UI_AA)).toBe(3)
+    expect(nguongDat(7.2)).toBeCloseTo(7.2 - SAI_SO)
+    const [k] = kiemTuongPhan(
+      bangGiaoDien([
+        ':root { --c: #777777; --n: #ffffff } :root[data-theme="dark"] { --c: #777777 }',
+      ]),
+      [{ ten: 'x', chu: '--c', nen: '--n', toiThieu: [CHU_AA, CHU_AA] }],
+    )
+    expect(k.tiLe).toBeGreaterThan(CHU_AA - SAI_SO)
+    expect(k.dat).toBe(false)
+  })
+
   it.each(ketQua.map((k) => [k.giaoDien, k.ten, k] as const))('%s · %s', (_g, _t, k) => {
-    expect(k.tiLe).toBeGreaterThanOrEqual(k.toiThieu - SAI_SO)
+    expect(k.tiLe).toBeGreaterThanOrEqual(nguongDat(k.toiThieu))
     expect(k.dat).toBe(true)
   })
 })
