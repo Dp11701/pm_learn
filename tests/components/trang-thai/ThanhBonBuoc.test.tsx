@@ -71,8 +71,10 @@ describe('ThanhBonBuoc (C10 đầy đủ)', () => {
     expect(links.map((a) => a.getAttribute('href'))).toEqual(Object.values(NEO))
     expect(nav.querySelector('ol')?.className).toContain('md:grid-cols-4')
     for (const a of links) {
-      expect(a.className).toContain('h-10')
-      expect(a.className).toContain('max-md:h-[var(--h-control-touch)]')
+      // Cao tối thiểu 40 (mobile 44), cao thêm khi chữ xuống dòng; h-full: các bước cùng hàng cao bằng nhau
+      expect(a.className).toContain('min-h-10')
+      expect(a.className).toContain('max-md:min-h-[var(--h-control-touch)]')
+      expect(a.className).toContain('h-full')
       expect(a.className).toContain('hover:bg-surface-2')
     }
   })
@@ -103,8 +105,6 @@ describe('ThanhBonBuoc (C10 đầy đủ)', () => {
     const { container } = render(<ThanhBonBuoc tinhTrang={DU} lienKet={NEO} />)
     const li = container.querySelector('li[data-buoc="ap-dung"]')!
     expect(li.textContent).toBe('Áp dụng · Không áp dụng')
-    // chữ bị cắt "…" khi cột hẹp thì title vẫn đủ
-    expect(li.querySelector('.truncate')?.getAttribute('title')).toBe('Áp dụng · Không áp dụng')
     expect(li.querySelector('svg')?.getAttribute('class')).toContain('lucide-minus')
   })
 
@@ -125,6 +125,34 @@ describe('ThanhBonBuoc (C10 đầy đủ)', () => {
     expect(o.tagName).toBe('DIV')
     expect(o.className).toContain('bg-surface-2')
     expect(o.className).toContain('text-muted')
+  })
+
+  it('chữ trạng thái không bao giờ bị cắt "…" (§11): ghi chú dài xuống dòng dưới tên, dấu · đầu dòng bị che', () => {
+    const { container } = render(
+      <ThanhBonBuoc
+        tinhTrang={{ ...MAU, 'kiem-tra': 'khong-ap-dung' }}
+        lienKet={NEO}
+        voHieu={['kiem-tra']}
+        ghiChu={{ 'kiem-tra': 'Không áp dụng · chưa có câu hỏi' }}
+      />,
+    )
+    // Không còn lớp cắt chữ một dòng ở bất kỳ đâu trong thanh
+    expect(container.querySelector('.truncate, .text-ellipsis, .whitespace-nowrap')).toBeNull()
+    expect(container.innerHTML).not.toMatch(/line-clamp/)
+    const chu = container.querySelector('[data-buoc="kiem-tra"] [data-chu-buoc]') as HTMLElement
+    // Tên + ghi chú là hai ô của hàng flex-wrap (ghi chú không vừa thì xuống dòng và tự ngắt)
+    const hang = chu.firstElementChild as HTMLElement
+    expect(hang.className).toContain('flex-wrap')
+    const [ten, ghiChu] = [...hang.children] as HTMLElement[]
+    expect(ten.textContent).toBe('Kiểm tra')
+    expect(ghiChu.textContent).toBe('· Không áp dụng · chưa có câu hỏi')
+    // Dấu · nằm trong phần đệm trái 16px của ghi chú; hàng lùi trái 16px trong khung overflow-hidden
+    expect(chu.className).toContain('overflow-hidden')
+    expect(hang.className).toContain('-ml-4')
+    expect(ten.className).toContain('pl-4')
+    expect(ghiChu.className).toContain('pl-4')
+    expect(ghiChu.className).not.toContain('min-w-0')
+    expect((ghiChu.firstElementChild as HTMLElement).className).toContain('absolute')
   })
 
   it('bấm bước gọi khiChon (để đưa focus vào khối)', () => {

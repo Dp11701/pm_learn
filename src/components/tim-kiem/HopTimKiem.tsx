@@ -5,8 +5,11 @@
 // quả đầu; ↑/↓ di chuyển, Enter mở /hoc/:slug, Esc đóng — bỏ qua khi Telex/VNI đang ghép chữ. id của
 // option theo id nút, nên kết quả đầu đổi khi gõ thì aria-activedescendant đổi và trình đọc đọc mục
 // Enter sẽ mở; số kết quả / "Không có kết quả" báo qua vùng status khi ngừng gõ (ThongBaoKetQua).
+// Icon + chữ trạng thái học của mỗi kết quả lấy từ dữ liệu học thật (src/app/du-lieu, phase 2a); truyền
+// `traMuc` thì dùng `traMuc` (test, gallery).
 import {
   Fragment,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -44,8 +47,9 @@ import ChipNoiDung from '../trang-thai/ChipNoiDung'
 import { LOP_ICON } from '../trang-thai/mau-trang-thai'
 import ThongBaoKetQua, { GOI_Y_KHONG_CO_KET_QUA } from './ThongBaoKetQua'
 import { viDuTimKiem, type ViDuTimKiem } from './vi-du'
+import { useTrangThai } from '../../app/du-lieu/trang-thai'
 
-/** Dữ liệu học của một mục cho hàng kết quả. Không có (phase 1) → Chưa học, không chip nội dung. */
+/** Dữ liệu học của một mục cho hàng kết quả. Không có → Chưa học, không chip nội dung. */
 export interface ThongTinMucTim {
   trangThai?: TrangThaiHoc
   canOnLai?: boolean
@@ -54,7 +58,7 @@ export interface ThongTinMucTim {
 }
 
 export interface DuLieuTimKiem {
-  /** Tra dữ liệu học theo id nút roadmap (phase 2a trở đi) */
+  /** Tra dữ liệu học theo id nút roadmap; không truyền thì lấy trạng thái học thật (useTrangThai) */
   traMuc?: (id: string) => ThongTinMucTim | undefined
   /** id → giải nghĩa của mục đã có nội dung, để tìm theo giải nghĩa */
   giaiNghia?: ReadonlyMap<string, string>
@@ -148,6 +152,12 @@ function NoiDungTim({
   moMuc: (muc: MucHoc) => void
 }) {
   const id = useId()
+  const { trangThaiCua } = useTrangThai()
+  const traMucThat = useCallback(
+    (idMuc: string): ThongTinMucTim => ({ trangThai: trangThaiCua(idMuc) }),
+    [trangThaiCua],
+  )
+  const tra = traMuc ?? traMucThat
   const idO = `${id}o`
   const idDs = `${id}ds`
   const idNhom = `${id}nhom`
@@ -238,7 +248,7 @@ function NoiDungTim({
                   id={idKetQua(kq.nut)}
                   kq={kq}
                   chon={i === dangChon}
-                  thongTin={traMuc?.(kq.nut.id)}
+                  thongTin={tra(kq.nut.id)}
                   khiBam={() => moMuc(kq.nut)}
                 />
               ))}

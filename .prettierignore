@@ -1,6 +1,6 @@
 docs/
-data/
-noi-dung/
+/data/
+/noi-dung/
 .mau/
 .frame/
 dist/

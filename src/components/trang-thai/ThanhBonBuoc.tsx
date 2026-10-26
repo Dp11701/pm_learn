@@ -1,6 +1,8 @@
 // C10 Thanh 4 bước (F02, F11, §1, đề xuất 3.2; quyết định 1: màu mực, không dùng xanh lá).
 // Bản đầy đủ ở đầu bài: lưới 4 cột cách 8 (mobile 2×2 — frame không vẽ, tự đặt để không cắt chữ),
-// mỗi bước cao 40 (mobile 44), viền 1px, bo 6, chữ 15/24,
+// mỗi bước cao 40 (mobile 44), viền 1px, bo 6, chữ 15/24; ghi chú "· …" cùng dòng tên như F11, không đủ chỗ
+// thì xuống dòng dưới tên (bỏ dấu ·) và tự ngắt dòng — bước cao thêm, các bước cùng hàng cao bằng nhau, chữ
+// trạng thái không bao giờ bị cắt "…" (§11 icon + chữ; vd. D8 "Không áp dụng · chưa có câu hỏi"),
 // chấm 20px — Xong: check trên nền mực · Đang làm: vòng mực 2px có chấm 8px, viền bước 1,5px mực,
 // chữ 600, aria-current="step" · Chưa làm: vòng rỗng viền border-input · Không áp dụng: vòng rỗng có
 // gạch ngang. Bấm bước cuộn tới khối tương ứng (link #neo).
@@ -148,7 +150,8 @@ export default function ThanhBonBuoc({
           const dangLam = tt === 'dang-lam' && !tat
           const chu = ghiChu[b] ?? GHI_CHU_MAC_DINH[tt]
           const href = tat ? undefined : lienKet[b]
-          const lop = `flex h-10 min-w-0 items-center gap-2 rounded-[var(--radius-sm)] px-3 text-[length:var(--fs-ui)] leading-[var(--lh-ui)] no-underline max-md:h-[var(--h-control-touch)] ${
+          // py-1.5: một dòng (6 + 24 + 6 + viền) vẫn trong 40 / 44 nên giữ đúng cao F11; nhiều dòng thì cao thêm.
+          const lop = `flex h-full min-h-10 min-w-0 items-center gap-2 rounded-[var(--radius-sm)] px-3 py-1.5 text-[length:var(--fs-ui)] leading-[var(--lh-ui)] no-underline max-md:min-h-[var(--h-control-touch)] ${
             dangLam ? 'border-[1.5px] border-primary font-semibold' : 'border border-border'
           } ${tat ? 'bg-surface-2 text-muted' : 'bg-surface text-text'} ${
             href ? 'transition-colors duration-150 hover:bg-surface-2' : ''
@@ -156,25 +159,29 @@ export default function ThanhBonBuoc({
           const noiDung = (
             <>
               <ChamBuoc tt={tt} voHieu={tat} />
-              {/* Ghi chú dài bị cắt "…" khi cột hẹp (F11 ở 720 đã tràn 8px): title giữ đủ chữ khi rê chuột */}
-              <span
-                className="min-w-0 truncate"
-                title={chu ? `${TEN_BUOC[b]} · ${chu}` : undefined}
-              >
-                {/* Khoảng trắng nằm ngoài span để tên truy cập không dính chữ ("Hiểu — đã xong") */}
-                {TEN_BUOC[b]}{' '}
-                {chu ? (
-                  <span className={`font-normal ${LOP_CHU_META} ${tat ? '' : 'text-muted'}`}>
-                    · {chu}
-                  </span>
-                ) : (
-                  <span className="sr-only">— {CHU_DOC[tt]}</span>
-                )}
+              {/* Tên + ghi chú là hai ô của hàng flex-wrap: ghi chú không vừa thì xuống dòng và tự ngắt. Hàng
+                  lùi trái 16px, mỗi ô đệm trái 16px; dấu · nằm trong phần đệm của ghi chú nên khi ghi chú đứng
+                  đầu dòng thì dấu · rơi ra ngoài khung overflow-hidden (không có "· " lơ lửng đầu dòng). */}
+              <span data-chu-buoc="" className="min-w-0 flex-1 overflow-hidden">
+                <span className="-ml-4 flex flex-wrap items-baseline">
+                  <span className="pl-4">{TEN_BUOC[b]}</span>
+                  {/* Khoảng trắng giữa hai ô để tên truy cập không dính chữ ("Hiểu — đã xong") */}{' '}
+                  {chu ? (
+                    <span
+                      className={`relative pl-4 font-normal ${LOP_CHU_META} ${tat ? '' : 'text-muted'}`}
+                    >
+                      <span className="absolute left-2">·</span> {chu}
+                    </span>
+                  ) : (
+                    <span className="sr-only">— {CHU_DOC[tt]}</span>
+                  )}
+                </span>
               </span>
             </>
           )
           return (
             <li key={b} className="min-w-0" data-buoc={b} data-tinh-trang={tt}>
+              {/* li giãn theo hàng của lưới; ô bên trong h-full để các bước cùng hàng cao bằng nhau */}
               {href ? (
                 <a
                   href={href}

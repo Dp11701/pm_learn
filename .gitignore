@@ -1,7 +1,7 @@
 node_modules/
 dist/
-data/
-noi-dung/
+/data/
+/noi-dung/
 .mau/
 .frame/
 *.tsbuildinfo

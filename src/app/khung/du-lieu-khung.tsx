@@ -1,6 +1,11 @@
-// Dữ liệu học mà khung app hiện (badge, khối Đang học, đồng hồ). Phase 1 chưa có API dữ liệu học
-// (phase 2a) nên mặc định là trạng thái trống; phase sau bọc khung bằng <DuLieuKhungProvider giaTri={…}>.
-import { createContext, useContext, type ReactNode } from 'react'
+// Dữ liệu học mà khung app hiện (badge, khối Đang học, đồng hồ).
+// - Không có <DuLieuKhungProvider> (app thật): lấy từ dữ liệu học thật (src/app/du-lieu) — từ phase 2a là
+//   khối "Đang học" (mục Đang học mở gần nhất trước + tổng); badge, đồng hồ cắm ở phase 3, 7a, 8.
+// - Có provider (gallery F02b, test khung): dùng đúng giá trị được đưa.
+import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { layCay } from '../../../shared/roadmap'
+import { cacMucDangHoc } from '../du-lieu/hoc-tiep'
+import { useTrangThai } from '../du-lieu/trang-thai'
 
 /** Chỗ cắm đồng hồ của phase 3 (C23 rút gọn). Khung chỉ đặt chỗ, không có logic đồng hồ. */
 export interface ODongHo {
@@ -26,7 +31,7 @@ export interface DuLieuKhung {
 
 export const DU_LIEU_KHUNG_TRONG: DuLieuKhung = { soTheDenHan: 0, soBanNhap: 0, dangHoc: [] }
 
-const NguCanhDuLieuKhung = createContext<DuLieuKhung>(DU_LIEU_KHUNG_TRONG)
+const NguCanhDuLieuKhung = createContext<DuLieuKhung | null>(null)
 
 export function DuLieuKhungProvider({
   giaTri,
@@ -38,6 +43,24 @@ export function DuLieuKhungProvider({
   return <NguCanhDuLieuKhung.Provider value={giaTri}>{children}</NguCanhDuLieuKhung.Provider>
 }
 
+/** Dữ liệu khung lấy từ dữ liệu học thật; chưa tải xong (hoặc cây lỗi) thì như trạng thái trống. */
+function useDuLieuKhungThat(): DuLieuKhung {
+  const { anhChup } = useTrangThai()
+  return useMemo(() => {
+    if (!anhChup) return DU_LIEU_KHUNG_TRONG
+    let dangHoc: string[]
+    try {
+      dangHoc = cacMucDangHoc(layCay(), anhChup).map((m) => m.id)
+    } catch {
+      // Cây lỗi: trang lỗi cây tự báo, khung coi như trống.
+      return DU_LIEU_KHUNG_TRONG
+    }
+    return { ...DU_LIEU_KHUNG_TRONG, dangHoc, tongDangHoc: dangHoc.length }
+  }, [anhChup])
+}
+
 export function useDuLieuKhung(): DuLieuKhung {
-  return useContext(NguCanhDuLieuKhung)
+  const giaTri = useContext(NguCanhDuLieuKhung)
+  const that = useDuLieuKhungThat()
+  return giaTri ?? that
 }

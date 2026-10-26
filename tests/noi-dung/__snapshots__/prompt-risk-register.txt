@@ -1,0 +1,68 @@
+Soạn bài học cho mục "Risk Register" trong roadmap quản lý dự án (PM) của roadmap.sh, dùng trong app tự học "Học PM A–Z".
+
+Người học là dev lead đang chuyển sang làm PM: đã quen vòng đời phát triển phần mềm, Scrum/Kanban, CI/CD, review code và Jira; có một dự án phần mềm thật để thực hành. Roadmap gốc chỉ có tên mục, không có nội dung; bài bạn soạn là bản nháp, người học sẽ tự soát và duyệt trong app.
+
+Mục cần soạn
+- Tên: Risk Register
+- Vị trí: Project Management › Risk Management › Risk Register
+- Loại: Tài liệu
+- File: noi-dung/project-management/risk-management/risk-register.md
+
+Frontmatter: đặt ở đầu file, đúng các khoá sau.
+---
+id: "R_EuTo3n9A-SvI3cB4kOW"
+loai: tai-lieu
+trang_thai_noi_dung: ban-nhap
+nguon: ai
+giai_nghia: <cụm tiếng Việt ngắn>
+lien_quan: [<slug>, <slug>]
+process_group: [<slug giai đoạn>, …]
+---
+- id, loai, trang_thai_noi_dung, nguon: giữ nguyên như trên.
+- giai_nghia: cụm tiếng Việt 2–6 chữ giải nghĩa tên mục; bỏ trống nếu tên không cần dịch.
+- lien_quan: 2–5 slug của các mục liên quan, lấy đúng chính tả trong "Slug các mục của roadmap" ở cuối. Đây là chỗ duy nhất ghi mục liên quan.
+- process_group: các giai đoạn quản lý dự án mà tài liệu được lập hoặc cập nhật, chọn trong: initiation, planning, execution, monitoring-and-control, closure.
+
+Thân bài: dùng đúng các tiêu đề ## sau, theo đúng thứ tự từ trên xuống. ★ là khối bắt buộc. Dòng tiêu đề trong file chỉ gồm "## " và tên khối, không ghi ★ hay phần mô tả.
+- "## Mục đích" ★: 2–4 câu: tài liệu dùng để làm gì, giải quyết vấn đề gì của dự án, ai đọc nó nhiều nhất.
+- "## Khi nào lập, ai lập, ai duyệt" ★: 2–3 câu: thời điểm lập trong vòng đời dự án, vai trò lập, vai trò duyệt. Các giai đoạn liên quan ghi ở process_group của frontmatter.
+- "## Cấu trúc tài liệu" ★: các phần của tài liệu, mỗi phần một dòng "- <tên phần> — <mô tả một dòng>".
+- "## Mẫu điền sẵn" ★: một bảng Markdown: hàng tiêu đề là các cột của tài liệu, thêm 3 hàng ví dụ giả định cho một dự án phần mềm. Người học tải bảng này về dạng .md / .csv để dùng.
+- "## Checklist chất lượng" ★: 4–6 dòng "- [ ] …", mỗi dòng một câu kiểm tra được bằng có/không.
+- "## Lỗi thường gặp" (tuỳ chọn): 3–4 lỗi hay gặp khi lập tài liệu này, mỗi lỗi một câu kèm cách tránh.
+- "## Tự kiểm tra" ★: 3–5 câu hỏi tình huống về cách lập và dùng tài liệu, mỗi câu một dòng "- H: <câu hỏi> | Đ: <đáp án>".
+- "## Tham khảo" ★: 2–5 nguồn, mỗi nguồn một dòng "- <tên nguồn> — <tác giả hoặc tổ chức>, <URL nếu có>".
+App tự tạo các khối "Nói lại bằng lời của bạn", "Bản của tôi", "Mục liên quan": không viết các khối này.
+
+Quy ước viết (app đọc đúng theo dạng này):
+- Câu hỏi Tự kiểm tra: mỗi câu đúng một dòng "- H: <câu hỏi> | Đ: <đáp án>", có dấu cách hai bên dấu |. Đáp án dài thì viết tiếp ở các dòng thụt vào 2 dấu cách ngay bên dưới. Cần chữ | trong câu hỏi hay đáp án thì viết \|.
+- Danh sách tick: mỗi dòng "- [ ] <tiêu chí>".
+- Mẫu điền sẵn: bảng Markdown (GFM) đầu tiên của khối là mẫu người học tải về; mọi hàng có đủ số cột.
+
+Yêu cầu:
+- Viết tiếng Việt có dấu, câu ngắn, rõ ý; gọi người học là "bạn".
+- Giữ nguyên tên mục và thuật ngữ PM bằng tiếng Anh, không dịch, không phiên âm; lần đầu nhắc một thuật ngữ có thể ghi nghĩa tiếng Việt trong ngoặc.
+- Chỉ viết điều bạn chắc chắn. Không bịa sự kiện, số liệu, trích dẫn, tên người hay nguồn tham khảo; điều gì không chắc thì bỏ, hoặc ghi rõ là chưa chắc.
+- Ghi nguồn ở khối Tham khảo; chỉ ghi nguồn có thật, ưu tiên nguồn chính thức và tài liệu gốc.
+- Ví dụ, tình huống và hàng ví dụ trong bảng là giả định để minh hoạ: không gán cho công ty hay người có thật.
+- Chỉ dùng Markdown thường: không HTML, không chèn ảnh; không viết chữ nào trước dòng "## " đầu tiên ngoài frontmatter; không thêm tiêu đề ## nào ngoài danh sách trên.
+- Đây là bản nháp: giữ trang_thai_noi_dung: ban-nhap và nguon: ai, không thêm ngay_duyet; chỉ người học duyệt bài trong app.
+
+Trả về toàn bộ nội dung file (frontmatter + thân bài). Ghi được file thì lưu đúng đường dẫn noi-dung/project-management/risk-management/risk-register.md; không thì đặt cả file trong một khối mã markdown để người học tự lưu.
+
+Slug các mục của roadmap (chỉ dùng slug có trong danh sách, không tự đặt):
+- Project Management › PM Framework / Approach: opa, pmis, sdlc, pdlc, eef, scrum, kanban, waterfall, iterative-approach, incremental-approach, agile, lean-principles, v-model, discovery-phase, poc, feasibility-study, mvp, scrum-of-scrums, safe-scaled-agile, nexus, spotify-model, less
+- Project Management › Project Governance: project-charter, project-management-plan, project-sponsor, steering-committee, supportive, controlling, directive, strategic, project-status-report, project-health-report, risk-and-issue-reports, meeting-notes, decision-log, initiation, planning, execution, monitoring-and-control, closure
+- Project Management › Scope Management: definition-of-ready, wbs-wbs-dictionary, scope-creep, scope-statement, definition-of-done, acceptance-of-deliverables, scope-baseline, functional-requirements, transition-requirements, non-functional-requirements, moscow, rice-score, ice-score, value-effort-matrix, 100-dollar-test, eisenhower-matrix
+- Project Management › Change Management: change-control-board-ccb, traceability-matrix, change-request-cr, change-log, lewins-change-management-model, adkar-model, kotters-8-step-process, mckinsey-7s-framework
+- Project Management › Schedule Management: schedule-baseline, earned-value-management, schedule-compression-crashing-fast-tracking, monitoring-schedule-performance, schedule-forecasting, schedule-creation-milestones-phases-critical-path, burndown-burnup-charts, use-case-points, t-shirt-sizing, story-points-estimation-planning-poker, analogous-estimation, bottom-up-top-down-estimation, three-point-estimation, expert-judgment, wideband-delphi, function-point-analysis
+- Project Management › Risk Management: risk-register, pestle, quantitative-risk-assessment, risk-identification-process, qualitative-risk-assessment, risk-and-opportunity-response-strategies, risk-appetite, contingency-management-reserve-allocation, vuca, bani
+- Project Management › Cost Management: cost-baseline, gross-profit-margin-gpm, purchase-order-invoice, how-to-develop-project-budget, cashflow-revenue-profit, cost-of-goods-sold-cogs, capex-opex, ebit-ebitda, depreciation-amortization, pnl-model
+- Project Management › Quality Management: quality-metrics, inspection, quality-control, quality-assurance, audit, cost-of-quality-coq, six-sigma-methodology, total-quality-management-tqm, quality-gates, quality-management-plan
+- Project Management › People Management: carrying-interviews, retention, mentoring-and-professional-development, recognition, onboarding-and-adaptation, staffing-process, tuckmans-model, thomas-kilmann-conflict-management-model, alderfers-erg-theory, maslows-hierarchy-of-needs, mcgregor-theory, herzbergs-motivation-hygiene-theory, vrooms-theory-of-expectancy, mcclellands-theory-of-needs
+- Project Management › Stakeholder and Communication Management: power-interest-grid, salience-model, expectations-management, communication-channels-matrix, communication-channels-calculation, stakeholder-engagement-assessment-matrix, communication-management-plan, stakeholder-register, raci-matrix
+- Project Management › Procurement Management: make-or-buy-decision-making, rfp, rfq, rfi, nda, msa, sow, sla, time-and-material, fixed-price, cost-reimbursable
+- Business Acumen: sales-process, presales, business-model-canvas, net-present-value-npv, internal-rate-of-return-irr, payback-period, benefit-cost-ratio, opportunity-cost-analysis, strategic-alignment-matrix, portfolio-balancing, scoring-models, roi, project-based-engagement, managed-services, hybrid-model, dedicated-team, staff-augmentation
+- Technical Acumen: ci-cd, infrastructure-management, cloud-overview, data-quality, data-security, test-strategy-test-plan, test-case-management, defect-management, automated-testing-test-pyramid, llms-overview, prompt-engineering, genai-genai-for-sdlc, branching-strategy, code-review, tech-debt, architectural-principles
+- Tools: miro, mural, figjam, ms-project, primavera-p6-oracle, asana, trello, azure-devops, jira, confluence, ms-suite, google-suite
+- Certifications: professional-scrum-master-psm, prince-2-foundation, certified-associate-in-project-management-capm, professional-scrum-product-owner-pspo, prince-2-practitioner, project-management-professional-pmp, professional-scrum-with-kanban-psk, itil, agile-certified-practitioner-pmi-acp, safe-certifications

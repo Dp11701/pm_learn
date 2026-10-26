@@ -10,6 +10,7 @@
   "scripts": {
     "predev": "tsx scripts/kiem-moi-truong.ts",
     "dev": "concurrently -k -n web,api -c blue,magenta \"vite\" \"tsx watch server/index.ts\"",
+    "dev:mau": "tsx scripts/dev-mau.ts",
     "build": "tsc -b && vite build",
     "start": "tsx server/index.ts",
     "test": "npm run test:tz && npm run test:go-cung",

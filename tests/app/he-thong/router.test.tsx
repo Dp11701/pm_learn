@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 // Bảng route (§6.1 routes P0 + P1, đề xuất 4.1): mọi route có trang với H1, route chưa làm tới hiện C38
 // "Có ở phase n", slug kiểm theo cây, route lạ → 404 trong khung (D24), /hoc/:slug/soan ngoài khung (D27).
+// /hoc/:slug là trang bài thật (phase 2a): API dữ liệu học / bài / trạng thái nội dung là máy chủ giả trong bộ
+// nhớ (giaApiBai), không đi mạng.
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { datLech, layLech, now } from '../../../shared/clock'
@@ -25,7 +27,65 @@ vi.mock('../../../src/components/tim-kiem/TimKiem', async () => ({
   useTimKiem: () => ({ mo: () => {} }),
 }))
 
-beforeEach(datMoiTruong)
+/**
+ * Máy chủ giả cho trang bài: GET /api/state (chưa có dữ liệu học), GET /api/bai/:id (mục chưa có file),
+ * POST /api/luot-mo/:id, GET /api/noi-dung/trang-thai (chưa mục nào có file). /api/meta và đường dẫn khác
+ * đi tiếp vào fetch giả của datMoiTruong.
+ */
+function giaApiBai() {
+  const fetchGoc = globalThis.fetch
+  const json = (data: unknown) =>
+    new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      const method = init?.method ?? 'GET'
+      if (method === 'GET' && url === '/api/state') {
+        return Promise.resolve(json({ revision: 1, trangThai: {}, luotMo: {} }))
+      }
+      if (method === 'GET' && url === '/api/noi-dung/trang-thai') return Promise.resolve(json({}))
+      const bai = /^\/api\/bai\/(.+)$/.exec(url)
+      if (method === 'GET' && bai) {
+        return Promise.resolve(
+          json({
+            muc: decodeURIComponent(bai[1]),
+            trangThaiNoiDung: { loai: 'chua-co' },
+            bai: null,
+            loiDoc: null,
+            canhBaoDuyet: null,
+            banHien: null,
+            hashFile: null,
+          }),
+        )
+      }
+      const luotMo = /^\/api\/luot-mo\/(.+)$/.exec(url)
+      if (method === 'POST' && luotMo) {
+        return Promise.resolve(
+          json({
+            revision: 1,
+            id: decodeURIComponent(luotMo[1]),
+            lanMoCuoi: '2026-10-23T08:00:00.000Z',
+          }),
+        )
+      }
+      return fetchGoc(input, init)
+    }),
+  )
+}
+
+/** Các lần gọi fetch (method + đường dẫn), trừ /api/meta. */
+function cacLanGoiApi() {
+  return vi
+    .mocked(fetch)
+    .mock.calls.map(([input, init]) => `${init?.method ?? 'GET'} ${String(input)}`)
+    .filter((x) => x !== 'GET /api/meta')
+}
+
+beforeEach(() => {
+  datMoiTruong()
+  giaApiBai()
+})
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
@@ -66,8 +126,6 @@ describe('route tĩnh chưa làm tới', () => {
     ['/on-tap/phien', 'Về Ôn tập', '/on-tap'],
     ['/lo-trinh-goi-y', 'Về Lộ trình', '/lo-trinh'],
     ['/chao-mung', 'Về Tổng quan', '/'],
-    ['/hoc/scope-creep', 'Về Lộ trình', '/lo-trinh'],
-    ['/hoc/project-management-professional-pmp', 'Về Chứng chỉ', '/chung-chi'],
     ['/linh-vuc/scope-management', 'Về Lộ trình', '/lo-trinh'],
     ['/phan/tools', 'Về Lộ trình', '/lo-trinh'],
   ])(
@@ -114,22 +172,46 @@ describe('route tĩnh chưa làm tới', () => {
 })
 
 describe('trang có slug', () => {
-  it('/hoc/:slug: H1 tên mục (lang=en), chip loại, "Có ở phase 2a"', async () => {
+  it('/hoc/:slug: trang bài thật trong khung — H1 tên mục (lang=en), chip loại + chip nội dung, C6, 4 bước', async () => {
+    const sc = cayMau.mucTheoSlug.get('scope-creep')!
     await moTrang('/hoc/scope-creep')
+    expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
     expect(h1().textContent).toBe('Scope Creep')
     expect(h1().querySelector('[lang="en"]')?.textContent).toBe('Scope Creep')
     expect(document.title).toBe('Scope Creep · Học PM A–Z')
-    expect(screen.getByText('Chủ đề')).toBeTruthy()
-    expect(screen.getByText('Có ở phase 2a')).toBeTruthy()
-    expect(khung()).not.toBeNull()
+    const dau = h1().closest('header')!
+    expect(within(dau).getByText('Chủ đề')).toBeTruthy()
+    expect(screen.getByRole('radiogroup', { name: 'Trạng thái học' })).toBeTruthy()
+    expect(screen.getByRole('group', { name: 'Bốn bước học' })).toBeTruthy()
+    // Bài tải từ API giả: mục chưa có file → chip "Chưa có nội dung" + card F17
+    expect(await screen.findByRole('heading', { name: 'Mục này chưa có nội dung.' })).toBeTruthy()
+    expect(within(dau).getByText('Chưa có nội dung')).toBeTruthy()
+    await waitFor(() =>
+      expect(screen.getByRole('radio', { name: /Chưa học/ }).getAttribute('aria-checked')).toBe(
+        'true',
+      ),
+    )
+    // Không còn ô giữ chỗ phase 1
+    expect(screen.queryByText(/^Có ở phase /)).toBeNull()
+    await waitFor(() =>
+      expect(cacLanGoiApi()).toEqual(
+        expect.arrayContaining([
+          'GET /api/state',
+          `GET /api/bai/${encodeURIComponent(sc.id)}`,
+          `POST /api/luot-mo/${encodeURIComponent(sc.id)}`,
+          'GET /api/noi-dung/trang-thai',
+        ]),
+      ),
+    )
   })
 
   it('/hoc/:slug: chip theo mẫu bài; dòng tên gốc khi tên đã sửa', async () => {
+    const chipLoai = () => within(h1().closest('header')!).getByText
     await moTrang('/hoc/risk-register')
-    expect(screen.getByText('Tài liệu')).toBeTruthy()
+    expect(chipLoai()('Tài liệu')).toBeTruthy()
     cleanup()
     await moTrang('/hoc/project-management-professional-pmp')
-    expect(screen.getByText('Chứng chỉ')).toBeTruthy()
+    expect(chipLoai()('Chứng chỉ')).toBeTruthy()
     cleanup()
     const coTenGoc = cayMau.mucHoc.find((m) => m.labelOriginal)!
     await moTrang(`/hoc/${coTenGoc.slug}`)
@@ -137,6 +219,26 @@ describe('trang có slug', () => {
       `Tên gốc trên roadmap: ${coTenGoc.labelOriginal}`,
     )
   })
+
+  it.each([
+    ['/hoc/scope-creep', 'scope-creep'],
+    ['/hoc/project-management-professional-pmp', 'project-management-professional-pmp'],
+  ])(
+    '%s: luôn có đường đi tiếp (D20, §2 quy tắc 4) — pager Trước/Tiếp tới mục kề trong cây',
+    async (duongDan, slug) => {
+      await moTrang(duongDan)
+      const muc = cayMau.mucTheoSlug.get(slug)!
+      const pager = await screen.findByRole('navigation', { name: 'Mục trước và tiếp' })
+      const cac = within(pager)
+        .getAllByRole('link')
+        .map((a) => a.getAttribute('href'))
+      const ke = [cayMau.mucHoc[muc.index - 1], cayMau.mucHoc[muc.index + 1]]
+        .filter(Boolean)
+        .map((m) => `/hoc/${m.slug}`)
+      expect(cac).toEqual(ke)
+      expect(screen.queryByText(/^Có ở phase /)).toBeNull()
+    },
+  )
 
   it('/linh-vuc/:slug: H1 tên lĩnh vực, chip Lĩnh vực, "Có ở phase 4"', async () => {
     await moTrang('/linh-vuc/scope-management')
