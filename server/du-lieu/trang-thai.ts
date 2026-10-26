@@ -1,6 +1,7 @@
 import { ngayCua, now } from '../../shared/clock.ts'
 import type { Db } from '../db/index.ts'
 import { layRevision, tangRevision } from '../db/settings.ts'
+import { mucCanOnLai } from './the.ts'
 import {
   giaTriCua,
   mucCua,
@@ -40,9 +41,20 @@ export function docMucTrangThai(db: Db, id: string): MucTrangThai | undefined {
 
 /**
  * Ảnh chụp dữ liệu học cho GET /api/state. `laMuc` lọc theo cây: bản ghi của mục không còn trong cây vẫn
- * nằm trong DB (bất biến 8) nhưng không vào ảnh chụp, nên không tính tiến độ.
+ * nằm trong DB (bất biến 8) nhưng không vào ảnh chụp, nên không tính tiến độ. canOnLai tính lúc đọc theo
+ * homNay() của server (bất biến 3). Đọc trong một transaction để các phần khớp cùng một revision.
  */
-export function docAnhChup(db: Db, laMuc: (id: string) => boolean = () => true): AnhChupHoc {
+export function docAnhChup(
+  db: Db,
+  laMuc: (id: string) => boolean = () => true,
+): AnhChupHoc & { canOnLai: string[] } {
+  return db.transaction(() => docAnhChupTrong(db, laMuc))()
+}
+
+function docAnhChupTrong(
+  db: Db,
+  laMuc: (id: string) => boolean,
+): AnhChupHoc & { canOnLai: string[] } {
   const trangThai: Record<string, MucTrangThai> = {}
   const cacDong = db
     .prepare('SELECT item_id, status, skip_reason FROM item_status ORDER BY item_id')
@@ -55,7 +67,7 @@ export function docAnhChup(db: Db, laMuc: (id: string) => boolean = () => true):
     .all() as { item_id: string; last_opened_at: string }[]
   for (const dong of cacLuot) if (laMuc(dong.item_id)) luotMo[dong.item_id] = dong.last_opened_at
 
-  return { revision: layRevision(db), trangThai, luotMo }
+  return { revision: layRevision(db), trangThai, luotMo, canOnLai: mucCanOnLai(db, laMuc) }
 }
 
 export interface ThamSoDatTrangThai {

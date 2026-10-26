@@ -1,6 +1,6 @@
 // API bước Áp dụng (đề xuất 2.1 bảng practice, 3.2; §1 "Không áp dụng" kèm lý do; bất biến 8): migration 3,
-// GET / PUT / DELETE /api/ap-dung trên DB + thư mục tạm, transaction + revision, câu lỗi tiếng Việt, 409 cho
-// mẫu bài chưa được đánh dấu ở phase 2a.
+// GET / PUT / DELETE /api/ap-dung trên DB + thư mục tạm, transaction + revision, câu lỗi tiếng Việt. Từ phase 3
+// /api/ap-dung là bí danh của PUT /api/hoc/:id/thuc-hanh và nhận mọi mẫu bài (test đầy đủ ở hoc.test.ts).
 import path from 'node:path'
 import request from 'supertest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -104,22 +104,12 @@ describe('migration 3 — bảng practice (đề xuất 2.1)', () => {
     expect(khoaChinh).toEqual(['item_id'])
   })
 
-  it('không tạo bảng nào khác của phase 3', () => {
+  it('chưa có bảng của phase sau (Bản của tôi 7c, kế hoạch thi P1, Đã soát 7a)', () => {
     const bang = db
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
       .pluck()
       .all() as string[]
-    for (const ten of [
-      'projects',
-      'restatements',
-      'self_check',
-      'doc_versions',
-      'doc_checklist',
-      'cert_plans',
-      'notes',
-      'flashcards',
-      'time_entries',
-    ]) {
+    for (const ten of ['doc_versions', 'doc_checklist', 'cert_plans', 'review_marks']) {
       expect(bang).not.toContain(ten)
     }
   })
@@ -140,7 +130,16 @@ describe('migration 3 — bảng practice (đề xuất 2.1)', () => {
     expect(() => them('dang-lam', 'lý do')).toThrow(/CHECK/)
     expect(() => them('khong-ap-dung', 'Không thi chứng chỉ này')).not.toThrow()
     db.prepare("DELETE FROM practice WHERE item_id = 'x'").run()
-    expect(() => them('xong', null)).not.toThrow()
+    // Phase 3 (migration 5): 'xong' phải có kết quả và done_at
+    expect(() => them('xong', null)).toThrow(/CHECK/)
+    expect(() =>
+      db
+        .prepare(
+          `INSERT INTO practice (item_id, result_md, state, done_at, created_at, updated_at)
+           VALUES ('x', 'Kết quả', 'xong', 'a', 'a', 'a')`,
+        )
+        .run(),
+    ).not.toThrow()
   })
 })
 
@@ -255,18 +254,20 @@ describe('PUT /api/ap-dung/:id — Không áp dụng kèm lý do', () => {
     expect(demPractice()).toBe(0)
   })
 
-  it('409: Chủ đề và Tài liệu chưa đánh dấu được ở phase 2a (câu tiếng Việt), không ghi gì', async () => {
+  it('phase 3: Chủ đề và Tài liệu cũng đánh dấu được (bỏ luật chỉ Chứng chỉ của 2a)', async () => {
     for (const m of [chuDe, taiLieu]) {
-      const res = await put(m.id, { khongApDung: true, lyDo: 'x' })
-      expect(res.status).toBe(409)
-      expect(res.body.loi).toContain(
-        `Mục "${m.label}" là ${m.mau === 'chu-de' ? 'Chủ đề' : 'Tài liệu'}`,
-      )
-      expect(res.body.loi).toContain('chỉ mục Chứng chỉ đánh dấu Không áp dụng được')
-      expect(res.body.loi).toContain('có ở phase 3')
+      const res = await put(m.id, { khongApDung: true, lyDo: 'Dự án không có phần này' })
+      expect(res.status).toBe(200)
+      expect(res.body.muc).toEqual({ trangThai: 'khong-ap-dung', lyDo: 'Dự án không có phần này' })
+      expect(
+        (await request(app).get(`/api/hoc/${m.id}`).set('Host', HOST)).body.thucHanh,
+      ).toMatchObject({
+        trangThai: 'khong-ap-dung',
+        lyDo: 'Dự án không có phần này',
+      })
     }
-    expect(demPractice()).toBe(0)
-    expect(layRevision(db)).toBe(0)
+    expect(demPractice()).toBe(2)
+    expect(layRevision(db)).toBe(2)
   })
 
   it('transaction: tăng revision lỗi → không có hàng, revision giữ nguyên (500)', async () => {
@@ -329,11 +330,11 @@ describe('DELETE /api/ap-dung/:id — bỏ đánh dấu (Hoàn tác)', () => {
     expect(dong(chungChi2.id)?.na_reason).toBe('Giữ nguyên')
   })
 
-  it('404 / 409 như PUT', async () => {
+  it('404 như PUT; mục chưa đánh dấu (mọi mẫu bài) → không ghi gì', async () => {
     expect((await xoa(ID_LA)).status).toBe(404)
     const res = await xoa(chuDe.id)
-    expect(res.status).toBe(409)
-    expect(res.body.loi).toContain('có ở phase 3')
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ revision: 0, id: chuDe.id, muc: null, truoc: null, daDoi: false })
   })
 
   it('transaction: tăng revision lỗi → hàng còn nguyên (500)', async () => {
@@ -352,8 +353,11 @@ describe('DELETE /api/ap-dung/:id — bỏ đánh dấu (Hoàn tác)', () => {
 describe('hàm ghi — giữ dữ liệu bài thực hành của phase 3', () => {
   it('Không áp dụng trên hàng đã có kết quả: giữ dự án / kết quả / tiêu chí; bỏ đánh dấu → dang-lam', () => {
     db.prepare(
+      `INSERT INTO projects (id, name, created_at, updated_at) VALUES (1, 'Dự án', 'a', 'a')`,
+    ).run()
+    db.prepare(
       `INSERT INTO practice (item_id, project_id, result_md, criteria, state, done_at, created_at, updated_at)
-       VALUES (?, 1, 'Kết quả', '[1]', 'xong', '2026-10-20T00:00:00.000Z', 'a', 'a')`,
+       VALUES (?, 1, 'Kết quả', '{"k1":true}', 'xong', '2026-10-20T00:00:00.000Z', 'a', 'a')`,
     ).run(chuDe.id)
     const ghi = danhDauKhongApDung(db, { id: chuDe.id, lyDo: 'Dự án không có phần này' })
     expect(ghi.truoc).toEqual({ trangThai: 'xong' })
@@ -362,7 +366,8 @@ describe('hàm ghi — giữ dữ liệu bài thực hành của phase 3', () =>
       na_reason: 'Dự án không có phần này',
       project_id: 1,
       result_md: 'Kết quả',
-      criteria: '[1]',
+      criteria: '{"k1":true}',
+      done_at: null,
     })
     const bo = boDanhDauKhongApDung(db, chuDe.id)
     expect(bo.muc).toEqual({ trangThai: 'dang-lam' })

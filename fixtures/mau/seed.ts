@@ -1,6 +1,8 @@
-// Seed DB của bộ dữ liệu mẫu (§7, đề xuất mục 7) cho `npm run dev:mau`. Ghi các bảng đã có tới phase 2b:
-// settings, item_status + status_events, item_visits, content_approvals, content_files. Ghi qua đúng hàm của
-// server (datTrangThai, ghiLuotMo, ghiDongSo) với thời điểm cố định nên lần chạy nào cũng ra cùng dữ liệu.
+// Seed DB của bộ dữ liệu mẫu (§7, đề xuất mục 7) cho `npm run dev:mau`. Ghi các bảng đã có tới phase 3:
+// settings, item_status + status_events, item_visits, content_approvals, content_files (2a, 2b); projects,
+// practice, restatements, self_check, notes, flashcards + flashcard_reviews, time_entries, active_timer (3).
+// Ghi qua đúng hàm của server (datTrangThai, ghiLuotMo, ghiDongSo, ghiThucHanh, taoThe, ghiLanOn, batDau…) với
+// thời điểm cố định nên lần chạy nào cũng ra cùng dữ liệu.
 //
 // Cách mở rộng: mỗi phase thêm bảng thì thêm một phần vào PHAN_SEED (chỉ ghi bảng của phase đó, đọc số
 // liệu từ so-lieu.ts) và gỡ dòng tương ứng khỏi CHUA_SEED.
@@ -10,12 +12,29 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { ngayCua } from '../../shared/clock.ts'
 import type { TrangThaiHoc } from '../../shared/domain/trang-thai.ts'
-import { docFrontmatter } from '../../shared/noi-dung/index.ts'
+import { docFrontmatter, phanTichBai, type CauTrucKhoi } from '../../shared/noi-dung/index.ts'
 import type { Cay, MucHoc } from '../../shared/roadmap/index.ts'
 import type { Db } from '../../server/db/index.ts'
-import { ghiSetting } from '../../server/db/settings.ts'
+import { ghiSetting, tangRevision } from '../../server/db/settings.ts'
+import { batDau, themPhien } from '../../server/du-lieu/dong-ho.ts'
+import { themDuAn } from '../../server/du-lieu/du-an.ts'
+import { ghiGhiChu, ghiNoiLai, ghiThucHanh, ghiTuKiemTra } from '../../server/du-lieu/hoc.ts'
 import { ghiDongSo } from '../../server/du-lieu/so-noi-dung.ts'
+import { ghiLanOn, taoThe } from '../../server/du-lieu/the.ts'
 import { datTrangThai, ghiLuotMo } from '../../server/du-lieu/trang-thai.ts'
+import {
+  CHU_MAU,
+  DONG_HO_MAU,
+  DU_AN_MAU,
+  GHI_CHU_MAU,
+  GIO_ON,
+  LUOT_MO_LAI,
+  NOI_LAI_DANG_HOC,
+  PHIEN_GIO,
+  THE_MAU,
+  THUC_HANH_DANG_LAM,
+  THUC_HANH_XONG,
+} from './so-lieu-hoc.ts'
 import { dsFileMd } from './tao-noi-dung.ts'
 import {
   BAN_NHAP,
@@ -109,8 +128,10 @@ function seedTrangThaiHoc({ db, cay }: NguCanhSeed): void {
 }
 
 function seedLuotMo({ db, cay }: NguCanhSeed): void {
+  // Mục Đã xong mở lại sau lúc xong (thêm ghi chú / thẻ, so-lieu-hoc.ts) thì lượt mở cuối là lúc mở lại.
+  const moLai = new Map(LUOT_MO_LAI.map((x) => [x.slug, luc(x.luc)]))
   const luot = [
-    ...DA_XONG.map((x) => ({ slug: x.slug, ms: luc(x.xong) })),
+    ...DA_XONG.map((x) => ({ slug: x.slug, ms: moLai.get(x.slug) ?? luc(x.xong) })),
     ...DANG_HOC.map((x) => ({ slug: x.slug, ms: luc(x.moCuoi) })),
   ].sort((a, b) => a.ms - b.ms)
   for (const x of luot) ghiLuotMo(db, mucCua(cay, x.slug).id, x.ms)
@@ -169,40 +190,182 @@ function seedSoNoiDung({ db, cay, noiDungDir }: NguCanhSeed): void {
   }
 }
 
-/** Các phần seed theo thứ tự chạy (phase 2a, 2b). Phase sau thêm phần của mình vào cuối. */
+// ---------- Phase 3: 4 bước, ghi chú, flashcard, giờ học (so-lieu-hoc.ts) ----------
+
+const PHUT = 60_000
+
+/** Cấu trúc khối (Thực hành, Tự kiểm tra) của bài mẫu trong thư mục nội dung. */
+function cauTrucCua(
+  ng: NguCanhSeed,
+  muc: MucHoc,
+  kieu: CauTrucKhoi['kieu'],
+): CauTrucKhoi | undefined {
+  const tep = path.join(ng.noiDungDir, muc.duongDanTuongDoi)
+  if (!fs.existsSync(tep)) return undefined
+  const bai = phanTichBai(fs.readFileSync(tep, 'utf8'), muc)
+  return bai.khoi.find((k) => k.cauTruc?.kieu === kieu)?.cauTruc ?? undefined
+}
+
+/** id dự án mẫu (seed 'du-an' chạy trước). */
+let idDuAnMau = 0
+
+function seedDuAn({ db }: NguCanhSeed): void {
+  idDuAnMau = themDuAn(db, {
+    ten: DU_AN_MAU.ten,
+    giaiDoan: DU_AN_MAU.giaiDoan,
+    vaiTro: DU_AN_MAU.vaiTro,
+    luc: luc(DU_AN_MAU.tao),
+  }).duAn.id
+}
+
+/** 7 bài thực hành Xong (mọi tiêu chí tick, 15 phút trước lúc mục xong) + Scope Creep đang làm (F11). */
+function seedThucHanh(ng: NguCanhSeed): void {
+  const xong = new Map(DA_XONG.map((x) => [x.slug, x.xong]))
+  for (const slug of THUC_HANH_XONG) {
+    const muc = mucCua(ng.cay, slug)
+    const moc = xong.get(slug)
+    if (!moc || muc.mau !== 'chu-de')
+      throw new Error(`Bài thực hành Xong phải là Chủ đề Đã xong: ${slug}`)
+    const th = cauTrucCua(ng, muc, 'thuc-hanh')
+    const tieuChi = Object.fromEntries(
+      (th?.kieu === 'thuc-hanh' ? th.tieuChi : []).map((t) => [t.khoa, true]),
+    )
+    ghiThucHanh(ng.db, {
+      id: muc.id,
+      mau: muc.mau,
+      yeuCau: { trangThai: 'xong', duAnId: idDuAnMau, ketQua: CHU_MAU.ketQua, tieuChi },
+      luc: luc(moc) - 15 * PHUT,
+    })
+  }
+  const sc = mucCua(ng.cay, THUC_HANH_DANG_LAM.slug)
+  ghiThucHanh(ng.db, {
+    id: sc.id,
+    mau: sc.mau,
+    yeuCau: { trangThai: 'dang-lam', duAnId: idDuAnMau },
+    luc: luc(THUC_HANH_DANG_LAM.luc),
+  })
+}
+
+/** Nói lại: mọi mục Đã xong (10 phút trước lúc xong) + Risk Register 21:18, Scope Creep 21:42 (F11, F15). */
+function seedNoiLai({ db, cay }: NguCanhSeed): void {
+  const ds = [
+    ...DA_XONG.map((x) => ({ slug: x.slug, ms: luc(x.xong) - 10 * PHUT })),
+    ...NOI_LAI_DANG_HOC.map((x) => ({ slug: x.slug, ms: luc(x.luc) })),
+  ].sort((a, b) => a.ms - b.ms)
+  for (const x of ds) ghiNoiLai(db, mucCua(cay, x.slug).id, CHU_MAU.noiLai, x.ms)
+}
+
+/** Tự kiểm tra: mọi câu của mục Đã xong đã trả lời, xem đáp án, tự chấm (mỗi câu thứ 4 "Một phần"). */
+function seedTuKiemTra(ng: NguCanhSeed): void {
+  let i = 0
+  for (const x of DA_XONG) {
+    const muc = mucCua(ng.cay, x.slug)
+    const tk = cauTrucCua(ng, muc, 'tu-kiem-tra')
+    if (tk?.kieu !== 'tu-kiem-tra') continue
+    for (const cau of tk.cauHoi) {
+      const id = muc.id
+      const khoa = cau.khoa
+      ghiTuKiemTra(ng.db, {
+        id,
+        khoa,
+        yeuCau: { traLoi: CHU_MAU.traLoi, daXem: true },
+        luc: luc(x.xong) - 8 * PHUT,
+      })
+      ghiTuKiemTra(ng.db, {
+        id,
+        khoa,
+        yeuCau: { cham: ++i % 4 === 0 ? 'mot-phan' : 'dung' },
+        luc: luc(x.xong) - 7 * PHUT,
+      })
+    }
+  }
+}
+
+/** 6 ghi chú (F38). */
+function seedGhiChu({ db, cay }: NguCanhSeed): void {
+  for (const x of GHI_CHU_MAU) ghiGhiChu(db, mucCua(cay, x.slug).id, CHU_MAU.ghiChu, luc(x.luc))
+}
+
+/** "MM-DD HH:mm" (năm 2026) → mốc giờ VN của so-lieu.ts. */
+const moc2026 = (s: string) => `2026-${s}`
+
+/**
+ * 85 thẻ + lịch sử ôn (THE_MAU), chạy theo thời gian qua đúng hàm của server: taoThe (hộp 1, hạn ngày mai) và
+ * ghiLanOn (Leitner 3.5), nên hộp và hạn cuối là kết quả của quy tắc thật.
+ */
+function seedThe({ db, cay }: NguCanhSeed): void {
+  type SuKien = { ms: number; the: number; ketQua?: 'nho' | 'quen' }
+  const suKien: SuKien[] = []
+  THE_MAU.forEach(([, tao, on], i) => {
+    suKien.push({ ms: luc(moc2026(tao)), the: i })
+    for (const lan of on ? on.split(', ') : []) {
+      const [ngay, kq] = lan.split(' ')
+      suKien.push({
+        ms: luc(`${moc2026(ngay)} ${GIO_ON}`),
+        the: i,
+        ketQua: kq === 'N' ? 'nho' : 'quen',
+      })
+    }
+  })
+  suKien.sort((a, b) => a.ms - b.ms || a.the - b.the)
+  const idThe = new Map<number, number>()
+  const soThuTu = new Map<string, number>()
+  for (const sk of suKien) {
+    const [slug] = THE_MAU[sk.the]
+    if (!sk.ketQua) {
+      const n = (soThuTu.get(slug) ?? 0) + 1
+      soThuTu.set(slug, n)
+      const the = taoThe(db, {
+        itemId: mucCua(cay, slug).id,
+        truoc: CHU_MAU.matTruoc(n),
+        sau: CHU_MAU.matSau(n),
+        luc: sk.ms,
+      }).the
+      idThe.set(sk.the, the.id)
+      continue
+    }
+    const id = idThe.get(sk.the)
+    if (id === undefined) throw new Error(`Thẻ mẫu ${sk.the} (${slug}) được ôn trước khi tạo`)
+    ghiLanOn(db, { theId: id, ketQua: sk.ketQua, luc: sk.ms })
+  }
+}
+
+/** Phiên giờ (PHIEN_GIO) + đồng hồ Risk Register đang chạy từ GIO_MAU − 24 phút 17 giây. */
+function seedGioHoc({ db, cay }: NguCanhSeed): void {
+  for (const [ngay, slug, gio, phut] of PHIEN_GIO) {
+    const batDauMs = luc(`${ngay} ${gio}`)
+    const ketThucMs = batDauMs + phut * PHUT
+    const phien = themPhien(db, {
+      itemId: mucCua(cay, slug).id,
+      batDauMs,
+      giay: phut * 60,
+      luc: ketThucMs,
+    })
+    if (!phien || phien.ngay !== ngay) throw new Error(`Phiên giờ mẫu sai: ${ngay} ${slug} ${gio}`)
+  }
+  tangRevision(db)
+  const muc = mucCua(cay, DONG_HO_MAU.slug)
+  batDau(db, { itemId: muc.id, tenMuc: () => muc.label, luc: luc(DONG_HO_MAU.batDau) })
+}
+
+/** Các phần seed theo thứ tự chạy (phase 2a, 2b, 3). Phase sau thêm phần của mình vào cuối. */
 export const PHAN_SEED: readonly PhanSeed[] = [
   { ten: 'cai-dat', bang: ['settings'], chay: seedCaiDat },
   { ten: 'trang-thai-hoc', bang: ['item_status', 'status_events'], chay: seedTrangThaiHoc },
   { ten: 'luot-mo', bang: ['item_visits'], chay: seedLuotMo },
   { ten: 'ban-chup-duyet', bang: ['content_approvals'], chay: seedBanChupDuyet },
   { ten: 'so-noi-dung', bang: ['content_files'], chay: seedSoNoiDung },
+  { ten: 'du-an', bang: ['projects'], chay: seedDuAn },
+  { ten: 'thuc-hanh', bang: ['practice'], chay: seedThucHanh },
+  { ten: 'noi-lai', bang: ['restatements'], chay: seedNoiLai },
+  { ten: 'tu-kiem-tra', bang: ['self_check'], chay: seedTuKiemTra },
+  { ten: 'ghi-chu', bang: ['notes'], chay: seedGhiChu },
+  { ten: 'the', bang: ['flashcards', 'flashcard_reviews'], chay: seedThe },
+  { ten: 'gio-hoc', bang: ['time_entries', 'active_timer'], chay: seedGioHoc },
 ]
 
 /** Số liệu §7 chưa seed vì bảng chưa có (phase = phase tạo bảng theo đề xuất mục 9). */
 export const CHUA_SEED: readonly { phase: string; bang: string; soLieu: string }[] = [
-  {
-    phase: '3',
-    bang: 'projects, practice',
-    soLieu:
-      'dự án "Cổng đặt lịch nội bộ" · Execution; 7 bài thực hành Xong; Scope Creep Áp dụng đang làm',
-  },
-  {
-    phase: '3',
-    bang: 'restatements, self_check, notes',
-    soLieu:
-      'Nói lại (Scope Creep 21:42, Risk Register 21:18), câu tự kiểm tra, ghi chú Scope Creep',
-  },
-  {
-    phase: '3',
-    bang: 'time_entries, active_timer',
-    soLieu:
-      'tuần này 4 giờ 35 phút / 6 giờ; tổng 38 giờ 10 phút; streak 5 (kỷ lục 12); Scope Creep 35 phút; Risk Register 1 giờ 05 phút; đồng hồ Risk Register started_at = GIO_MAU − 24 phút 17 giây; heatmap tuần 32–43',
-  },
-  {
-    phase: '3',
-    bang: 'flashcards (tạo thẻ)',
-    soLieu: 'Scope Creep 3 thẻ (hộp 2 ôn 24/10, hộp 1 ôn 23/10 ×2)',
-  },
   {
     phase: '7a',
     bang: 'review_marks',
@@ -213,12 +376,6 @@ export const CHUA_SEED: readonly { phase: string; bang: string; soLieu: string }
     bang: 'doc_versions, doc_checklist',
     soLieu:
       'tài liệu 1/15: Change Request (CR) v1.0 Hoàn thành; Risk Register v0.2 Đang viết, sửa lần cuối 21/10/2026',
-  },
-  {
-    phase: '8',
-    bang: 'flashcards, flashcard_reviews',
-    soLieu:
-      '85 thẻ, 12 đến hạn, hộp 1–5 = 34/21/15/9/6; tỉ lệ nhớ 30 ngày 81%; Cần ôn lại Scrum, MoSCoW, Definition of Done (lọc Đang học + Cần ôn lại = 9)',
   },
   {
     phase: '11',
@@ -239,6 +396,11 @@ export interface TomTatSeed {
   banChup: number
   /** Số file trong sổ nội dung */
   soFile: number
+  /** Phase 3 */
+  soThe: number
+  soLanOn: number
+  soPhienGio: number
+  soGhiChu: number
 }
 
 /** Seed bộ mẫu §7 vào DB đã chạy migration; một transaction. */
@@ -260,5 +422,9 @@ export function seedMau(ng: NguCanhSeed): TomTatSeed {
     luotMo: dem('SELECT count(*) AS n FROM item_visits'),
     banChup: dem('SELECT count(*) AS n FROM content_approvals WHERE superseded_at IS NULL'),
     soFile: dem('SELECT count(*) AS n FROM content_files'),
+    soThe: dem('SELECT count(*) AS n FROM flashcards'),
+    soLanOn: dem('SELECT count(*) AS n FROM flashcard_reviews'),
+    soPhienGio: dem('SELECT count(*) AS n FROM time_entries'),
+    soGhiChu: dem('SELECT count(*) AS n FROM notes'),
   }
 }

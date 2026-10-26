@@ -6,9 +6,12 @@ import type { Db } from './db/index.ts'
 import { khongCoApi, khongTimThay, xuLyLoi } from './loi.ts'
 import { routeApDung } from './routes/ap-dung.ts'
 import { routeBai } from './routes/bai.ts'
+import { routeDongHo } from './routes/dong-ho.ts'
+import { routeHoc } from './routes/hoc.ts'
 import { routeMeta } from './routes/meta.ts'
 import { routeNhap } from './routes/nhap.ts'
 import { routeNoiDung } from './routes/noi-dung.ts'
+import { routeThe } from './routes/the.ts'
 import { routeTrangThai } from './routes/trang-thai.ts'
 import { taoSaoLuu, type SaoLuu } from './sao-luu.ts'
 
@@ -46,6 +49,9 @@ export function taoApp({ cauHinh, db, soMucHoc, saoLuu, cay = layCay() }: TuyCho
   app.use('/api', routeBai(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeNoiDung(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeApDung(db, cay))
+  app.use('/api', routeHoc(db, cay))
+  app.use('/api', routeThe(db, cay))
+  app.use('/api', routeDongHo(db, cay))
   app.use('/api', routeNhap(db, cay, cauHinh.noiDungDir, boSaoLuu))
 
   app.use('/api', khongCoApi)

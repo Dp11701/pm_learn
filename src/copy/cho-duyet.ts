@@ -356,3 +356,16 @@ export const GAN_MUC = {
   boGan: 'Bỏ gán',
   huy: 'Huỷ',
 } as const
+
+// ---------- Phase 3 — lớp dữ liệu học (src/app/du-lieu/the.ts, dong-ho.ts) ----------
+// Toast lỗi / Thử lại / Hoàn tác nguyên văn 3.1; "Đã đánh dấu / Đã bỏ đánh dấu Không áp dụng:" dùng lại câu 2a ở
+// trên cho Thực hành mọi mẫu (src/app/du-lieu/hoc.ts).
+
+/** Toast sau khi xoá một flashcard (kèm Hoàn tác; src/app/du-lieu/the.ts). */
+export const DA_XOA_THE = 'Đã xoá thẻ'
+
+/** Toast sau "Chuyển sang mục này" (kèm Hoàn tác) và sau Hoàn tác, trước tên mục (src/app/du-lieu/dong-ho.ts). */
+export const DA_CHUYEN_DONG_HO_SANG = 'Đã chuyển đồng hồ sang'
+
+/** Toast sau khi xoá một phiên trong Lịch sử của card đồng hồ (kèm Hoàn tác; dong-ho.ts). */
+export const DA_XOA_PHIEN_HOC = 'Đã xoá phiên học'

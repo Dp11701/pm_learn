@@ -93,13 +93,18 @@ describe('migration 2 (đề xuất 2.1)', () => {
     }
     expect(() => them('learning', 'lý do')).toThrow(/CHECK/)
     expect(() => them('skip', 'lý do')).not.toThrow()
-    const cot = db
+    // Không bảng / cột / chỉ mục nào lưu "Cần ôn lại" (phase 3 có flashcard_reviews, due_on của thẻ — là dữ
+    // liệu gốc để suy ra, không phải cờ).
+    const ten = db
       .prepare(
-        "SELECT name FROM pragma_table_info('item_status') UNION ALL SELECT name FROM sqlite_master",
+        `SELECT m.name FROM sqlite_master m
+         UNION ALL
+         SELECT p.name FROM sqlite_master m, pragma_table_info(m.name) p WHERE m.type = 'table'`,
       )
       .pluck()
       .all() as string[]
-    expect(cot.some((c) => /on.?lai|review|due/i.test(c))).toBe(false)
+    expect(ten.length).toBeGreaterThan(10)
+    expect(ten.filter((c) => /on.?lai|needs.?review|review.?flag|can.?on/i.test(c))).toEqual([])
   })
 
   it('status_events: via, ngày, from ≠ to đều có CHECK', () => {
@@ -137,7 +142,7 @@ describe('GET /api/state', () => {
     const res = await get('/api/state')
     expect(res.status).toBe(200)
     expect(res.headers['cache-control']).toBe('no-store')
-    expect(res.body).toEqual({ revision: 0, trangThai: {}, luotMo: {} })
+    expect(res.body).toEqual({ revision: 0, trangThai: {}, luotMo: {}, canOnLai: [] })
   })
 
   it('bất biến 8: bản ghi của mục không còn trong cây vẫn giữ trong DB, không vào ảnh chụp', async () => {
@@ -175,6 +180,7 @@ describe('PUT /api/trang-thai/:id', () => {
       revision: 1,
       trangThai: { [mucA.id]: { status: 'learning' } },
       luotMo: {},
+      canOnLai: [],
     })
   })
 

@@ -55,6 +55,11 @@ export interface AnhChupHoc {
   trangThai: Record<string, MucTrangThai>
   /** id nút → lần mở bài gần nhất (ISO UTC) */
   luotMo: Record<string, string>
+  /**
+   * Phase 3: id các mục "Cần ôn lại" (đề xuất 3.3, bất biến 3 — suy ra, không lưu): Đã xong và có ≥ 1 thẻ hạn
+   * ≤ hôm nay (server), xếp theo id. Server luôn gửi; tuỳ chọn trong kiểu để dữ liệu kiểu phase 2a vẫn hợp lệ.
+   */
+  canOnLai?: string[]
 }
 
 /** Body của PUT /api/trang-thai/:id */
