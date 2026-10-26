@@ -24,12 +24,6 @@ export const CAC_TRANG_TINH: readonly TrangTinh[] = [
     moTa: MO_TA_SAP_CO.loTrinh,
   },
   {
-    duongDan: 'noi-dung',
-    tenTrang: 'Nội dung',
-    phase: '2b',
-    moTa: MO_TA_SAP_CO.noiDung,
-  },
-  {
     duongDan: 'on-tap',
     tenTrang: 'Ôn tập',
     phase: '8',

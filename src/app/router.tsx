@@ -6,6 +6,7 @@
 //   khung (D27, F20); slug sai thì trang soạn dựng khung app và route con index (KhongTimThay) hiện trong
 //   <Outlet/> của khung, nên 404 vẫn ở trong khung (D24).
 // - /hoc/:slug/ban-cua-toi/:id (Bản của tôi, phase 7c) ở trong khung.
+// - /noi-dung là trang thật từ phase 2b (tab Nhập; Độ phủ, Chờ duyệt là C38 trong trang tới phase 7a).
 // - /_dev/* chỉ có ở bản dev; bản build loại bỏ nhánh này (scripts/kiem-bundle.ts).
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import DangTai from '../pages/DangTai'
@@ -17,6 +18,7 @@ import TrangMucHoc from '../pages/TrangMucHoc'
 import TrangPhan from '../pages/TrangPhan'
 import TrangSapCo from '../pages/TrangSapCo'
 import TrangBanCuaToi from '../pages/TrangBanCuaToi'
+import TrangNoiDung from '../pages/noi-dung/TrangNoiDung'
 import TrangSoan, { TrangSoanTongQuan } from '../pages/TrangSoan'
 import { CAC_TRANG_TINH } from '../pages/cac-trang'
 import GocApp from './GocApp'
@@ -80,6 +82,11 @@ export const cacRoute: RouteObject[] = [
             ErrorBoundary: LoiTrang,
             children: [
               ...trangTinh,
+              {
+                path: 'noi-dung',
+                Component: TrangNoiDung,
+                handle: { tenTrang: 'Nội dung' } satisfies HandleRoute,
+              },
               { path: 'hoc/:slug', Component: TrangMucHoc },
               { path: 'hoc/:slug/ban-cua-toi/:id', Component: TrangBanCuaToi },
               { path: 'linh-vuc/:slug', Component: TrangLinhVuc },

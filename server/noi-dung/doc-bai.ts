@@ -15,23 +15,36 @@ import {
   type BanChupDuyet,
   type TomTatBanChup,
 } from '../du-lieu/ban-chup-duyet.ts'
+import { docTepCuaMuc, type DongSo } from '../du-lieu/so-noi-dung.ts'
 import { bamNoiDung } from './bam.ts'
 import type { CanhBaoDuyet, PhanHoiBai } from './hop-dong-bai.ts'
 import { docTepTrongGoc } from './tep-an-toan.ts'
 
 // Đọc bài của một mục học cho GET /api/bai/:id (quy tắc ở hop-dong-bai.ts) và quy tắc trạng thái nội dung
 // dùng chung với GET /api/noi-dung/trang-thai (trang-thai-noi-dung.ts). Chỉ đọc: không ghi file, không ghi
-// DB (bất biến 5). Phase 2a chưa có sổ nội dung (2b) nên đọc thẳng đường dẫn chuẩn.
+// DB (bất biến 5). Từ phase 2b chỉ đọc file ĐÃ NHẬN (dòng 'bai' của mục trong sổ content_files, đề xuất 1.6):
+// file chưa nhận không hiện trong bài tới khi Quét lại; bản nháp đã nhận bị sửa ngoài app thì đọc thẳng bản
+// mới; file đã nhận bị xoá → như không có file (bài đã duyệt hiện bản chụp).
 
 /** File bài trên đĩa: chữ (UTF-8) + sha256 của toàn bộ byte; hoặc file quá TOI_DA_BYTE_BAI (không đọc). */
 export type TepBai = { noiDung: string; hash: string } | { quaLon: true; kichThuoc: number }
 
-/** Đọc file bài chuẩn của mục (tối đa 256 KB, đề xuất 1.7); null khi không có, symlink, không phải file thường. */
-export async function docTepBai(noiDungDir: string, muc: MucHoc): Promise<TepBai | null> {
-  const kq = await docTepTrongGoc(noiDungDir, muc.duongDanTuongDoi, { toiDa: TOI_DA_BYTE_BAI })
+/** Đọc một file bài (tối đa 256 KB, đề xuất 1.7); null khi không có, symlink, không phải file thường. */
+export async function docTepTai(noiDungDir: string, duongDan: string): Promise<TepBai | null> {
+  const kq = await docTepTrongGoc(noiDungDir, duongDan, { toiDa: TOI_DA_BYTE_BAI })
   if (kq.ok) return { noiDung: kq.noiDung.toString('utf8'), hash: bamNoiDung(kq.noiDung) }
   if (kq.lyDo === 'qua-lon') return { quaLon: true, kichThuoc: kq.kichThuoc }
   return null
+}
+
+/** Đọc file ở đường dẫn chuẩn của mục (không qua sổ) — cho test và công cụ. */
+export function docTepBai(noiDungDir: string, muc: MucHoc): Promise<TepBai | null> {
+  return docTepTai(noiDungDir, muc.duongDanTuongDoi)
+}
+
+/** Bản sửa đã nhận và còn trên đĩa (theo lượt quét nhẹ gần nhất) → chip "Đã duyệt · có bản sửa chưa duyệt". */
+export function coBanSuaDaNhan(dong: DongSo | undefined): boolean {
+  return dong !== undefined && dong.missingSince === null
 }
 
 /** Phần đầu file đủ để quyết định trạng thái nội dung (không cần thân bài). */
@@ -55,12 +68,18 @@ export function dauTepCua(muc: MucHoc, tep: TepBai): DauTep {
  *    lớn) → ai (1.5). File ghi da-duyet mà không có bản chụp hiện hành vẫn là Bản nháp.
  * @param dau đầu file ở đường dẫn chuẩn; null = không có file
  * @param banChup bản chụp duyệt HIỆN HÀNH (superseded_at IS NULL); undefined = không có
+ * @param coBanSua mục đã duyệt có bản sửa đã nhận (chỉ xét khi có bản chụp)
  */
 export function trangThaiNoiDungCua(
   dau: DauTep | null,
   banChup: Pick<TomTatBanChup, 'ngayDuyet'> | undefined,
+  coBanSua = false,
 ): TrangThaiNoiDung {
-  if (banChup) return { loai: 'da-duyet', ngayDuyet: banChup.ngayDuyet }
+  if (banChup) {
+    return coBanSua
+      ? { loai: 'da-duyet', ngayDuyet: banChup.ngayDuyet, coBanSua: true }
+      : { loai: 'da-duyet', ngayDuyet: banChup.ngayDuyet }
+  }
   if (!dau) return { loai: 'chua-co' }
   return { loai: 'ban-nhap', nguon: dau.frontmatter?.nguon ?? 'ai' }
 }
@@ -68,6 +87,7 @@ export function trangThaiNoiDungCua(
 /**
  * Quyết định trạng thái nội dung + bài hiện, từ file trên đĩa và bản chụp duyệt.
  * @param coBanChupCu mục có bản chụp nào (kể cả đã bị thay) — chỉ xét khi không có bản chụp hiện hành
+ * @param coBanSua mục có bản sửa đã nhận (chỉ xét khi có bản chụp hiện hành)
  *
  * File ghi da-duyet mà không có bản chụp hiện hành (đề xuất 1.6):
  *  - DB không có bản chụp nào của mục → 'chua-xac-nhan' (◎ "app chưa xác nhận");
@@ -80,6 +100,7 @@ export function quyetDinhBai(
   tep: TepBai | null,
   banChup: BanChupDuyet | undefined,
   coBanChupCu = false,
+  coBanSua = false,
 ): PhanHoiBai {
   const hashFile = tep && !('quaLon' in tep) ? tep.hash : null
 
@@ -89,7 +110,7 @@ export function quyetDinhBai(
     const kq = phanTichBai(tepTin ? tepTin.noiDung : banChup.noiDung, muc)
     return {
       muc: muc.id,
-      trangThaiNoiDung: trangThaiNoiDungCua(null, banChup),
+      trangThaiNoiDung: trangThaiNoiDungCua(null, banChup, coBanSua),
       bai: kq.loi ? null : kq,
       loiDoc: kq.loi,
       canhBaoDuyet: tepTin ? null : 'doi-ngoai-app',
@@ -142,9 +163,16 @@ export function quyetDinhBai(
   }
 }
 
-/** Bài của mục: đọc file + bản chụp hiện hành (+ có bản chụp cũ không) rồi quyết định. */
+/** Bài của mục: đọc file đã nhận + bản chụp hiện hành (+ có bản chụp cũ không) rồi quyết định. */
 export async function docBai(db: Db, noiDungDir: string, muc: MucHoc): Promise<PhanHoiBai> {
-  const tep = await docTepBai(noiDungDir, muc)
+  const dong = docTepCuaMuc(db, muc.id, 'bai')
+  const tep = dong ? await docTepTai(noiDungDir, dong.path) : null
   const banChup = docBanChupHienHanh(db, muc.id)
-  return quyetDinhBai(muc, tep, banChup, banChup === undefined && coBanChup(db, muc.id))
+  return quyetDinhBai(
+    muc,
+    tep,
+    banChup,
+    banChup === undefined && coBanChup(db, muc.id),
+    banChup !== undefined && coBanSuaDaNhan(docTepCuaMuc(db, muc.id, 'ban-sua')),
+  )
 }

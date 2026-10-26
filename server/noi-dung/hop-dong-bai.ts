@@ -4,8 +4,9 @@ import type { KetQuaBai, LoiDong } from '../../shared/noi-dung/index.ts'
 // Hợp đồng GET /api/bai/:id (đề xuất 1.5, 1.6 "Bảo vệ bản Đã duyệt", 1.10, 2.2 bất biến 7, 3.6
 // "Hiện ở bài") — TS thuần, không dùng gì của Node: web import để đọc phản hồi.
 //
-// Trạng thái nội dung do server quyết (phase 2a chưa có sổ nội dung, đọc thẳng đường dẫn chuẩn
-// noi-dung/<muc.duongDanTuongDoi>):
+// Trạng thái nội dung do server quyết. Từ phase 2b chỉ đọc file ĐÃ NHẬN của mục (dòng 'bai' trong sổ
+// content_files, thường ở noi-dung/<muc.duongDanTuongDoi>); file chưa nhận coi như không có (tới khi Nhập /
+// Quét lại). Mục Đã duyệt có bản sửa đã nhận → trangThaiNoiDung.coBanSua = true.
 //  - mục có bản chụp duyệt hiện hành: luôn Đã duyệt (ngày = ngày của bản chụp). File trùng hash bản
 //    chụp → hiện file; file bị sửa / xoá / không đọc được → hiện BẢN CHỤP + 'doi-ngoai-app';
 //  - không có bản chụp, không có file → Chưa có (bai null);

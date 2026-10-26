@@ -1,6 +1,7 @@
 // GET /api/noi-dung/trang-thai (đề xuất 1.6, 3.6, 2.2 bất biến 7): trạng thái nội dung của mọi mục, cùng quy
 // tắc với GET /api/bai/:id; rẻ cho cả cây (mục có bản chụp không đụng đĩa, mục khác stat + đệm theo
-// mtime/size). supertest trên DB + thư mục nội dung tạm, cây đóng băng, file mẫu ở tests/fixtures/noi-dung.
+// mtime/size). Từ phase 2b chỉ xét file ĐÃ NHẬN (sổ content_files). supertest trên DB + thư mục nội dung tạm,
+// cây đóng băng, file mẫu ở tests/fixtures/noi-dung.
 import fs from 'node:fs'
 import path from 'node:path'
 import request from 'supertest'
@@ -14,7 +15,9 @@ import { taoApp } from '../../server/app.ts'
 import { docCauHinh } from '../../server/cau-hinh.ts'
 import { moDb, type Db } from '../../server/db/index.ts'
 import { bamNoiDung } from '../../server/noi-dung/bam.ts'
-import { docTepBai } from '../../server/noi-dung/doc-bai.ts'
+import { ghiDongSo } from '../../server/du-lieu/so-noi-dung.ts'
+import { docTepTai } from '../../server/noi-dung/doc-bai.ts'
+import { nhanTepCoSanDongBo } from '../../server/noi-dung/quet.ts'
 import type { PhanHoiBai, PhanHoiTrangThaiNoiDung } from '../../server/noi-dung/hop-dong-bai.ts'
 import { taoBoTrangThaiNoiDung } from '../../server/noi-dung/trang-thai-noi-dung.ts'
 import { taoSaoLuu, type SaoLuu } from '../../server/sao-luu.ts'
@@ -71,11 +74,33 @@ async function layTrangThai(): Promise<PhanHoiTrangThaiNoiDung> {
   return res.body as PhanHoiTrangThaiNoiDung
 }
 
-function ghiBai(m: MucHoc, noiDung: string | Buffer): string {
+/** Ghi file ở đường dẫn chuẩn; mặc định nhận luôn vào sổ (như sau Nhập / Quét lại). */
+function ghiBai(m: MucHoc, noiDung: string | Buffer, nhan = true): string {
   const p = path.join(tam.noiDungDir, m.duongDanTuongDoi)
   fs.mkdirSync(path.dirname(p), { recursive: true })
   fs.writeFileSync(p, noiDung)
+  if (nhan) {
+    nhanTepCoSanDongBo(db, tam.noiDungDir, {
+      duongDan: m.duongDanTuongDoi,
+      itemId: m.id,
+      vai: 'bai',
+    })
+  }
   return p
+}
+
+/** Dòng sổ trỏ vào đường dẫn chuẩn của mục mà không đọc file (để thử file bị thay bằng symlink / thư mục). */
+function dongSoGia(m: MucHoc): void {
+  ghiDongSo(db, {
+    path: m.duongDanTuongDoi,
+    itemId: m.id,
+    role: 'bai',
+    hash: '0'.repeat(64),
+    size: 0,
+    mtime: null,
+    importedOn: '2026-10-26',
+    missingSince: null,
+  })
 }
 
 function chenBanChup(
@@ -142,8 +167,10 @@ describe('GET /api/noi-dung/trang-thai', () => {
     const that = ghiBai(d, fm(d, 'nguon: tu-viet\n'))
     const lienKet = path.join(tam.noiDungDir, e.duongDanTuongDoi)
     fs.mkdirSync(path.dirname(lienKet), { recursive: true })
-    fs.symlinkSync(that, lienKet) // symlink → Chưa có
+    fs.symlinkSync(that, lienKet) // file đã nhận bị thay bằng symlink → Chưa có
+    dongSoGia(e)
     fs.mkdirSync(path.join(tam.noiDungDir, g.duongDanTuongDoi), { recursive: true }) // thư mục → Chưa có
+    dongSoGia(g)
     ghiBai(h, DA_DUYET.replace(scopeCreep.id, h.id))
     chenBanChup(h.id, DA_DUYET, { thayLuc: '2026-10-20T00:00:00.000Z' }) // chỉ bản chụp đã thay
     chenBanChup('id-khong-co-trong-cay', DA_DUYET) // bỏ qua (bất biến 8)
@@ -186,6 +213,48 @@ describe('GET /api/noi-dung/trang-thai', () => {
     expect((await layTrangThai())[riskRegister.id]).toBeUndefined()
   })
 
+  it('file CHƯA NHẬN ở đường dẫn chuẩn không tính (1.6, đường 3): Chưa có tới khi Nhập / Quét lại', async () => {
+    ghiBai(riskRegister, fm(riskRegister, 'nguon: tu-viet\n'), false)
+    expect(await layTrangThai()).toEqual({})
+    expect((await theoTungBai())[riskRegister.id]).toEqual({ loai: 'chua-co' })
+    nhanTepCoSanDongBo(db, tam.noiDungDir, {
+      duongDan: riskRegister.duongDanTuongDoi,
+      itemId: riskRegister.id,
+      vai: 'bai',
+    })
+    expect((await layTrangThai())[riskRegister.id]).toEqual({ loai: 'ban-nhap', nguon: 'tu-viet' })
+  })
+
+  it('Đã duyệt có bản sửa đã nhận → coBanSua (chip "Đã duyệt · có bản sửa chưa duyệt"), cùng ở /api/bai', async () => {
+    ghiBai(scopeCreep, DA_DUYET)
+    chenBanChup(scopeCreep.id, DA_DUYET)
+    const banSua = scopeCreep.duongDanTuongDoi.replace(/\.md$/, '.ban-sua.md')
+    fs.writeFileSync(path.join(tam.noiDungDir, banSua), BAN_NHAP)
+    // chưa nhận → chưa tính
+    expect((await layTrangThai())[scopeCreep.id]).toEqual({
+      loai: 'da-duyet',
+      ngayDuyet: '2026-10-18',
+    })
+    nhanTepCoSanDongBo(db, tam.noiDungDir, {
+      duongDan: banSua,
+      itemId: scopeCreep.id,
+      vai: 'ban-sua',
+    })
+    const mong = { loai: 'da-duyet', ngayDuyet: '2026-10-18', coBanSua: true }
+    expect((await layTrangThai())[scopeCreep.id]).toEqual(mong)
+    expect((await theoTungBai())[scopeCreep.id]).toEqual(mong)
+    // bản sửa của mục chưa duyệt không đổi trạng thái
+    const rr = riskRegister.duongDanTuongDoi.replace(/\.md$/, '.ban-sua.md')
+    ghiBai(riskRegister, fm(riskRegister))
+    fs.writeFileSync(path.join(tam.noiDungDir, rr), fm(riskRegister))
+    nhanTepCoSanDongBo(db, tam.noiDungDir, {
+      duongDan: rr,
+      itemId: riskRegister.id,
+      vai: 'ban-sua',
+    })
+    expect((await layTrangThai())[riskRegister.id]).toEqual({ loai: 'ban-nhap', nguon: 'ai' })
+  })
+
   it('chỉ đọc; phương thức khác → 404; Host lạ → 403', async () => {
     for (const phuongThuc of ['put', 'post', 'delete', 'patch'] as const) {
       const goi = request(app)
@@ -204,15 +273,15 @@ describe('bộ trạng thái nội dung: rẻ cho cả cây', () => {
     for (const m of cacMuc) ghiBai(m, fm(m, 'nguon: tu-viet\n'))
     chenBanChup(scopeCreep.id, DA_DUYET)
     const daDoc: string[] = []
-    const bo = taoBoTrangThaiNoiDung(tam.noiDungDir, async (dir, m) => {
-      daDoc.push(m.id)
-      return docTepBai(dir, m)
+    const bo = taoBoTrangThaiNoiDung(tam.noiDungDir, async (dir, duongDan) => {
+      daDoc.push(duongDan)
+      return docTepTai(dir, duongDan)
     })
 
     const lan1 = await bo.docTatCa(db, cacMuc)
     expect(Object.keys(lan1)).toHaveLength(cay.soMucHoc)
     expect(daDoc).toHaveLength(cay.soMucHoc - 1)
-    expect(daDoc).not.toContain(scopeCreep.id)
+    expect(daDoc).not.toContain(scopeCreep.duongDanTuongDoi)
 
     daDoc.length = 0
     const batDau = performance.now()
@@ -223,7 +292,7 @@ describe('bộ trạng thái nội dung: rẻ cho cả cây', () => {
     // file đổi kích thước → chỉ đọc lại đúng file đó
     ghiBai(salience, fm(salience, 'nguon: ai\n'))
     const lan3 = await bo.docTatCa(db, cacMuc)
-    expect(daDoc).toEqual([salience.id])
+    expect(daDoc).toEqual([salience.duongDanTuongDoi])
     expect(lan3[salience.id]).toEqual({ loai: 'ban-nhap', nguon: 'ai' })
   })
 })

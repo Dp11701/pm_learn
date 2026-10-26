@@ -301,6 +301,43 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
     expect(cac[1].textContent).toContain('Chưa học · ')
   })
 
+  it('lien_quan cũ sau khi thay cây: giá trị tra trượt → tra tiếp bảng slug cũ (GET /api/noi-dung/slug-cu, đề xuất 1.3, 1.5)', async () => {
+    datScopeCreep()
+    const rr = muc('risk-register')
+    const fetchGia = vi.mocked(fetch)
+    let soLanHoi = 0
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        if (String(input) !== '/api/noi-dung/slug-cu') return fetchGia(input, init)
+        soLanHoi += 1
+        return Promise.resolve(new Response(JSON.stringify({ 'khong-co-muc-nay': rr.id })))
+      }),
+    )
+    const { container } = await moVaCho()
+    await screen.findByRole('article')
+    const khoi = container.querySelector('#muc-lien-quan') as HTMLElement
+    await waitFor(() =>
+      expect(
+        within(khoi)
+          .getAllByRole('link')
+          .map((a) => a.getAttribute('href')),
+      ).toEqual(['/hoc/change-request-cr', `/hoc/${rr.slug}`, '/hoc/scope-baseline']),
+    )
+    expect(soLanHoi).toBe(1)
+  })
+
+  it('mọi lien_quan tra được theo cây hiện tại → không hỏi bảng slug cũ', async () => {
+    datScopeCreep({ lienQuan: ['change-request-cr', 'scope-baseline'] })
+    const fetchGia = vi.mocked(fetch)
+    const hoi = vi.fn(fetchGia)
+    vi.stubGlobal('fetch', hoi)
+    await moVaCho()
+    await screen.findByRole('article')
+    await cho(10)
+    expect(hoi.mock.calls.map(([u]) => String(u))).not.toContain('/api/noi-dung/slug-cu')
+  })
+
   it('pager và Mục liên quan hiện chip nội dung của mục đích; mục chưa có file → "Chưa có nội dung" (§6.2, F11, F17)', async () => {
     datScopeCreep()
     const truoc = cay.mucHoc[sc.index - 1]
@@ -448,8 +485,9 @@ describe('banner bảo vệ bản Đã duyệt và lỗi đọc file (đề xu�
     sv.bai.set(sc.id, phanHoi(sc, fileChuDe(sc, { trangThai: 'da-duyet' })))
     await moVaCho()
     expect(await screen.findByText('File ghi Đã duyệt nhưng app chưa xác nhận')).toBeTruthy()
+    // ?quet=1: tab Nhập quét lại ngay (không phải bấm Quét lại lần nữa)
     expect(screen.getByRole('link', { name: 'Quét lại' }).getAttribute('href')).toBe(
-      '/noi-dung?tab=nhap',
+      '/noi-dung?tab=nhap&quet=1',
     )
     expect(screen.getByText('Bản nháp · AI')).toBeTruthy()
     cleanup()

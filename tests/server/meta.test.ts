@@ -20,12 +20,18 @@ afterEach(async () => {
 })
 
 describe('GET /api/meta', () => {
-  it('trả đúng 4 trường; now và homNay chạy theo GIO_MAU', async () => {
+  it('trả đúng 5 trường (thêm noiDung ở phase 2b); now và homNay chạy theo GIO_MAU', async () => {
     apDungGioMau(GIO_MAU)
     const res = await mt.get('/api/meta')
     expect(res.status).toBe(200)
     expect(res.headers['content-type']).toMatch(/application\/json/)
-    expect(Object.keys(res.body).sort()).toEqual(['homNay', 'now', 'revision', 'soMucHoc'])
+    expect(Object.keys(res.body).sort()).toEqual([
+      'homNay',
+      'noiDung',
+      'now',
+      'revision',
+      'soMucHoc',
+    ])
     expect(res.body.revision).toBe(0)
     expect(res.body.soMucHoc).toBe(SO_MUC_HOC_GIA)
     expect(res.body.now).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)

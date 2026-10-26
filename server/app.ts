@@ -7,6 +7,7 @@ import { khongCoApi, khongTimThay, xuLyLoi } from './loi.ts'
 import { routeApDung } from './routes/ap-dung.ts'
 import { routeBai } from './routes/bai.ts'
 import { routeMeta } from './routes/meta.ts'
+import { routeNhap } from './routes/nhap.ts'
 import { routeNoiDung } from './routes/noi-dung.ts'
 import { routeTrangThai } from './routes/trang-thai.ts'
 import { taoSaoLuu, type SaoLuu } from './sao-luu.ts'
@@ -30,7 +31,7 @@ export function taoApp({ cauHinh, db, soMucHoc, saoLuu, cay = layCay() }: TuyCho
   app.use(nosniff)
   app.use(kiemHost(cauHinh.congApi, cauHinh.congWeb))
   app.use(kiemOrigin(cauHinh.congApi, cauHinh.congWeb))
-  // Body JSON tối đa 1 MB; riêng /api/nhap/* (phase 2b) tự gắn parser 16 MB (đề xuất 1.7).
+  // Body JSON tối đa 1 MB; riêng /api/nhap/* gắn parser 16 MB trong routeNhap (đề xuất 1.7).
   const docJson = express.json({ limit: '1mb' })
   app.use((req, res, next) =>
     req.path.startsWith('/api/nhap/') ? next() : docJson(req, res, next),
@@ -45,6 +46,7 @@ export function taoApp({ cauHinh, db, soMucHoc, saoLuu, cay = layCay() }: TuyCho
   app.use('/api', routeBai(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeNoiDung(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeApDung(db, cay))
+  app.use('/api', routeNhap(db, cay, cauHinh.noiDungDir, boSaoLuu))
 
   app.use('/api', khongCoApi)
   app.use(khongTimThay)

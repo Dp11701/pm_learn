@@ -5,7 +5,7 @@
 // - bản Đã duyệt bị sửa / xoá ngoài app (đang hiện bản chụp): "File đã đổi ngoài app" + "Quét lại để kiểm tra";
 // - bản nháp: "Bản nháp do AI soạn — chưa được bạn duyệt, có thể sai." / "Bản nháp do bạn tự viết — chưa
 //   duyệt." ("Vào chế độ duyệt" có ở phase 7a).
-// "Quét lại" mở tab Nhập (phase 2b); "Mở trong trình soạn" mở trình soạn (phase 7b).
+// "Quét lại" mở tab Nhập và quét lại ngay (?quet=1, phase 2b); "Mở trong trình soạn" mở trình soạn (phase 7b).
 import Banner from '../../components/Banner'
 import { NutLink } from '../../components/Nut'
 import { DUONG_DAN_QUET_LAI, duongDanSoan } from '../../components/bai-hoc/dinh-vi'

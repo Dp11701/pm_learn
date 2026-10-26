@@ -38,8 +38,8 @@ export const duongDanBanDo = (muc: MucHoc) => `/lo-trinh?xem=ban-do&muc=${muc.sl
 export const duongDanSoan = (muc: MucHoc) => `/hoc/${muc.slug}/soan`
 /** "Nhập file .md" trên trang chưa có nội dung (đề xuất 3.6): file thả vào được gán sẵn mục này. */
 export const duongDanNhap = (muc: MucHoc) => `/noi-dung?tab=nhap&muc=${muc.slug}`
-/** "Quét lại" của banner bảo vệ bản Đã duyệt (đề xuất 1.6): tab Nhập (phase 2b). */
-export const DUONG_DAN_QUET_LAI = '/noi-dung?tab=nhap'
+/** "Quét lại" của banner bảo vệ bản Đã duyệt (đề xuất 1.6): tab Nhập (phase 2b), ?quet=1 → quét lại ngay. */
+export const DUONG_DAN_QUET_LAI = '/noi-dung?tab=nhap&quet=1'
 
 /** Số đếm tiến độ của mọi mục học trong một nút (phân số ở menu breadcrumb, đề xuất 3.3). */
 export function demTienDo(cay: Cay, nutId: string, trangThaiCua: TraTrangThai): SoTienDo {

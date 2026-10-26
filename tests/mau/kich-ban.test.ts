@@ -72,6 +72,18 @@ describe.skipIf(!laGioMau)('dựng kịch bản có seed (giờ Việt Nam)', ()
       fs.readFileSync(path.join(THU_MUC_NOI_DUNG_MAU, muc.duongDanTuongDoi), 'utf8'),
     )
     expect(kq.tomTat?.banChup).toBe(41)
+    // sổ nội dung (2b): bản sửa là file đã nhận → chip "Đã duyệt · có bản sửa chưa duyệt" (F12)
+    expect(demDong(kq.tepDb, 'content_files')).toBe(51)
+    const db = new Database(kq.tepDb, { readonly: true })
+    try {
+      expect(
+        db
+          .prepare("SELECT path FROM content_files WHERE item_id = ? AND role = 'ban-sua'")
+          .get(muc.id),
+      ).toEqual({ path: muc.duongDanTuongDoi.replace(/\.md$/, '.ban-sua.md') })
+    } finally {
+      db.close()
+    }
   })
 
   it('loi-file: change-log.md lỗi dòng 3, mọi file khác đọc được; fixtures nguồn không bị đổi', async () => {
@@ -82,6 +94,8 @@ describe.skipIf(!laGioMau)('dựng kịch bản có seed (giờ Việt Nam)', ()
       if (muc.slug === 'change-log') expect(ket.loi?.dong).toBe(3)
       else expect(ket.loi, tep).toBeNull()
     }
+    // file hỏng vẫn là file đã nhận (banner F26 trên bài)
+    expect(demDong(kq.tepDb, 'content_files')).toBe(50)
     expect(soVoiBoDung()).toEqual({ thieu: [], thua: [], khac: [] })
   })
 
@@ -115,6 +129,8 @@ describe('dựng kịch bản không seed (mọi múi giờ)', () => {
       'status_events',
       'item_visits',
       'content_approvals',
+      'content_files',
+      'file_ops',
       'settings',
     ]) {
       expect(demDong(kq.tepDb, bang), bang).toBe(0)

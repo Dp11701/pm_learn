@@ -1,6 +1,6 @@
 # Đề xuất triển khai — Học PM A–Z (web tự học Project Management theo roadmap.sh)
 
-Trạng thái: **đã duyệt 23/10/2026** ("OK hết" 13 điểm ở mục 8). Phase 0, 1, 2a xong; đang chờ duyệt phase 2a (26/10/2026). Đã qua 2 vòng phản biện độc lập (độ phủ đặc tả + thiết kế; kỹ thuật) và đã sửa theo cả hai.
+Trạng thái: **đã duyệt 23/10/2026** ("OK hết" 13 điểm ở mục 8). Phase 0, 1, 2a, 2b xong (26/10/2026); kế tiếp phase 3. Đã qua 2 vòng phản biện độc lập (độ phủ đặc tả + thiết kế; kỹ thuật) và đã sửa theo cả hai.
 
 ## Tóm tắt để duyệt
 

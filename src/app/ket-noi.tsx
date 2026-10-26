@@ -25,12 +25,36 @@ import { DA_KET_NOI_LAI } from '../copy/cho-duyet'
 
 export type TrangThaiKetNoi = 'dang-ket-noi' | 'on-dinh' | 'mat-ket-noi'
 
+/** Banner một lần sau khi thay file cây (đề xuất 1.3 bước 4; server/noi-dung/thay-cay.ts BannerThayCay). */
+export interface BannerThayCay {
+  /** Mục học mới */
+  them: number
+  /** Mục học bị bỏ (thành mồ côi) */
+  bo: number
+  /** Mục học đổi tên */
+  doiTen: number
+  /** ISO UTC lúc nhận cây mới */
+  luc: string
+}
+
+/** Kết quả quét nhẹ thư mục nội dung trong /api/meta (đề xuất 1.6; từ phase 2b). */
+export interface NoiDungMeta {
+  /** Revision nội dung: tăng khi sổ, bản chụp duyệt hay file trên đĩa đổi */
+  revision: number
+  /** Số file .md trong thư mục nội dung chưa được nhận */
+  chuaNhan: number
+  /** Banner thay cây chưa tắt; null khi không có */
+  thayCay: BannerThayCay | null
+}
+
 /** Phản hồi GET /api/meta (server/routes/meta.ts). */
 export interface Meta {
   revision: number
   now: string
   homNay: string
   soMucHoc: number
+  /** Không có khi server chưa gửi (bản trước phase 2b) hoặc trường này hỏng */
+  noiDung?: NoiDungMeta
 }
 
 export interface GiaTriKetNoi {
@@ -48,12 +72,41 @@ export const CHU_KY_HOI = 5000
 /** Quá thời gian này chưa có phản hồi thì coi là mất kết nối (ms). */
 export const HET_HAN_HOI = 4000
 
-const LuocDoMeta = z.object({
-  revision: z.number(),
-  now: z.string(),
-  homNay: z.string(),
-  soMucHoc: z.number(),
+const LuocDoThayCay: z.ZodType<BannerThayCay> = z.object({
+  them: z.number(),
+  bo: z.number(),
+  doiTen: z.number(),
+  luc: z.string(),
 })
+
+/**
+ * `noiDung` hỏng (thiếu số, sai kiểu) thì bỏ riêng trường này (catch → undefined), không làm cả lượt hỏi thành
+ * "mất kết nối"; banner thay cây hỏng thì coi như không có.
+ */
+const LuocDoNoiDungMeta: z.ZodType<NoiDungMeta | undefined> = z
+  .object({
+    revision: z.number(),
+    chuaNhan: z.number(),
+    thayCay: LuocDoThayCay.nullable().optional().catch(null),
+  })
+  .transform(({ revision, chuaNhan, thayCay }) => ({
+    revision,
+    chuaNhan,
+    thayCay: thayCay ?? null,
+  }))
+  .optional()
+  .catch(undefined)
+
+// Khoá lạ của server bị bỏ (zod mặc định); khoá nào web dùng thì phải có trong lược đồ này.
+const LuocDoMeta = z
+  .object({
+    revision: z.number(),
+    now: z.string(),
+    homNay: z.string(),
+    soMucHoc: z.number(),
+    noiDung: LuocDoNoiDungMeta,
+  })
+  .transform(({ noiDung, ...m }): Meta => (noiDung ? { ...m, noiDung } : m))
 
 export async function hoiMeta(signal?: AbortSignal): Promise<Meta> {
   const phanHoi = await fetch(DUONG_DAN_META, {

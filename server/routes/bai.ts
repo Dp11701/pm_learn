@@ -4,19 +4,21 @@ import type { Cay, MucHoc } from '../../shared/roadmap/index.ts'
 import type { Db } from '../db/index.ts'
 import { LoiApi } from '../loi.ts'
 import { CSP_ANH, docAnh } from '../noi-dung/anh.ts'
-import { docBai } from '../noi-dung/doc-bai.ts'
+import { layKhoNoiDung } from '../noi-dung/kho-noi-dung.ts'
 import type { PhanHoiBai } from '../noi-dung/hop-dong-bai.ts'
 
 // API bài học, chỉ đọc (đề xuất 1.5, 1.6, 1.10, 2.2 bất biến 5, 7, 8; 3.6 "Hiện ở bài"):
 // - GET /api/bai/:id                     bài đã đọc + trạng thái nội dung (PhanHoiBai);
 // - GET /api/anh/:id?duong-dan=<src>     ảnh trong bài (shared/noi-dung duongDanAnh tạo URL này);
 // - GET /api/anh/:id/<src>               cùng việc, đường dẫn đặt trong path (không viết được '../').
-// id phải là mục học của cây (bất biến 8), không thì 404. Không có route ghi nào ở đây.
+// id phải là mục học của cây (bất biến 8), không thì 404. Không có route ghi nào ở đây. Từ phase 2b bài đọc
+// file ĐÃ NHẬN qua sổ nội dung (kho-noi-dung.ts, doc-bai.ts).
 
 const DS_DUOI = DUOI_ANH.join(' ')
 
 export function routeBai(db: Db, cay: Pick<Cay, 'mucTheoId'>, noiDungDir: string): Router {
   const r = Router()
+  const kho = layKhoNoiDung(db, noiDungDir, cay)
 
   function mucCua(req: Request<{ id: string }>): MucHoc {
     const muc = cay.mucTheoId.get(req.params.id)
@@ -42,7 +44,7 @@ export function routeBai(db: Db, cay: Pick<Cay, 'mucTheoId'>, noiDungDir: string
   }
 
   r.get('/bai/:id', async (req: Request<{ id: string }>, res) => {
-    const phanHoi: PhanHoiBai = await docBai(db, noiDungDir, mucCua(req))
+    const phanHoi: PhanHoiBai = await kho.docBai(mucCua(req))
     res.json(phanHoi)
   })
 

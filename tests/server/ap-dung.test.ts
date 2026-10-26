@@ -84,7 +84,7 @@ const demPractice = () =>
 describe('migration 3 — bảng practice (đề xuất 2.1)', () => {
   it('đúng cột của đề xuất + created_at / updated_at; user_version = số migration', () => {
     expect(layPhienBan(db)).toBe(dsMigration.length)
-    expect(dsMigration.at(-1)?.ten).toBe('ap-dung')
+    expect(dsMigration[2]?.ten).toBe('ap-dung')
     const cot = db.prepare("SELECT name FROM pragma_table_info('practice')").pluck().all()
     expect(cot).toEqual([
       'item_id',

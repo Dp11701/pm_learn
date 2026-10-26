@@ -89,9 +89,11 @@ Bản dev có `/_dev/thanh-phan` (F01, F02, F02b). Trên Mac của người dùn
 
 ## Trạng thái
 
-- Phase 0, 1: xong và đã duyệt (báo cáo `docs/bao-cao/phase-0.md`, `phase-1.md`).
-- Phase 2a — bài học (đọc) + trạng thái: xong 26/10/2026, báo cáo `docs/bao-cao/phase-2a.md`. **Đang chờ người
-  dùng duyệt**, nhất là prompt soạn bài (`tests/noi-dung/__snapshots__/prompt-*.txt`). Chưa làm phase 2b khi chưa duyệt.
-- Câu chữ UI tự đặt: `src/copy/cho-duyet.ts` (web) và `shared/noi-dung/thong-bao.ts` (thông báo parser).
+- Phase 0, 1, 2a: xong và đã duyệt (báo cáo trong `docs/bao-cao/`).
+- Phase 2b — đưa nội dung vào: xong 26/10/2026, báo cáo `docs/bao-cao/phase-2b.md` (không phải điểm dừng; mục
+  "Chờ bạn duyệt" gom vào lần dừng sau phase 3). Kế tiếp: phase 3.
+- Câu chữ tự đặt: `src/copy/cho-duyet.ts` (web), `shared/noi-dung/thong-bao.ts`, `server/noi-dung/thong-bao.ts`,
+  `server/nhap/thong-bao.ts`.
+- Mọi thao tác chạm file nội dung đi qua `layKhoNoiDung(...)` / `file_ops` (server/noi-dung); không ghi file trực tiếp.
 - Ô nhập ghi về server dùng `src/app/nhap-tam.ts` để giữ chữ đang gõ khi mất kết nối.
 - Chạy bộ dữ liệu mẫu: `npm run dev:mau -- --kich-ban=mac-dinh` (web 5322, API 5323, dữ liệu trong `.mau/`).

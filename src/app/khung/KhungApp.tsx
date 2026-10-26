@@ -5,9 +5,14 @@
 // focus về H1 (#tieu-de-trang) hoặc <main>.
 // Provider dùng chung (toast, kết nối, tìm kiếm, phím tắt) và ScrollRestoration nằm ở GocApp — khung
 // không gắn lại (gắn hai lần sẽ nghe phím hai lần).
+// Từ phase 2b khung theo dõi revision nội dung của /api/meta cho mọi trang (Claude ghi file, sửa ngoài app →
+// tải lại trạng thái nội dung, bài đang mở; đề xuất 1.6) và hiện banner một lần sau khi thay file cây (1.3)
+// ở đầu <main>.
 import { useCallback, useRef, useState } from 'react'
 import { Outlet } from 'react-router'
+import { useTheoDoiNoiDung } from '../du-lieu/nhap'
 import { BannerMatKetNoi } from '../ket-noi'
+import BannerThayCay from './BannerThayCay'
 import { useBeRong } from './be-rong'
 import ChanTrang from './ChanTrang'
 import Drawer, { type LyDoDongDrawer } from './Drawer'
@@ -20,6 +25,7 @@ import ThanhTrenMobile from './ThanhTrenMobile'
 import { ThanhTrenProvider, type CauHinhThanhTren } from './thanh-tren'
 
 export default function KhungApp() {
+  useTheoDoiNoiDung()
   const beRong = useBeRong()
   const [cauHinhThanhTren, datCauHinhThanhTren] = useState<CauHinhThanhTren | null>(null)
   const [moDrawer, datMoDrawer] = useState(false)
@@ -81,6 +87,7 @@ export default function KhungApp() {
             tabIndex={-1}
             className="flex min-w-0 flex-1 flex-col outline-none"
           >
+            <BannerThayCay />
             <Outlet />
           </main>
           <ChanTrang />

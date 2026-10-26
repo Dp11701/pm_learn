@@ -1,5 +1,6 @@
 // Seed bộ dữ liệu mẫu (§7, đề xuất mục 7) trên thư mục tạm: đúng số liệu §7 mà các bảng phase 2a biểu diễn
-// được, lịch sử trạng thái cho burnup, lượt mở cho Học tiếp / sidebar, bản chụp duyệt khớp hash file.
+// được, lịch sử trạng thái cho burnup, lượt mở cho Học tiếp / sidebar, bản chụp duyệt khớp hash file; sổ nội
+// dung (phase 2b) nhận đủ file mẫu để bài hiện như phase 2a.
 import fs from 'node:fs'
 import path from 'node:path'
 import Database from 'better-sqlite3'
@@ -15,11 +16,13 @@ import { docCauHinh } from '../../server/cau-hinh.ts'
 import type { Db } from '../../server/db/index.ts'
 import { docSetting } from '../../server/db/settings.ts'
 import { docBanChupHienHanh, docCacBanChupHienHanh } from '../../server/du-lieu/ban-chup-duyet.ts'
+import { docSo, docTepCuaMuc } from '../../server/du-lieu/so-noi-dung.ts'
 import type { AnhChupHoc, TrangThaiDb } from '../../server/du-lieu/hop-dong-trang-thai.ts'
 import { docAnhChup, docSuKien } from '../../server/du-lieu/trang-thai.ts'
 import { danhSachDangHoc, hocTiep } from '../../src/app/du-lieu/hoc-tiep.ts'
 import { bamFile, kiemMuiGio, lichDoiTrangThai } from '../../fixtures/mau/seed.ts'
 import {
+  BAN_NHAP,
   BO_QUA,
   DANG_HOC,
   DA_DUYET,
@@ -242,6 +245,51 @@ describe.skipIf(!laGioMau)('API thật trên DB mẫu', () => {
       expect(Object.keys(res.body.trangThai)).toHaveLength(47)
       expect(Object.keys(res.body.luotMo)).toHaveLength(43)
       expect(hocTiep(cay, res.body as AnhChupHoc)?.slug).toBe('risk-register')
+    } finally {
+      rw.close()
+    }
+  })
+})
+
+describe.skipIf(!laGioMau)('sổ nội dung (phase 2b): bài mẫu hiện như phase 2a', () => {
+  it('50 file đã nhận, đúng vai; "Ngày nhập" 9 bản nháp như F21b; hash / size khớp file', () => {
+    const so = docSo(db)
+    expect(so).toHaveLength(50)
+    expect(kq.tomTat?.soFile).toBe(50)
+    for (const d of so) {
+      const muc = cay.mucTheoId.get(d.itemId)
+      expect(muc?.duongDanTuongDoi, d.path).toBe(d.path)
+      expect(d.role).toBe('bai')
+      const byte = fs.readFileSync(path.join(kq.noiDungDir, d.path))
+      expect(d.hash).toBe(bamFile(byte))
+      expect(d.size).toBe(byte.length)
+      expect(d.missingSince).toBeNull()
+    }
+    for (const x of BAN_NHAP) {
+      expect(docTepCuaMuc(db, mucSlug(x.slug).id)?.importedOn, x.slug).toBe(x.ngayNhap)
+    }
+    for (const x of DA_DUYET) {
+      expect(docTepCuaMuc(db, mucSlug(x.slug).id)?.importedOn).toBe(ngayCuaMoc(x.duyetLuc))
+    }
+  })
+
+  it('API: 41 Đã duyệt + 9 Bản nháp, 0 file chưa nhận; Scope Creep hiện file (khớp bản chụp)', async () => {
+    const rw = new Database(kq.tepDb)
+    try {
+      const cauHinh = docCauHinh({ DATA_DIR: kq.dataDir, NOI_DUNG_DIR: kq.noiDungDir })
+      const app = taoApp({ cauHinh, db: rw, soMucHoc: cay.soMucHoc })
+      const get = (url: string) => request(app).get(url).set('Host', '127.0.0.1:5321')
+      const tt = (await get('/api/noi-dung/trang-thai')).body as Record<string, { loai: string }>
+      const dem = { 'da-duyet': 0, 'ban-nhap': 0 } as Record<string, number>
+      for (const x of Object.values(tt)) dem[x.loai]++
+      expect(dem).toEqual({ 'da-duyet': 41, 'ban-nhap': 9 })
+      const meta = (await get('/api/meta')).body.noiDung
+      expect(meta.chuaNhan).toBe(0)
+      const bai = (await get(`/api/bai/${mucSlug('scope-creep').id}`)).body
+      expect(bai.banHien).toBe('file')
+      expect(bai.canhBaoDuyet).toBeNull()
+      // quét nhẹ trên dữ liệu vừa seed không thấy đổi gì
+      expect((await get('/api/meta')).body.noiDung.revision).toBe(meta.revision)
     } finally {
       rw.close()
     }

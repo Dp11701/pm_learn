@@ -14,6 +14,7 @@ import { docCauHinh } from '../../server/cau-hinh.ts'
 import { moDb, type Db } from '../../server/db/index.ts'
 import { layRevision } from '../../server/db/settings.ts'
 import { bamNoiDung } from '../../server/noi-dung/bam.ts'
+import { nhanTepCoSanDongBo } from '../../server/noi-dung/quet.ts'
 import { quyetDinhBai } from '../../server/noi-dung/doc-bai.ts'
 import { CAU_CANH_BAO_DUYET, type PhanHoiBai } from '../../server/noi-dung/hop-dong-bai.ts'
 import { taoSaoLuu, type SaoLuu } from '../../server/sao-luu.ts'
@@ -68,11 +69,15 @@ async function layBai(m: MucHoc): Promise<PhanHoiBai> {
   return res.body as PhanHoiBai
 }
 
-/** Ghi file bài vào đúng đường dẫn chuẩn của mục (noi-dung/<phần>/<lĩnh vực>/<slug>.md). */
+/**
+ * Ghi file bài vào đúng đường dẫn chuẩn của mục (noi-dung/<phần>/<lĩnh vực>/<slug>.md) rồi nhận vào sổ nội
+ * dung (từ phase 2b bài chỉ đọc file đã nhận — như sau Nhập / Quét lại).
+ */
 function ghiBai(m: MucHoc, noiDung: string | Buffer): string {
   const p = path.join(tam.noiDungDir, m.duongDanTuongDoi)
   fs.mkdirSync(path.dirname(p), { recursive: true })
   fs.writeFileSync(p, noiDung)
+  nhanTepCoSanDongBo(db, tam.noiDungDir, { duongDan: m.duongDanTuongDoi, itemId: m.id, vai: 'bai' })
   return p
 }
 

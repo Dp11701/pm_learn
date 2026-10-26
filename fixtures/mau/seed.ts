@@ -1,6 +1,6 @@
-// Seed DB của bộ dữ liệu mẫu (§7, đề xuất mục 7) cho `npm run dev:mau`. Chỉ ghi các bảng đã có ở phase 2a:
-// settings, item_status + status_events, item_visits, content_approvals. Ghi qua đúng hàm của server
-// (datTrangThai, ghiLuotMo) với thời điểm cố định nên lần chạy nào cũng ra cùng dữ liệu.
+// Seed DB của bộ dữ liệu mẫu (§7, đề xuất mục 7) cho `npm run dev:mau`. Ghi các bảng đã có tới phase 2b:
+// settings, item_status + status_events, item_visits, content_approvals, content_files. Ghi qua đúng hàm của
+// server (datTrangThai, ghiLuotMo, ghiDongSo) với thời điểm cố định nên lần chạy nào cũng ra cùng dữ liệu.
 //
 // Cách mở rộng: mỗi phase thêm bảng thì thêm một phần vào PHAN_SEED (chỉ ghi bảng của phase đó, đọc số
 // liệu từ so-lieu.ts) và gỡ dòng tương ứng khỏi CHUA_SEED.
@@ -14,8 +14,11 @@ import { docFrontmatter } from '../../shared/noi-dung/index.ts'
 import type { Cay, MucHoc } from '../../shared/roadmap/index.ts'
 import type { Db } from '../../server/db/index.ts'
 import { ghiSetting } from '../../server/db/settings.ts'
+import { ghiDongSo } from '../../server/du-lieu/so-noi-dung.ts'
 import { datTrangThai, ghiLuotMo } from '../../server/du-lieu/trang-thai.ts'
+import { dsFileMd } from './tao-noi-dung.ts'
 import {
+  BAN_NHAP,
   BO_QUA,
   DANG_HOC,
   DA_DUYET,
@@ -134,21 +137,49 @@ function seedBanChupDuyet({ db, cay, noiDungDir }: NguCanhSeed): void {
   }
 }
 
-/** Các phần seed theo thứ tự chạy (phase 2a). Phase sau thêm phần của mình vào cuối. */
+/**
+ * Sổ nội dung (phase 2b): mọi file .md của thư mục nội dung mẫu là file đã nhận (kịch bản f12, loi-file cũng
+ * vậy), để bài hiện đúng như phase 2a. Ngày nhập: bản nháp theo F21b (BAN_NHAP.ngayNhap), bài đã duyệt = ngày
+ * duyệt, bản sửa (f12) = ngày của GIO_MAU.
+ */
+function seedSoNoiDung({ db, cay, noiDungDir }: NguCanhSeed): void {
+  const ngayNhap = new Map<string, string>([
+    ...BAN_NHAP.map((x) => [x.slug, x.ngayNhap] as const),
+    ...DA_DUYET.map((x) => [x.slug, ngayCuaMoc(x.duyetLuc)] as const),
+  ])
+  const theoDuongDan = new Map(cay.mucHoc.map((m) => [m.duongDanTuongDoi, m]))
+  for (const tep of dsFileMd(noiDungDir)) {
+    const laBanSua = tep.endsWith('.ban-sua.md')
+    const muc = theoDuongDan.get(laBanSua ? tep.replace(/\.ban-sua\.md$/, '.md') : tep)
+    if (!muc) throw new Error(`File mẫu không thuộc mục nào: ${tep}`)
+    const duongDan = path.join(noiDungDir, tep)
+    const st = fs.statSync(duongDan)
+    ghiDongSo(db, {
+      path: tep,
+      itemId: muc.id,
+      role: laBanSua ? 'ban-sua' : 'bai',
+      hash: bamFile(fs.readFileSync(duongDan)),
+      size: st.size,
+      mtime: st.mtimeMs,
+      importedOn: laBanSua
+        ? GIO_MAU.slice(0, 10)
+        : (ngayNhap.get(muc.slug) ?? GIO_MAU.slice(0, 10)),
+      missingSince: null,
+    })
+  }
+}
+
+/** Các phần seed theo thứ tự chạy (phase 2a, 2b). Phase sau thêm phần của mình vào cuối. */
 export const PHAN_SEED: readonly PhanSeed[] = [
   { ten: 'cai-dat', bang: ['settings'], chay: seedCaiDat },
   { ten: 'trang-thai-hoc', bang: ['item_status', 'status_events'], chay: seedTrangThaiHoc },
   { ten: 'luot-mo', bang: ['item_visits'], chay: seedLuotMo },
   { ten: 'ban-chup-duyet', bang: ['content_approvals'], chay: seedBanChupDuyet },
+  { ten: 'so-noi-dung', bang: ['content_files'], chay: seedSoNoiDung },
 ]
 
-/** Số liệu §7 chưa seed vì bảng chưa có ở phase 2a (phase = phase tạo bảng theo đề xuất mục 9). */
+/** Số liệu §7 chưa seed vì bảng chưa có (phase = phase tạo bảng theo đề xuất mục 9). */
 export const CHUA_SEED: readonly { phase: string; bang: string; soLieu: string }[] = [
-  {
-    phase: '2b',
-    bang: 'content_files',
-    soLieu: 'sổ nội dung 50 file; "Ngày nhập" 9 bản nháp như F21b (BAN_NHAP.ngayNhap)',
-  },
   {
     phase: '3',
     bang: 'projects, practice',
@@ -206,6 +237,8 @@ export interface TomTatSeed {
   suKien: number
   luotMo: number
   banChup: number
+  /** Số file trong sổ nội dung */
+  soFile: number
 }
 
 /** Seed bộ mẫu §7 vào DB đã chạy migration; một transaction. */
@@ -226,5 +259,6 @@ export function seedMau(ng: NguCanhSeed): TomTatSeed {
     suKien: dem('SELECT count(*) AS n FROM status_events'),
     luotMo: dem('SELECT count(*) AS n FROM item_visits'),
     banChup: dem('SELECT count(*) AS n FROM content_approvals WHERE superseded_at IS NULL'),
+    soFile: dem('SELECT count(*) AS n FROM content_files'),
   }
 }

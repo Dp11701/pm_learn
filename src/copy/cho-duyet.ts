@@ -100,8 +100,6 @@ export const MO_TA_SAP_CO = {
   /** `/lo-trinh` (cac-trang.ts) */
   loTrinh:
     'Cả roadmap dạng danh sách cây (phase 4) và bản đồ (phase 6), lọc theo trạng thái, loại, phần, lĩnh vực.',
-  /** `/noi-dung` (cac-trang.ts) */
-  noiDung: 'Nhập file .md (phase 2b); tab Độ phủ và Chờ duyệt có ở phase 7a.',
   /** `/on-tap` (cac-trang.ts) */
   onTap: 'Thẻ đến hạn hôm nay, các hộp Leitner, tỉ lệ nhớ 30 ngày và danh sách Cần ôn lại.',
   /** `/on-tap/phien` (cac-trang.ts) */
@@ -210,3 +208,151 @@ export const DA_BO_DANH_DAU_KHONG_AP_DUNG = 'Đã bỏ đánh dấu Không áp d
 
 /** Dưới khối Kế hoạch thi khi GET /api/ap-dung hỏng (KhoiApp.tsx); như "Lỗi: không đọc được tiến độ bước" của C10. */
 export const LOI_DOC_AP_DUNG = 'Lỗi: không đọc được bước Áp dụng'
+
+// ---------- Phase 2b — trang Nội dung /noi-dung, tab Nhập (src/pages/noi-dung, src/components/nhap, C30) ----------
+// Chữ nguyên văn F22 / §8.8 / đề xuất 1.6–1.7, 3.8 ("Kéo thả file hoặc thư mục .md vào đây", "Quét lại thư mục",
+// "Gán cho mục…", "Giữ bản cũ", "Nhập n file", "Đã nhập n file", "Có n file chưa nhận — Quét lại"…) nằm tại
+// chỗ; dưới đây là câu tự đặt.
+
+/** Mô tả C38 "Có ở phase 7a" của tab Độ phủ (src/pages/noi-dung/TrangNoiDung.tsx). */
+export const DO_PHU_SAP_CO =
+  'Bảng mọi mục học với trạng thái nội dung và cột Đủ khối, lọc theo trạng thái nội dung.'
+
+/** Mô tả C38 "Có ở phase 7a" của tab Chờ duyệt (TrangNoiDung.tsx). */
+export const CHO_DUYET_SAP_CO =
+  'Các bản nháp chờ duyệt (kèm bản sửa và tổng quan nháp), nút Duyệt mở chế độ duyệt.'
+
+/** Nút thứ hai của C30: chọn cả một thư mục (src/components/VungThaFile.tsx). */
+export const CHON_THU_MUC = 'Chọn thư mục…'
+
+/** C30 lúc kéo vào khi không biết số file (có thư mục); F02b vẽ "Thả để kiểm tra 15 file" khi biết. */
+export const THA_DE_KIEM_TRA = 'Thả để kiểm tra'
+
+/** C30 đang chờ máy chủ kiểm tra (src/pages/noi-dung/TabNhap.tsx). */
+export const dangKiemTraFile = (tong: string) => `Đang kiểm tra ${tong} file…`
+
+/** C30 đang quét lại thư mục nội dung (TabNhap.tsx). */
+export const DANG_QUET_LAI = 'Đang quét lại thư mục nội dung…'
+
+/** Dòng phụ của C30 lỗi khi cả lô bị từ chối (TabNhap.tsx). */
+export const THU_LAI_KEO_THA = 'Kéo thả lại hoặc chọn file khác.'
+
+/** Lý do không nhận một file (src/components/nhap/doc-tep.ts); "Chỉ nhận file .md" là chữ đề xuất 1.7. */
+export const LY_DO_KHONG_NHAN = {
+  quaLon: (kb: number) => `File lớn hơn ${kb} KB`,
+  tenQuaDai: (toiDa: number) => `Tên file dài quá ${toiDa} ký tự`,
+  khongDocDuoc: 'Không đọc được file theo UTF-8',
+} as const
+
+/** Lỗi cả lô (doc-tep.ts, TabNhap.tsx): vượt 250 file, 16 MB mỗi lần (đề xuất 1.7), lô rỗng. */
+export const LOI_LO = {
+  quaNhieuFile: (toiDa: string, so: string) =>
+    `Mỗi lần nhập tối đa ${toiDa} file — lần này có ${so} file .md. Hãy chia thành nhiều lần.`,
+  quaDungLuong: (toiDa: string, so: string) =>
+    `Mỗi lần nhập tối đa ${toiDa} MB — lần này ${so} MB. Hãy chia thành nhiều lần.`,
+  khongCoFile: 'Không tìm thấy file .md nào.',
+  khongCoFileNhapDuoc: 'Không có file nào nhập được.',
+  quaNhieuMuc: (toiDa: string) => `Thư mục có hơn ${toiDa} mục — hãy chọn thư mục nhỏ hơn.`,
+} as const
+
+/** Tiêu đề danh sách file bị bỏ qua ở phía trình duyệt (src/components/nhap/DanhSachKhongNhan.tsx). */
+export const khongNhanFile = (so: string) => `Không nhận ${so} file`
+
+/** Dòng cuối danh sách khi còn file không hiện (DanhSachKhongNhan.tsx). */
+export const vaFileKhac = (so: string) => `… và ${so} file khác`
+
+/** Dòng dưới C30 khi mở tab với ?muc= (đề xuất 3.6 "Lối vào"): file thả vào được gán sẵn mục này (TabNhap.tsx). */
+export const GAN_SAN_CHO = 'File thả vào được gán sẵn cho'
+
+/** Nút bỏ ?muc= khỏi đường dẫn (TabNhap.tsx). */
+export const BO_GAN_SAN = 'Bỏ gán sẵn'
+
+/** Giá trị cột "Khớp theo" khi bạn tự gán / khi gán sẵn theo ?muc= (src/components/nhap/ket-qua.ts); "id", "tên file" là chữ F22. */
+export const KHOP_THEO_BAN_GAN = 'bạn gán'
+export const KHOP_THEO_GAN_SAN = 'gán sẵn'
+/** "Khớp theo" của dòng Quét lại mà server khớp theo chỗ của file (file đã nhận / nằm ở đường dẫn chuẩn của mục). */
+export const KHOP_THEO_DUONG_DAN = 'đường dẫn'
+
+/** Chữ ẩn ở ô Mục "—" (src/components/nhap/BangKetQua.tsx). */
+export const CHUA_GAN_MUC = 'Chưa gán mục'
+
+/** Tên vùng cuộn ngang của bảng kết quả (BangKetQua.tsx), cùng kiểu với nhanBangCuon. */
+export const TEN_BANG_KET_QUA = 'Kết quả kiểm tra, cuộn ngang'
+
+/** Ghi chú dòng Hợp lệ khi mục đã có Bản nháp (đề xuất 3.8 "mục có Bản nháp thì thay"; BangKetQua.tsx). */
+export const THAY_BAN_NHAP = 'Thay bản nháp đang có (bản cũ vào thùng rác)'
+
+/** Cảnh báo dòng sẽ nhập vào cùng mục với một file khác trong lô (src/components/nhap/BangKetQua.tsx). */
+export const cungMucVoi = (ten: string) => `Cùng mục với ${ten} — chỉ nên nhập một file`
+
+/** Ghi chú dòng ⟳ của Quét lại khi chọn Giữ bản cũ (đề xuất 1.6; BangKetQua.tsx). */
+export const GIU_BAN_CU_GHI_LAI = 'Ghi lại bản đã duyệt; bản sửa ngoài app vào thùng rác'
+/** Như trên khi file Đã duyệt đã bị xoá / chuyển đi ngoài app (không có gì để bỏ vào thùng rác). */
+export const GIU_BAN_CU_KHOI_PHUC = 'Ghi lại bản đã duyệt từ bản chụp của app'
+
+/** Hộp chọn chung cho mọi dòng ◎ khi có từ 2 dòng (BangKetQua.tsx). */
+export const nhanTatCaDaDuyet = (so: string) => `Nhận là Đã duyệt cả ${so} file ◎`
+
+/** Ghi chú cuối bảng khi có dòng ◎ (BangKetQua.tsx), cạnh câu F22 về file trùng. */
+export const CHU_THICH_CHUA_CHUP = 'File ◎ chỉ nhập khi tick "Nhận là Đã duyệt"'
+
+/** Phần thêm của dòng tóm tắt F22 khi có dòng ◎ (ket-qua.ts). */
+export const chuaCoBanChup = (so: string) => `${so} chưa có bản chụp`
+
+/** Nút cuối bảng khi Quét lại có dòng ⟳ để Giữ bản cũ (ket-qua.ts); chỉ nhập thì là "Nhập n file" (F22). */
+export const nutGiuBanCu = (so: string) => `Giữ ${so} bản cũ`
+export const nutNhapVaGiu = (nhap: string, giu: string) => `Nhập ${nhap} file · giữ ${giu} bản cũ`
+
+/** Toast sau khi Giữ bản cũ (src/app/du-lieu/nhap.ts) — không có Hoàn tác (bản ngoài app nằm trong thùng rác). */
+export const daGiuBanCu = (so: string) => `Đã giữ ${so} bản cũ`
+
+/** Toast sau Hoàn tác lần nhập (nhap.ts). */
+export const daHoanTacNhap = (so: string) => `Đã hoàn tác: ${so} file trở lại như trước khi nhập`
+
+/** Toast khi Quét lại không có gì để nhập (nhap.ts, TabNhap.tsx). */
+export const QUET_LAI_KHONG_CO_GI = 'Quét lại xong: không có file nào cần nhập.'
+
+/** Toast lỗi (nhap.ts): câu của máy chủ đứng sau. */
+export const LOI_NHAP = {
+  kiemTra: 'Không kiểm tra được',
+  nhap: 'Không nhập được',
+  hoanTac: 'Không hoàn tác được',
+  quetLai: 'Không quét lại được',
+  giuBanCu: 'Không giữ được bản cũ',
+  matKetNoi: 'Mất kết nối với máy chủ cục bộ.',
+} as const
+
+/** Nút của banner lỗi khi lô hết hạn (410) — kiểm lại cùng các file (TabNhap.tsx). */
+export const KIEM_TRA_LAI = 'Kiểm tra lại'
+
+/** Vùng status đọc kết quả kiểm tra (TabNhap.tsx): `tomTat` là dòng tóm tắt F22. */
+export const daKiemTra = (so: string, tomTat: string) => `Kiểm tra xong ${so} file: ${tomTat}.`
+
+/** Khối "Vừa nhập" sau khi nhập: tiêu đề + dòng phụ + link tới từng bài (src/components/nhap/VuaNhap.tsx). */
+export const VUA_NHAP = 'Vừa nhập'
+export const VUA_NHAP_MO_TA = 'Các bài vừa nhập — mở bài để đọc.'
+/** Nhãn từng dòng "Vừa nhập": file vào đâu (bản sửa: trang bài vẫn hiện bản đã duyệt — xem bản sửa ở phase 7a). */
+export const VUA_NHAP_THANH = {
+  'ban-nhap': 'Bản nháp',
+  'ban-sua': 'Bản sửa — bài vẫn hiện bản Đã duyệt tới khi bạn duyệt bản sửa',
+  'da-duyet': 'Đã duyệt',
+} as const
+
+// ---------- Phase 2b — thay file cây (đề xuất 1.3) ----------
+
+/** Toast lỗi khi tắt banner "Cây roadmap vừa cập nhật…" không được (src/app/khung/BannerThayCay.tsx). */
+export const LOI_TAT_THAY_CAY = 'Không tắt được thông báo cây roadmap'
+
+/** Dialog "Gán cho mục…" (C28 trong C32; src/components/nhap/HopThoaiGanMuc.tsx). */
+export const GAN_MUC = {
+  tieuDe: 'Gán cho mục',
+  timMuc: 'Tìm mục để gán',
+  goiY: 'Gợi ý theo tên file',
+  dangGan: 'Đang gán',
+  huongDanTrong: 'Gõ tên mục, tên gốc hoặc viết tắt để tìm.',
+  /** "↑ ↓ di chuyển" như chân C28; "Enter gán" thay "Enter mở". */
+  huongDanPhim: '↑ ↓ di chuyển · Enter gán',
+  ketQua: 'Kết quả',
+  boGan: 'Bỏ gán',
+  huy: 'Huỷ',
+} as const

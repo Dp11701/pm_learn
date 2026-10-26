@@ -27,10 +27,13 @@ vi.mock('../../../src/components/tim-kiem/TimKiem', async () => ({
   useTimKiem: () => ({ mo: () => {} }),
 }))
 
+/** Bảng slug cũ của máy chủ giả (GET /api/noi-dung/slug-cu); mỗi test đặt lại rỗng. */
+let slugCu: Record<string, string> = {}
+
 /**
  * Máy chủ giả cho trang bài: GET /api/state (chưa có dữ liệu học), GET /api/bai/:id (mục chưa có file),
- * POST /api/luot-mo/:id, GET /api/noi-dung/trang-thai (chưa mục nào có file). /api/meta và đường dẫn khác
- * đi tiếp vào fetch giả của datMoiTruong.
+ * POST /api/luot-mo/:id, GET /api/noi-dung/trang-thai (chưa mục nào có file), GET /api/noi-dung/slug-cu
+ * (`slugCu`). /api/meta và đường dẫn khác đi tiếp vào fetch giả của datMoiTruong.
  */
 function giaApiBai() {
   const fetchGoc = globalThis.fetch
@@ -45,6 +48,7 @@ function giaApiBai() {
         return Promise.resolve(json({ revision: 1, trangThai: {}, luotMo: {} }))
       }
       if (method === 'GET' && url === '/api/noi-dung/trang-thai') return Promise.resolve(json({}))
+      if (method === 'GET' && url === '/api/noi-dung/slug-cu') return Promise.resolve(json(slugCu))
       const bai = /^\/api\/bai\/(.+)$/.exec(url)
       if (method === 'GET' && bai) {
         return Promise.resolve(
@@ -83,6 +87,7 @@ function cacLanGoiApi() {
 }
 
 beforeEach(() => {
+  slugCu = {}
   datMoiTruong()
   giaApiBai()
 })
@@ -155,7 +160,6 @@ describe('route tĩnh chưa làm tới', () => {
       [
         '',
         'lo-trinh',
-        'noi-dung',
         'on-tap',
         'on-tap/phien',
         'lo-trinh-goi-y',
@@ -268,7 +272,8 @@ describe('trang có slug', () => {
     ['/hoc/scope-creep/khong-co', 'đoạn thừa'],
   ])('%s (%s) → 404 trong khung', async (duongDan) => {
     await moTrang(duongDan)
-    expect(h1().textContent).toBe('Không tìm thấy trang này.')
+    // Slug lạ ở /hoc, /linh-vuc, /phan: hỏi bảng slug cũ trước (không có) rồi mới 404.
+    await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang này.' })
     expect(document.title).toBe('Không tìm thấy trang · Học PM A–Z')
     expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
     expect(screen.getByRole('link', { name: 'Về Tổng quan' }).getAttribute('href')).toBe('/')
@@ -276,11 +281,63 @@ describe('trang có slug', () => {
 
   it('404 gợi ý mục gần nhất cho đường dẫn gõ sai', async () => {
     await moTrang('/hoc/scope-crep')
-    const goiY = screen.getByText(/Có phải bạn muốn mở/)
+    const goiY = await screen.findByText(/Có phải bạn muốn mở/)
     expect(goiY.textContent).toBe('Có phải bạn muốn mở Scope Creep?')
     expect(within(goiY).getByRole('link', { name: 'Scope Creep' }).getAttribute('href')).toBe(
       '/hoc/scope-creep',
     )
+  })
+})
+
+describe('/noi-dung (trang thật từ phase 2b)', () => {
+  it('không còn là route "Có ở phase 2b": H1 Nội dung trong khung, tab Nhập', async () => {
+    expect(CAC_TRANG_TINH.some((t) => t.duongDan === 'noi-dung')).toBe(false)
+    await moTrang('/noi-dung')
+    expect(h1().textContent).toBe('Nội dung')
+    expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
+    expect(document.title).toBe('Nội dung · Học PM A–Z')
+    expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('true')
+    expect(screen.queryByText('Có ở phase 2b')).toBeNull()
+  })
+})
+
+describe('slug cũ sau khi thay file cây (đề xuất 1.3 bước 2)', () => {
+  const sc = cayMau.mucTheoSlug.get('scope-creep')!
+  const lv = cayMau.nutTheoSlug.get('scope-management')!
+
+  it('/hoc/<slug cũ> → chuyển (replace) sang slug hiện tại, giữ ?query và #neo; không hiện 404 trước', async () => {
+    slugCu = { 'scope-creep-cu': sc.id }
+    const { router } = await moTrang('/hoc/scope-creep-cu?xem=1#tu-kiem-tra')
+    expect(screen.queryByText('Không tìm thấy trang này.')).toBeNull()
+    await waitFor(() => expect(router.state.location.pathname).toBe('/hoc/scope-creep'))
+    expect(router.state.location.search).toBe('?xem=1')
+    expect(router.state.location.hash).toBe('#tu-kiem-tra')
+    expect(router.state.historyAction).toBe('REPLACE')
+    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe('Scope Creep')
+    expect(cacLanGoiApi()).toContain('GET /api/noi-dung/slug-cu')
+  })
+
+  it('/linh-vuc/<slug cũ> → lĩnh vực hiện tại; slug cũ của nút khác loại → 404', async () => {
+    slugCu = { 'quan-ly-pham-vi-cu': lv.id, 'scope-creep-cu': sc.id }
+    const { router } = await moTrang('/linh-vuc/quan-ly-pham-vi-cu')
+    await waitFor(() => expect(router.state.location.pathname).toBe('/linh-vuc/scope-management'))
+    cleanup()
+    await moTrang('/linh-vuc/scope-creep-cu')
+    await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang này.' })
+  })
+
+  it('GET /api/noi-dung/slug-cu lỗi → 404 như thường', async () => {
+    const fetchGia = vi.mocked(fetch)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) =>
+        String(input) === '/api/noi-dung/slug-cu'
+          ? Promise.resolve(new Response('{"loi":"hỏng"}', { status: 500 }))
+          : fetchGia(input, init),
+      ),
+    )
+    await moTrang('/hoc/scope-creep-cu')
+    await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang này.' })
   })
 })
 

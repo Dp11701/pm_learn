@@ -14,6 +14,7 @@ import { taoApp } from '../../server/app.ts'
 import { docCauHinh } from '../../server/cau-hinh.ts'
 import { moDb, type Db } from '../../server/db/index.ts'
 import { CSP_ANH } from '../../server/noi-dung/anh.ts'
+import { nhanTepCoSanDongBo } from '../../server/noi-dung/quet.ts'
 import { bamNoiDung } from '../../server/noi-dung/bam.ts'
 import type { PhanHoiBai } from '../../server/noi-dung/hop-dong-bai.ts'
 import { docTepTrongGoc, namTrongGoc } from '../../server/noi-dung/tep-an-toan.ts'
@@ -196,6 +197,12 @@ describe('GET /api/bai/:id — symlink, file lạ (1.6)', () => {
 describe('.md chứa HTML / link / ảnh nguy hiểm (mục 6)', () => {
   beforeEach(() => {
     fs.writeFileSync(tepBai(), NGUY_HIEM)
+    // Từ phase 2b bài chỉ đọc file đã nhận (sổ nội dung)
+    nhanTepCoSanDongBo(db, tam.noiDungDir, {
+      duongDan: scopeCreep.duongDanTuongDoi,
+      itemId: scopeCreep.id,
+      vai: 'bai',
+    })
     fs.writeFileSync(path.join(thuMucBai, 'x.svg'), SVG_CO_SCRIPT)
   })
 

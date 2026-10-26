@@ -12,6 +12,7 @@ import { giaiLienQuan } from '../../../shared/noi-dung'
 import { CAC_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import { chuoiCha, layCay, type MucHoc } from '../../../shared/roadmap'
 import { coDuLieuApDung, useApDung } from '../../app/du-lieu/ap-dung'
+import { useSlugCu } from '../../app/du-lieu/thay-cay'
 import { usePhimTat } from '../../app/phim-tat'
 import { LE_NGANG_TRANG } from '../../app/khung/le-trang'
 import { useThanhTrenMobile } from '../../app/khung/thanh-tren'
@@ -105,12 +106,17 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
 
   const duLieu = bai.tinhTrang === 'xong' ? bai.duLieu : null
   const ketQua = duLieu && !duLieu.loiDoc ? duLieu.bai : null
+  // lien_quan tra theo slug hiện tại → slug cũ (sau khi thay cây, đề xuất 1.3, 1.5) → tên gốc → id; bảng slug cũ
+  // chỉ tải khi có giá trị tra trượt theo cây hiện tại.
+  const dsLienQuan = ketQua?.frontmatter?.lienQuan
+  const canSlugCu = useMemo(
+    () => (dsLienQuan ? giaiLienQuan(cay, dsLienQuan).khongThay.length > 0 : false),
+    [cay, dsLienQuan],
+  )
+  const traSlugCu = useSlugCu(canSlugCu).tra
   const lienQuan = useMemo(
-    () =>
-      ketQua?.frontmatter
-        ? giaiLienQuan(cay, ketQua.frontmatter.lienQuan, { boId: muc.id }).muc
-        : [],
-    [cay, ketQua, muc.id],
+    () => (dsLienQuan ? giaiLienQuan(cay, dsLienQuan, { boId: muc.id, traSlugCu }).muc : []),
+    [cay, dsLienQuan, muc.id, traSlugCu],
   )
   const cacO = useMemo(
     () => (ketQua ? cacOHien(ketQua, { coLienQuan: lienQuan.length > 0 }) : []),
