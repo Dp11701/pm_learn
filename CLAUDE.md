@@ -87,13 +87,20 @@ Bản dev có `/_dev/thanh-phan` (F01, F02, F02b). Trên Mac của người dùn
   - `foldVi` xoá dấu nháy và ® thay vì đổi thành khoảng trắng;
   - sao lưu giữ 14 bản mỗi loại (hằng ngày; từng lý do).
 
+## Phạm vi đã rút gọn (27/10/2026)
+
+Xem `docs/de-xuat-trien-khai.md` mục 10: **chỉ máy tính (≥ 1024px), bỏ mobile, bỏ đồng hồ học, bỏ bản đồ, bỏ nhóm P1
+(phase 10–12), bỏ trình soạn trong app**. Mục tiêu cuối: người dùng **học được** — nội dung bài thật cho 199 mục là
+ưu tiên. Bước còn lại: 1 học trọn một mục · 2 danh sách + lĩnh vực + Tổng quan gọn · 3 ôn tập · 4 duyệt bài gọn ·
+5 nội dung thật (Claude soạn nháp vào `noi-dung/`, người dùng duyệt) · 6 nghiệm thu. Điểm dừng: sau bước 1, sau đợt
+nội dung đầu, sau bước 6.
+
 ## Trạng thái
 
-- Phase 0, 1, 2a: xong và đã duyệt (báo cáo trong `docs/bao-cao/`).
-- Phase 2b — đưa nội dung vào: xong 26/10/2026, báo cáo `docs/bao-cao/phase-2b.md` (không phải điểm dừng; mục
-  "Chờ bạn duyệt" gom vào lần dừng sau phase 3). Kế tiếp: phase 3.
+- Phase 0, 1, 2a, 2b: xong (báo cáo trong `docs/bao-cao/`; mục chờ duyệt của 2b gom vào lần dừng sau bước 1).
+- Bước 1 (phase 3 rút gọn): đang làm trên nhánh `wip/phase-3` (bước A server + hook đã commit).
+- Bước 5 (nội dung): đợt đầu Scope Management + PMP, ghi vào `noi-dung/` (thư mục nội dung thật, ngoài git của app).
 - Câu chữ tự đặt: `src/copy/cho-duyet.ts` (web), `shared/noi-dung/thong-bao.ts`, `server/noi-dung/thong-bao.ts`,
   `server/nhap/thong-bao.ts`.
 - Mọi thao tác chạm file nội dung đi qua `layKhoNoiDung(...)` / `file_ops` (server/noi-dung); không ghi file trực tiếp.
-- Ô nhập ghi về server dùng `src/app/nhap-tam.ts` để giữ chữ đang gõ khi mất kết nối.
 - Chạy bộ dữ liệu mẫu: `npm run dev:mau -- --kich-ban=mac-dinh` (web 5322, API 5323, dữ liệu trong `.mau/`).

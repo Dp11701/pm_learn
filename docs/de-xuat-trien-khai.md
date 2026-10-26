@@ -510,3 +510,23 @@ Thứ tự theo gợi ý của designer, hết P0 rồi tới P1, trừ: tab Nh�
 | **11. P1-b** | Chứng chỉ (mẫu 7 khối trên khung F11, mức theo đuổi, kế hoạch thi, Phủ roadmap, Thông tin kỳ thi); Bộ hồ sơ + tab Dự án; Thống kê (KPI, burnup + dự báo, heatmap, đều có bảng) | F32, F33, F34, F34b, F35 | D20 (F32), D29 (F32, F34, F34b/F35) | Theo dõi chứng chỉ, 15 tài liệu của dự án, burnup việc học |
 | **12. P1-c** | Thiết lập lần đầu (bước 1–4 + F36); Thuật ngữ + Viết tắt; Lộ trình gợi ý + Trước/Tiếp theo lộ trình; đường nối mục liên quan trên bản đồ | F30, F36, F37 | D29 (F37), D33 (F37) | Đủ toàn bộ P1 |
 | **13. Nghiệm thu cuối** | Lặp lại phase 9 cho toàn app, cùng quy tắc thư mục tạm; thêm round-trip sao lưu toàn bộ, nhập JSON vào DB trống, đặt lại giữ đúng danh sách 2.3, thay cây thử. Báo cáo đối chiếu đủ 51 frame | Đủ 51 frame | tick lại D1–D35 | Báo cáo nghiệm thu |
+
+## 10. Điều chỉnh phạm vi (27/10/2026, người dùng đã duyệt)
+
+Người dùng: "lược bỏ bớt, tập trung vào nội dung, cuối cùng chỉ muốn được học; bỏ hẳn mobile". Kế hoạch còn lại thay
+mục 9 từ phase 3 trở đi:
+
+| Bước | Làm | Bỏ |
+|---|---|---|
+| 1. Học trọn một mục | Nói lại, Thực hành, Tự kiểm tra, F19 phải, lý do Bỏ qua; cột phải: Mục lục, Ghi chú, Flashcard | Mobile F13; đồng hồ học, giờ học, streak |
+| 2. Đi lại trong roadmap (gộp 4 + 5) | Danh sách cây có bộ lọc, trang Lĩnh vực, Tổng quan gọn (tiến độ, Học tiếp, thẻ cần ôn) | Bản đồ (phase 6) |
+| 3. Ôn tập (phase 8) | Phiên ôn Leitner | — |
+| 4. Duyệt bài gọn (thay 7a–7c) | Nút "Duyệt bài" trên trang bài, danh sách bản nháp chờ duyệt | Trình soạn trong app, "Bản của tôi", tải CSV |
+| 5. Nội dung thật | Claude soạn bài nháp cho 199 mục bằng prompt đã duyệt, có agent soát độc lập; người dùng duyệt trong app | — |
+| 6. Nghiệm thu cuối (gộp 9 + 13) | Kiểm toàn app trên máy tính | — |
+
+- Chỉ máy tính (≥ 1024px). Không làm thêm, không kiểm thêm giao diện < 1024px; phần mobile đã có từ phase 1–2b để nguyên.
+- Bỏ toàn bộ P1 (phase 10–12): Thống kê, Chứng chỉ, Bộ hồ sơ, Thiết lập lần đầu, Thuật ngữ, Lộ trình gợi ý, trang Phần,
+  Cài đặt nâng cao. Sao lưu tự động hằng ngày giữ nguyên.
+- Đồng hồ: API server đã viết ở phase 3 bước A để nguyên, không làm giao diện; bỏ khu đồng hồ ở sidebar / rail.
+- Điểm dừng chờ duyệt mới: sau bước 1, sau đợt nội dung đầu tiên, sau bước 6.
