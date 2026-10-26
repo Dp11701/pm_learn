@@ -1,5 +1,6 @@
 // C10 Thanh 4 bước (F02, F11, §1, đề xuất 3.2; quyết định 1: màu mực, không dùng xanh lá).
-// Bản đầy đủ ở đầu bài: lưới 4 cột cách 8, mỗi bước cao 40 (mobile 44), viền 1px, bo 6, chữ 15/24,
+// Bản đầy đủ ở đầu bài: lưới 4 cột cách 8 (mobile 2×2 — frame không vẽ, tự đặt để không cắt chữ),
+// mỗi bước cao 40 (mobile 44), viền 1px, bo 6, chữ 15/24,
 // chấm 20px — Xong: check trên nền mực · Đang làm: vòng mực 2px có chấm 8px, viền bước 1,5px mực,
 // chữ 600, aria-current="step" · Chưa làm: vòng rỗng viền border-input · Không áp dụng: vòng rỗng có
 // gạch ngang. Bấm bước cuộn tới khối tương ứng (link #neo).
@@ -135,9 +136,12 @@ export default function ThanhBonBuoc({
         </span>
       </p>
     )
+  // Có bước bấm được thì là <nav> (F11); không có link thì chỉ là nhóm có nhãn.
+  const coLink = CAC_BUOC.some((b) => lienKet[b] && !voHieu.includes(b))
+  const Khung = coLink ? 'nav' : 'div'
   return (
-    <nav aria-label="Bốn bước học" className={className}>
-      <ol className="m-0 grid list-none grid-cols-4 gap-2 p-0">
+    <Khung role={coLink ? undefined : 'group'} aria-label="Bốn bước học" className={className}>
+      <ol className="m-0 grid list-none grid-cols-2 gap-2 p-0 md:grid-cols-4">
         {CAC_BUOC.map((b) => {
           const tt = tinhTrang[b]
           const tat = voHieu.includes(b)
@@ -152,14 +156,19 @@ export default function ThanhBonBuoc({
           const noiDung = (
             <>
               <ChamBuoc tt={tt} voHieu={tat} />
-              <span className="min-w-0 truncate">
-                {TEN_BUOC[b]}
+              {/* Ghi chú dài bị cắt "…" khi cột hẹp (F11 ở 720 đã tràn 8px): title giữ đủ chữ khi rê chuột */}
+              <span
+                className="min-w-0 truncate"
+                title={chu ? `${TEN_BUOC[b]} · ${chu}` : undefined}
+              >
+                {/* Khoảng trắng nằm ngoài span để tên truy cập không dính chữ ("Hiểu — đã xong") */}
+                {TEN_BUOC[b]}{' '}
                 {chu ? (
-                  <span
-                    className={`font-normal ${LOP_CHU_META} ${tat ? '' : 'text-muted'}`}
-                  >{` · ${chu}`}</span>
+                  <span className={`font-normal ${LOP_CHU_META} ${tat ? '' : 'text-muted'}`}>
+                    · {chu}
+                  </span>
                 ) : (
-                  <span className="sr-only">{` — ${CHU_DOC[tt]}`}</span>
+                  <span className="sr-only">— {CHU_DOC[tt]}</span>
                 )}
               </span>
             </>
@@ -184,7 +193,7 @@ export default function ThanhBonBuoc({
           )
         })}
       </ol>
-    </nav>
+    </Khung>
   )
 }
 

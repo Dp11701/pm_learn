@@ -17,12 +17,22 @@ export function tenTruyCapGiaoDien(g: GiaoDien): string {
 type Props = Omit<ComponentProps<'button'>, 'children' | 'type'> & {
   /** Chỉ icon (rail): nhãn nằm ở tooltip và aria-label. */
   chiIcon?: boolean
+  /** Nút hẹp (sidebar 264, rộng 187): "Giao diện: Theo hệ thống" không đủ chỗ cùng icon → bỏ icon,
+   *  giữ đủ chữ (nhãn phải cho thấy giao diện đang dùng). Sáng / Tối vẫn có icon như C34. */
+  hep?: boolean
 }
 
 /** Nhận cả ref (React 19) để làm trigger của tooltip rail. */
-export default function NutGiaoDien({ chiIcon = false, className = '', onClick, ...khac }: Props) {
+export default function NutGiaoDien({
+  chiIcon = false,
+  hep = false,
+  className = '',
+  onClick,
+  ...khac
+}: Props) {
   const [giaoDien, datGiaoDien] = useGiaoDien()
   const Icon = ICON[giaoDien]
+  const coIcon = chiIcon || !hep || giaoDien !== 'he-thong'
   return (
     <button
       {...khac}
@@ -34,7 +44,7 @@ export default function NutGiaoDien({ chiIcon = false, className = '', onClick, 
       }}
       className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-border-input bg-surface text-text transition-colors duration-150 hover:border-text hover:bg-surface-2 ${className}`}
     >
-      <Icon size={16} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
+      {coIcon && <Icon size={16} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />}
       {!chiIcon && (
         <span className="truncate text-[length:var(--fs-meta)] leading-[var(--lh-meta)] font-medium">
           {nhanGiaoDien(giaoDien)}

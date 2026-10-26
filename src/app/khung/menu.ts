@@ -16,6 +16,9 @@ import { layCay } from '../../../shared/roadmap'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import type { DuLieuKhung } from './du-lieu-khung'
 
+/** Tên app (logo C34, tooltip rail, top bar khi không có tên trang). */
+export const TEN_APP = 'Học PM A–Z'
+
 export type KhoaMenu =
   | 'tong-quan'
   | 'lo-trinh'
@@ -86,7 +89,10 @@ export function menuDangMo(pathname: string): MenuDangMo | null {
   return null
 }
 
-export function ariaCurrent(dangMo: MenuDangMo | null, khoa: KhoaMenu): 'page' | 'true' | undefined {
+export function ariaCurrent(
+  dangMo: MenuDangMo | null,
+  khoa: KhoaMenu,
+): 'page' | 'true' | undefined {
   if (dangMo?.khoa !== khoa) return undefined
   return dangMo.chinhXac ? 'page' : 'true'
 }
@@ -112,8 +118,31 @@ export function badgeCua(khoa: KhoaMenu, duLieu: DuLieuKhung): BadgeMenu | null 
   return null
 }
 
-/** Tiêu đề top bar mobile khi trang không tự đặt: tên mục menu đang mở. */
+/** Tiêu đề top bar mobile khi trang không tự đặt và route không có tên: tên mục menu đang mở. */
 export function tieuDeMacDinh(pathname: string): string {
   const dangMo = menuDangMo(pathname)
-  return MENU.find((m) => m.khoa === dangMo?.khoa)?.nhan ?? 'Học PM A–Z'
+  return MENU.find((m) => m.khoa === dangMo?.khoa)?.nhan ?? TEN_APP
+}
+
+/** `handle.tenTrang` của route sâu nhất có đặt (router.tsx), vd. "Phiên ôn" cho /on-tap/phien. */
+export function tenTrangTuRoute(cacRoute: readonly { handle: unknown }[]): string | undefined {
+  for (let i = cacRoute.length - 1; i >= 0; i--) {
+    const handle = cacRoute[i].handle
+    if (typeof handle === 'object' && handle !== null && 'tenTrang' in handle) {
+      const ten = handle.tenTrang
+      if (typeof ten === 'string' && ten !== '') return ten
+    }
+  }
+  return undefined
+}
+
+/** Click mở tab / cửa sổ mới (⌘, Ctrl, Shift, Alt, chuột giữa): không phải điều hướng trong app. */
+export function laClickRaNgoai(e: {
+  button: number
+  metaKey: boolean
+  ctrlKey: boolean
+  shiftKey: boolean
+  altKey: boolean
+}): boolean {
+  return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
 }

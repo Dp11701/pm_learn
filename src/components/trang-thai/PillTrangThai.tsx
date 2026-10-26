@@ -3,6 +3,7 @@
 // hover viền 1px màu trạng thái, disabled "đang lưu", lỗi viền danger.
 import type { ComponentProps } from 'react'
 import { ChevronDown, RotateCcw } from 'lucide-react'
+import { dinhDangSo } from '../../../shared/dinh-dang'
 import {
   TEN_CAN_ON_LAI,
   TEN_TRANG_THAI_HOC,
@@ -52,6 +53,12 @@ export default function PillTrangThai({ trangThai, phu, className = '' }: PropsP
   )
 }
 
+/** C7 cờ "Cần ôn lại · 2 thẻ đến hạn" (F02); không có số thẻ thì chỉ "Cần ôn lại". */
+export function CoCanOnLai({ soThe, className }: { soThe?: number; className?: string }) {
+  const phu = soThe && soThe > 0 ? `${dinhDangSo(soThe)} thẻ đến hạn` : undefined
+  return <PillTrangThai trangThai="can-on-lai" phu={phu} className={className} />
+}
+
 export type PropsNutPillTrangThai = {
   trangThai: TrangThaiHoc
   /** Đang lưu: nền surface-2, chữ muted, không chevron, không bấm được. */
@@ -86,7 +93,7 @@ export function NutPillTrangThai({
       disabled={tat}
       aria-busy={dangLuu || undefined}
       data-trang-thai={trangThai}
-      className={`${NEN} relative justify-between pr-2 pl-2.5 ${LOP_CHU_CHIP} transition-shadow duration-150 ${VUNG_CHAM} ${mau} ${className}`}
+      className={`${NEN} relative justify-between ${tat ? 'px-2.5' : 'pr-2 pl-2.5'} ${LOP_CHU_CHIP} transition-shadow duration-150 ${VUNG_CHAM} ${mau} ${className}`}
     >
       <span className="inline-flex items-center gap-1.5">
         <IconPill trangThai={trangThai} size={12} />

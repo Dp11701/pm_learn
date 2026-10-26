@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
   MENU,
+  TEN_APP,
   ariaCurrent,
   badgeCua,
+  laClickRaNgoai,
   menuDangMo,
+  tenTrangTuRoute,
   tieuDeMacDinh,
 } from '../../../src/app/khung/menu'
 import { DU_LIEU_KHUNG_TRONG } from '../../../src/app/khung/du-lieu-khung'
@@ -72,5 +75,29 @@ describe('menu khung (§6.1)', () => {
     expect(tieuDeMacDinh('/')).toBe('Tổng quan')
     expect(tieuDeMacDinh('/on-tap/phien')).toBe('Ôn tập')
     expect(tieuDeMacDinh('/khong-co')).toBe('Học PM A–Z')
+    expect(TEN_APP).toBe('Học PM A–Z')
+  })
+
+  it('tên trang từ handle của route sâu nhất có đặt', () => {
+    expect(tenTrangTuRoute([])).toBeUndefined()
+    expect(
+      tenTrangTuRoute([
+        { handle: undefined },
+        { handle: { tenTrang: 'Ôn tập' } },
+        { handle: { tenTrang: 'Phiên ôn' } },
+        { handle: null },
+      ]),
+    ).toBe('Phiên ôn')
+    expect(tenTrangTuRoute([{ handle: { tenTrang: '' } }, { handle: { khac: 1 } }])).toBeUndefined()
+  })
+
+  it('click mở tab mới (phím bổ trợ, chuột giữa) không tính là điều hướng trong app', () => {
+    const thuong = { button: 0, metaKey: false, ctrlKey: false, shiftKey: false, altKey: false }
+    expect(laClickRaNgoai(thuong)).toBe(false)
+    expect(laClickRaNgoai({ ...thuong, metaKey: true })).toBe(true)
+    expect(laClickRaNgoai({ ...thuong, ctrlKey: true })).toBe(true)
+    expect(laClickRaNgoai({ ...thuong, shiftKey: true })).toBe(true)
+    expect(laClickRaNgoai({ ...thuong, altKey: true })).toBe(true)
+    expect(laClickRaNgoai({ ...thuong, button: 1 })).toBe(true)
   })
 })

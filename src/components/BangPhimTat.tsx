@@ -1,6 +1,7 @@
 // F27 Bảng phím tắt ("?"): dialog 720px cách đỉnh 72, nhóm theo phạm vi thành lưới 2 cột (mobile 1 cột),
 // phím kiểu JetBrains Mono, ô ghi chú cuối bảng. Mọi dòng lấy từ sổ phím (src/app/phim-tat.tsx).
 // Nút đóng "Esc Đóng" của frame thay cho nút X mặc định của C32; nhận focus đầu tiên khi mở.
+// Hiện đủ bảng §11 như frame, kể cả phím của màn hình chưa có (sổ ghi phase có tác dụng).
 import { Dialog } from 'radix-ui'
 import { Info } from 'lucide-react'
 import HopThoai from './HopThoai'
@@ -44,7 +45,7 @@ export default function BangPhimTat({ mo, doiMo, nhom }: PropsBangPhimTat) {
             <dl className="m-0 flex flex-col">
               {n.dong.map((d) => (
                 <div
-                  key={d.moTa}
+                  key={`${d.phamVi}:${d.moTa}`}
                   className="flex min-h-9 items-center justify-between gap-3 border-b border-[var(--phim-tat-vach)]"
                 >
                   <dt>{d.moTa}</dt>

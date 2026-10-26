@@ -2,9 +2,9 @@
 // - Gốc: GocApp (provider) + ErrorBoundary toàn app (không cần khung).
 // - Khung app: KhungApp; ErrorBoundary của route con nằm ở route không đường dẫn bên trong, nên lỗi một
 //   trang vẫn hiện trong khung (sidebar còn dùng được). KhungApp hỏng → trang lỗi không khung.
-// - /hoc/:slug/soan nằm ngoài khung (D27, F20).
-// - /_dev/* chỉ có ở bản dev; bản build loại bỏ nhánh này (tests/go-cung/kiem-bundle).
-// `handle.tenTrang` của route tĩnh để khung app (top bar mobile) đọc qua useMatches nếu cần.
+// - /hoc/:slug/soan nằm ngoài khung (D27, F20); slug sai thì TrangSoan dựng khung app và route con index
+//   (KhongTimThay) hiện trong <Outlet/> của khung, nên 404 vẫn ở trong khung (D24).
+// - /_dev/* chỉ có ở bản dev; bản build loại bỏ nhánh này (scripts/kiem-bundle.ts).
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import DangTai from '../pages/DangTai'
 import KhongTimThay from '../pages/KhongTimThay'
@@ -19,6 +19,7 @@ import { CAC_TRANG_TINH } from '../pages/cac-trang'
 import GocApp from './GocApp'
 import KhungApp from './khung/KhungApp'
 
+/** `handle` của route: khung app đọc `tenTrang` qua useMatches làm tiêu đề top bar mobile (ThanhTrenMobile). */
 export interface HandleRoute {
   tenTrang?: string
 }
@@ -73,7 +74,12 @@ export const cacRoute: RouteObject[] = [
           },
         ],
       },
-      { path: 'hoc/:slug/soan', Component: TrangSoan, ErrorBoundary: LoiUngDung },
+      {
+        path: 'hoc/:slug/soan',
+        Component: TrangSoan,
+        ErrorBoundary: LoiUngDung,
+        children: [{ index: true, Component: KhongTimThay }],
+      },
       ...trangDev,
     ],
   },

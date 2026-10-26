@@ -16,9 +16,10 @@ export default function ChanTrang() {
           href={cayJson.source}
           target="_blank"
           rel="noreferrer"
+          aria-label="roadmap.sh (mở tab mới)"
           className="text-text underline hover:text-[var(--primary-hover)]"
         >
-          roadmap.sh<span className="sr-only"> (mở tab mới)</span>
+          roadmap.sh
         </a>{' '}
         · cập nhật {NGAY_CAP_NHAT} · dữ liệu lấy ngày {NGAY_LAY}
       </p>

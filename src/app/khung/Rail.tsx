@@ -8,7 +8,7 @@ import { useTimKiem } from '../../components/tim-kiem/TimKiem'
 import { useMoBangPhimTat } from '../phim-tat'
 import { useGiaoDien } from '../giao-dien'
 import { useDuLieuKhung } from './du-lieu-khung'
-import { MENU, ariaCurrent, badgeCua, menuDangMo, type BadgeMenu } from './menu'
+import { MENU, TEN_APP, ariaCurrent, badgeCua, menuDangMo, type BadgeMenu } from './menu'
 import NutGiaoDien, { nhanGiaoDien } from './NutGiaoDien'
 import Logo from './Logo'
 
@@ -59,14 +59,15 @@ export default function Rail() {
 
   return (
     <Tooltip.Provider delayDuration={300}>
+      {/* 72 = lề 12 + ô 48 + lề 11 + viền phải 1 (không tràn ngang). */}
       <aside
         aria-label="Điều hướng chính"
-        className="sticky top-0 flex h-dvh w-[var(--rail-w)] shrink-0 flex-col items-center gap-4 self-start overflow-y-auto border-r border-border bg-surface px-3 py-5"
+        className="sticky top-0 flex h-dvh w-[var(--rail-w)] shrink-0 flex-col items-center gap-4 self-start overflow-x-hidden overflow-y-auto border-r border-border bg-surface py-5 pr-[11px] pl-3"
       >
-        <GoiYRail nhan="Học PM A–Z">
+        <GoiYRail nhan={TEN_APP}>
           <Link
             to="/"
-            aria-label="Học PM A–Z"
+            aria-label={TEN_APP}
             className={`flex shrink-0 items-center justify-center ${O}`}
           >
             <Logo />
@@ -77,6 +78,7 @@ export default function Rail() {
           <button
             type="button"
             aria-label="Tìm mục"
+            aria-haspopup="dialog"
             aria-keyshortcuts="/"
             onClick={moTimKiem}
             className={`flex shrink-0 items-center justify-center border border-border-input bg-surface text-muted transition-colors duration-150 hover:border-text ${O}`}
@@ -85,7 +87,7 @@ export default function Rail() {
           </button>
         </GoiYRail>
 
-        <nav aria-label="Menu">
+        <nav aria-label="Menu" className="shrink-0">
           <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
             {MENU.map((m) => {
               const current = ariaCurrent(dangMo, m.khoa)
@@ -115,7 +117,7 @@ export default function Rail() {
           </ul>
         </nav>
 
-        <div className="mt-auto flex w-full flex-col items-center gap-2 border-t border-border pt-4">
+        <div className="mt-auto flex w-full shrink-0 flex-col items-center gap-2 border-t border-border pt-4">
           {duLieu.dongHo?.rail}
           <GoiYRail nhan={nhanGiaoDien(giaoDien)}>
             <NutGiaoDien chiIcon className={`shrink-0 ${O}`} />
@@ -124,6 +126,7 @@ export default function Rail() {
             <button
               type="button"
               aria-label="Bảng phím tắt"
+              aria-haspopup="dialog"
               aria-keyshortcuts="?"
               onClick={moBangPhimTat}
               className={`shrink-0 border border-border-input bg-surface font-mono text-[length:var(--fs-ui)] leading-[var(--lh-ui)] font-semibold text-text transition-colors duration-150 hover:border-text hover:bg-surface-2 ${O}`}

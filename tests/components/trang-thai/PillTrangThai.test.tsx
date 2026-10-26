@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import PillTrangThai, {
+  CoCanOnLai,
   NutPillTrangThai,
   tenTrangThaiHien,
 } from '../../../src/components/trang-thai/PillTrangThai'
@@ -39,6 +40,21 @@ describe('PillTrangThai (C5, cờ C7)', () => {
   })
 })
 
+describe('CoCanOnLai (C7 cờ)', () => {
+  it('"Cần ôn lại · 2 thẻ đến hạn" với icon ↺; không có số thẻ thì chỉ "Cần ôn lại"', () => {
+    const { container, rerender } = render(<CoCanOnLai soThe={2} />)
+    expect(container.textContent).toBe('Cần ôn lại · 2 thẻ đến hạn')
+    expect(container.querySelector('svg')?.getAttribute('class')).toContain('lucide-rotate-ccw')
+    expect((container.firstElementChild as HTMLElement).className).toContain(
+      'bg-[var(--st-review-bg)]',
+    )
+    rerender(<CoCanOnLai soThe={0} />)
+    expect(container.textContent).toBe('Cần ôn lại')
+    rerender(<CoCanOnLai soThe={1200} />)
+    expect(container.textContent).toBe('Cần ôn lại · 1.200 thẻ đến hạn')
+  })
+})
+
 describe('NutPillTrangThai (C5 bấm được)', () => {
   it('nút mở menu: icon + chữ + chevron, hover viền 1px màu trạng thái', () => {
     const bam = vi.fn()
@@ -58,6 +74,9 @@ describe('NutPillTrangThai (C5 bấm được)', () => {
     expect(nut).toHaveProperty('disabled', true)
     expect(nut.getAttribute('aria-busy')).toBe('true')
     expect(nut.className).toContain('bg-surface-2')
+    // F02 "Disabled · đang lưu": padding 0 10 (không còn chevron)
+    expect(nut.className).toContain('px-2.5')
+    expect(nut.className).not.toContain('pr-2 ')
     expect(nut.querySelectorAll('svg')).toHaveLength(1)
   })
 

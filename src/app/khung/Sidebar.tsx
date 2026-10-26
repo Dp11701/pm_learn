@@ -1,20 +1,23 @@
 // C34 Sidebar 264px (§6.1; F11, F27, F28): logo, ô tìm (/), menu, khối Đang học, chân ghim đáy (D4)
 // có đồng hồ, nút Giao diện (D5), nút "?". `mobile` = trong drawer (F28): hàng 44px, có nút "Đóng menu".
-import { useId } from 'react'
+import { useId, type MouseEvent } from 'react'
 import { Link, useLocation } from 'react-router'
-import { Award, FileText, Search, X } from 'lucide-react'
+import { Award, FileText, Search, X, type LucideIcon } from 'lucide-react'
 import IconTrangThai from '../../components/trang-thai/IconTrangThai'
+import TenMuc from '../../components/TenMuc'
 import { useTimKiem } from '../../components/tim-kiem/TimKiem'
 import { useMoBangPhimTat } from '../phim-tat'
-import { layCay, type MucHoc } from '../../../shared/roadmap'
+import { layCay, type MauBai, type MucHoc } from '../../../shared/roadmap'
 import { TEN_LOAI } from '../../../shared/domain/trang-thai'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import { useDuLieuKhung } from './du-lieu-khung'
 import {
   DEN_TAT_CA_DANG_HOC,
   MENU,
+  TEN_APP,
   ariaCurrent,
   badgeCua,
+  laClickRaNgoai,
   menuDangMo,
   type BadgeMenu,
 } from './menu'
@@ -66,6 +69,9 @@ export function BadgeSidebar({ badge, dangMo }: { badge: BadgeMenu; dangMo: bool
   )
 }
 
+const NUT_VIEN =
+  'rounded-[var(--radius-sm)] border border-border-input bg-surface text-text transition-colors duration-150 hover:border-text hover:bg-surface-2'
+
 export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSidebar) {
   const { pathname } = useLocation()
   const duLieu = useDuLieuKhung()
@@ -75,22 +81,29 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
   const dangMo = menuDangMo(pathname)
   const dsDangHoc = mucDangHoc(duLieu.dangHoc)
   const tongDangHoc = duLieu.tongDangHoc ?? duLieu.dangHoc.length
-  const dieuHuong = () => khiChon?.('dieu-huong')
+  // ⌘/Ctrl/Shift + click mở tab mới: drawer giữ nguyên.
+  const dieuHuong = (e: MouseEvent) => {
+    if (!laClickRaNgoai(e)) khiChon?.('dieu-huong')
+  }
 
   // Cao hàng: 36 (desktop) / 44 (drawer, vùng chạm).
   const hang = mobile ? 'h-11' : 'h-9'
   const vuong = mobile ? 'size-11' : 'size-9'
 
   return (
-    <div className="flex min-h-full flex-col gap-6 px-4 py-5">
+    // shrink-0: cao hơn khung (drawer 375×812, cửa sổ thấp) thì cuộn, không ép hàng 36/44 thấp lại;
+    // min-h-full: thấp hơn thì chân vẫn ghim đáy (D4).
+    <div className="flex min-h-full shrink-0 flex-col gap-6 px-4 py-5">
       <div className="flex items-center justify-between gap-2">
         <Link
           to="/"
           onClick={dieuHuong}
-          className="flex items-center gap-2.5 rounded-[var(--radius-sm)] text-text no-underline"
+          className={`flex items-center gap-2.5 rounded-[var(--radius-sm)] text-text no-underline ${
+            mobile ? 'min-h-11' : ''
+          }`}
         >
           <Logo />
-          <span className="text-[17px] leading-7 font-bold">Học PM A–Z</span>
+          <span className="text-[17px] leading-7 font-bold">{TEN_APP}</span>
         </Link>
         {khiDong && (
           <button
@@ -104,8 +117,10 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
         )}
       </div>
 
+      {/* Mở bằng bấm / Enter / Space hoặc phím "/". Không mở khi chỉ Tab tới (WCAG 3.2.1). */}
       <button
         type="button"
+        aria-haspopup="dialog"
         aria-keyshortcuts="/"
         onClick={() => {
           khiChon?.('lop-khac')
@@ -151,7 +166,10 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
         </ul>
       </nav>
 
-      <section aria-labelledby={idDangHoc} className="flex flex-col gap-1 border-t border-border pt-4">
+      <section
+        aria-labelledby={idDangHoc}
+        className="flex flex-col gap-1 border-t border-border pt-4"
+      >
         <h2
           id={idDangHoc}
           className="m-0 mb-1 px-2.5 text-[length:var(--fs-meta)] leading-[var(--lh-meta)] font-semibold text-muted"
@@ -179,10 +197,9 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
                         current ? 'bg-surface-2 font-semibold' : ''
                       }`}
                     >
-                      <IconTrangThai trangThai="dang-hoc" size={16} className="shrink-0" />
-                      <span lang="en" className="min-w-0 flex-1 break-words">
-                        {muc.label}
-                      </span>
+                      {/* Chữ "Đang học" ở tiêu đề khối đi kèm icon (§11: icon + chữ). */}
+                      <IconTrangThai trangThai="dang-hoc" toMau size={16} />
+                      <TenMuc className="min-w-0 flex-1 break-words">{muc.label}</TenMuc>
                       <IconLoai muc={muc} />
                     </Link>
                   </li>
@@ -205,23 +222,25 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
       <div className="mt-auto flex flex-col gap-3 border-t border-border pt-4">
         <div className="flex flex-col gap-1 rounded-[var(--radius-md)] border border-border bg-surface-2 p-3">
           {duLieu.dongHo?.sidebar ?? (
-            // Phase 1 chưa có đồng hồ: trạng thái nghỉ của frame, không có nút Bắt đầu (phase 3 cắm vào).
+            // Phase 1 chưa có đồng hồ: trạng thái nghỉ của frame, chưa có nút Bắt đầu (phase 3 cắm
+            // khối đồng hồ thật qua DuLieuKhung.dongHo.sidebar).
             <p className="m-0 flex min-h-8 items-center text-[length:var(--fs-meta)] leading-[var(--lh-meta)] text-muted">
               Chưa bấm giờ
             </p>
           )}
         </div>
         <div className="flex gap-2">
-          <NutGiaoDien className={`flex-1 ${hang} px-2`} />
+          <NutGiaoDien hep={!mobile} className={`flex-1 ${hang} px-1.5`} />
           <button
             type="button"
             aria-label="Bảng phím tắt"
+            aria-haspopup="dialog"
             aria-keyshortcuts="?"
             onClick={() => {
               khiChon?.('lop-khac')
               moBangPhimTat()
             }}
-            className={`${vuong} shrink-0 rounded-[var(--radius-sm)] border border-border-input bg-surface font-mono text-[length:var(--fs-ui)] leading-[var(--lh-ui)] font-semibold text-text transition-colors duration-150 hover:border-text hover:bg-surface-2`}
+            className={`${vuong} shrink-0 font-mono text-[length:var(--fs-ui)] leading-[var(--lh-ui)] font-semibold ${NUT_VIEN}`}
           >
             ?
           </button>
@@ -232,28 +251,18 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
 }
 
 /** Icon loại sau tên (C34): chỉ Tài liệu (file-text) và Chứng chỉ (award), như chip loại. */
+const ICON_LOAI: Partial<Record<MauBai, LucideIcon>> = { 'tai-lieu': FileText, 'chung-chi': Award }
+
 function IconLoai({ muc }: { muc: MucHoc }) {
-  if (muc.mau === 'tai-lieu') {
-    return (
-      <FileText
-        size={14}
-        strokeWidth={1.75}
-        role="img"
-        aria-label={TEN_LOAI['tai-lieu']}
-        className="shrink-0 text-muted"
-      />
-    )
-  }
-  if (muc.mau === 'chung-chi') {
-    return (
-      <Award
-        size={14}
-        strokeWidth={1.75}
-        role="img"
-        aria-label={TEN_LOAI['chung-chi']}
-        className="shrink-0 text-muted"
-      />
-    )
-  }
-  return null
+  const Icon = ICON_LOAI[muc.mau]
+  if (!Icon) return null
+  return (
+    <Icon
+      size={14}
+      strokeWidth={1.75}
+      role="img"
+      aria-label={TEN_LOAI[muc.mau]}
+      className="shrink-0 text-muted"
+    />
+  )
 }

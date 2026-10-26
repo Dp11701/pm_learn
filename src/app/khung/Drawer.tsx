@@ -25,6 +25,7 @@ export default function Drawer({ mo, dong, lyDoDongRef, nutMenuRef }: PropsDrawe
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-[var(--scrim)] data-[state=closed]:animate-[an-dan_150ms_ease-in] data-[state=open]:animate-[hien-dan_150ms_ease-out]" />
         <Dialog.Content
+          aria-modal="true"
           aria-describedby={undefined}
           onEscapeKeyDown={(e) => {
             // Esc lúc Telex/VNI đang ghép chữ chỉ huỷ ghép (đề xuất 5).
@@ -34,8 +35,11 @@ export default function Drawer({ mo, dong, lyDoDongRef, nutMenuRef }: PropsDrawe
             e.preventDefault()
             const lyDo = lyDoDongRef.current
             lyDoDongRef.current = null
-            if (lyDo === 'dieu-huong') focusDauTrang()
-            else if (lyDo === null) nutMenuRef.current?.focus()
+            if (lyDo === 'lop-khac') return
+            // Nút menu không còn (cửa sổ nới rộng quá 1024 lúc drawer mở) → về H1 như chuyển trang.
+            const nutMenu = lyDo === null ? nutMenuRef.current : null
+            if (nutMenu?.isConnected) nutMenu.focus()
+            else focusDauTrang()
           }}
           className="fixed inset-y-0 left-0 z-50 flex w-[min(var(--drawer-w),100vw)] flex-col overflow-y-auto border-r border-[var(--border-dialog)] bg-surface text-text shadow-[var(--shadow-3)] outline-none motion-safe:data-[state=closed]:animate-[ra-trai_150ms_ease-in] motion-safe:data-[state=open]:animate-[vao-tu-trai_200ms_ease-out] motion-reduce:data-[state=closed]:animate-[an-dan_150ms_ease-in] motion-reduce:data-[state=open]:animate-[hien-dan_150ms_ease-out]"
         >

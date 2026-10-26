@@ -105,7 +105,8 @@ export function VongTienDo({ co = 'lon', className = '', ...s }: PropsVongTienDo
     { ten: 'dang-hoc', n: s.dangHoc, net: 'stroke-[var(--st-learning-solid)]' },
     { ten: 'bo-qua', n: s.boQua, net: '' },
   ].map((d) => {
-    const dai = CHU_VI * tiLe(d.n, s.tong)
+    // Không vẽ vượt một vòng khi số đếm lỗi (tổng các phần > tổng)
+    const dai = Math.min(CHU_VI * tiLe(d.n, s.tong), CHU_VI - batDau)
     const kq = { ...d, dai, batDau }
     batDau += dai
     return kq

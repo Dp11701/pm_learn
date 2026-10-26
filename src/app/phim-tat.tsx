@@ -1,8 +1,9 @@
 // Sổ phím tắt dùng chung (§11, đề xuất 5): một bảng cho cả bộ xử lý toàn cục và bảng F27.
 // So theo e.code (vị trí phím vật lý) nên Telex/VNI không biến "[" thành "ơ". Bỏ qua khi: đang gõ
 // (ô nhập, contenteditable, CodeMirror), IME đang ghép chữ, giữ Alt/Ctrl/⌘ (Shift chỉ cho "?"),
-// focus ở trong dialog modal hoặc menu/listbox (chúng tự xử lý phím, Esc của Radix cũng vậy).
+// đang mở dialog modal (Radix tự xử lý Esc) hoặc focus ở menu/listbox/combobox (chúng tự xử lý phím).
 // Trang đăng ký phím của mình bằng usePhimTat; cùng một phím thì nơi đăng ký sau cùng (lớp trên cùng) nhận.
+// F27 hiện đủ bảng §11 như frame, kể cả phím của màn hình phase sau (cột phase trong sổ ghi lúc có tác dụng).
 import {
   createContext,
   useCallback,
@@ -137,7 +138,8 @@ const MA_TOAN_CUC: ReadonlySet<string> = new Set<MaPhimToanCuc>([
   'Space',
 ])
 
-const O_GO = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), .cm-editor'
+const O_GO =
+  'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="searchbox"], .cm-editor'
 // input không nhận chữ: phím tắt vẫn chạy
 const INPUT_KHONG_GO = new Set([
   'checkbox',
@@ -150,8 +152,9 @@ const INPUT_KHONG_GO = new Set([
   'range',
   'color',
 ])
+// Vùng tự xử lý phím (typeahead, mũi tên, Space)
 const VUNG_TU_XU_LY =
-  '[aria-modal="true"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"]'
+  '[role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="combobox"]'
 // Space trên các phần tử này là "bấm", không phải phím tắt
 const PHAN_TU_BAM =
   'button, a[href], summary, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="switch"], [role="tab"], [role="option"], [role="menuitem"], [role="treeitem"]'
@@ -168,12 +171,17 @@ export function maPhimTuSuKien(e: KeyboardEvent): MaPhimToanCuc | null {
   if (e.defaultPrevented || e.repeat) return null
   if (e.isComposing || e.keyCode === 229) return null
   if (e.altKey || e.ctrlKey || e.metaKey) return null
+  let ma: MaPhimToanCuc | null = null
+  if (e.code === 'Slash' && e.shiftKey) ma = 'Shift+Slash'
+  else if (!e.shiftKey && MA_TOAN_CUC.has(e.code)) ma = e.code as MaPhimToanCuc
+  if (!ma) return null
   const dich = e.target instanceof Element ? e.target : null
   if (laChoGo(dich) || dich?.closest(VUNG_TU_XU_LY)) return null
-  if (e.code === 'Slash' && e.shiftKey) return 'Shift+Slash'
-  if (e.shiftKey || !MA_TOAN_CUC.has(e.code)) return null
-  if (e.code === 'Space' && dich?.closest(PHAN_TU_BAM)) return null
-  return e.code as MaPhimToanCuc
+  if (ma === 'Space' && dich?.closest(PHAN_TU_BAM)) return null
+  // Dialog modal đang mở (kể cả lúc focus lọt ra body): phím tắt của trang nằm dưới không chạy.
+  // Dialog đang chạy hiệu ứng đóng (Radix data-state="closed") không tính.
+  if (document.querySelector('[aria-modal="true"]:not([data-state="closed"])')) return null
+  return ma
 }
 
 type XuLyPhim = (e: KeyboardEvent) => void
@@ -218,6 +226,9 @@ export function usePhimTat(
   }, [ma, enabled])
 }
 
+// Đếm số provider đang gắn: lỡ gắn hai lần thì gỡ một cái không làm mất bộ nghe chung.
+let soProvider = 0
+
 const NHOM_BANG = nhomBangPhimTat()
 const NguCanhMoBang = createContext<() => void>(() => {})
 
@@ -226,8 +237,10 @@ export function PhimTatProvider({ children }: { children: ReactNode }) {
   const [mo, datMo] = useState(false)
   const moBang = useCallback(() => datMo(true), [])
   useEffect(() => {
-    document.addEventListener('keydown', nghePhim)
-    return () => document.removeEventListener('keydown', nghePhim)
+    if (soProvider++ === 0) document.addEventListener('keydown', nghePhim)
+    return () => {
+      if (--soProvider === 0) document.removeEventListener('keydown', nghePhim)
+    }
   }, [])
   usePhimTat('Shift+Slash', moBang)
   return (

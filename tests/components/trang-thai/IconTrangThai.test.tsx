@@ -23,7 +23,12 @@ describe('IconTrangThai', () => {
     const svg = [...container.querySelectorAll('svg')]
     expect(svg).toHaveLength(4)
     const duongVe = svg.map((s) => s.querySelector('path')?.getAttribute('d') ?? null)
-    expect(duongVe).toEqual([null, 'M12 2a10 10 0 0 1 0 20z', 'm9 12 2 2 4-4', 'm4.9 4.9 14.2 14.2'])
+    expect(duongVe).toEqual([
+      null,
+      'M12 2a10 10 0 0 1 0 20z',
+      'm9 12 2 2 4-4',
+      'm4.9 4.9 14.2 14.2',
+    ])
     // Đang học tô nửa vòng
     expect(svg[1].querySelector('path')?.getAttribute('fill')).toBe('currentColor')
     for (const s of svg) expect(s.querySelector('circle')?.getAttribute('r')).toBe('10')

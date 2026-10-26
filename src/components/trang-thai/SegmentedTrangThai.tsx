@@ -1,5 +1,6 @@
 // C6 Segmented trạng thái (F02, F11, F17; quyết định 2 / D16; đề xuất 1.2): khung viền border-input,
-// padding 3, gap 2, bo 6 cả khung lẫn đoạn, cao 36 (đoạn 28); mobile đoạn cao 44 (vùng chạm).
+// padding 3, gap 2, bo 6 cả khung lẫn đoạn, cao 36 (đoạn 28); mobile đoạn cao 44 (vùng chạm), xếp 2×2
+// (frame không vẽ; mobile ở trang bài dùng pill + sheet, đây chỉ là dự phòng khi hẹp).
 // Đoạn: icon 16 + chữ 15/24 (+ gợi ý phím 1–4 nếu bật). Đang chọn: nền pill + viền trong 1,5px màu
 // trạng thái, chữ 600. Hover: nền surface-2. Disabled (đang tải): khung surface-2, chữ muted.
 // Lỗi lưu: khung viền danger + "Lỗi lưu — đã giữ trạng thái cũ. Thử lại".
@@ -83,14 +84,14 @@ export default function SegmentedTrangThai({
     : `bg-surface text-text ${loi ? 'border-danger' : 'border-border-input'}`
 
   return (
-    <div className={`inline-flex max-w-full flex-col items-start gap-1.5 ${className}`}>
+    <div className={`inline-flex max-w-full flex-col items-start gap-1.5 max-md:flex ${className}`}>
       <div
         role="radiogroup"
         aria-label={nhan}
         aria-disabled={voHieu || undefined}
         aria-describedby={loi ? idLoi : undefined}
         onBlur={khiRoi}
-        className={`inline-flex max-w-full flex-wrap gap-0.5 rounded-[var(--radius-sm)] border p-[3px] ${khung}`}
+        className={`inline-flex max-w-full flex-wrap gap-0.5 rounded-[var(--radius-sm)] border p-[3px] max-md:grid max-md:w-full max-md:grid-cols-2 ${khung}`}
       >
         {CAC_TRANG_THAI_HOC.map((tt, i) => {
           const chon = tt === giaTri

@@ -2,14 +2,11 @@
 // (≥ 1280 sidebar 264 · 1024–1279 rail 72 · < 1024 top bar mobile + drawer 312), banner mất kết nối dính
 // đầu cột nội dung, <main id="noi-dung-chinh"> chứa trang, chân trang ghi nguồn. Sau mỗi lần chuyển
 // trang phía client, focus về H1 (#tieu-de-trang) hoặc <main>.
-// Khung là layout route bao mọi trang nên gắn luôn các provider dùng chung (toast, kết nối, tìm kiếm,
-// phím tắt) — các provider này cần nằm trong router (điều hướng) và chỉ được gắn MỘT lần ở đây.
-import { useCallback, useRef, useState, type MouseEvent, type ReactNode } from 'react'
-import { Outlet, ScrollRestoration } from 'react-router'
-import { ToastProvider } from '../../components/Toast'
-import { TimKiemProvider } from '../../components/tim-kiem/TimKiem'
-import { BannerMatKetNoi, KetNoiProvider } from '../ket-noi'
-import { PhimTatProvider } from '../phim-tat'
+// Provider dùng chung (toast, kết nối, tìm kiếm, phím tắt) và ScrollRestoration nằm ở GocApp — khung
+// không gắn lại (gắn hai lần sẽ nghe phím hai lần).
+import { useCallback, useRef, useState, type MouseEvent } from 'react'
+import { Outlet } from 'react-router'
+import { BannerMatKetNoi } from '../ket-noi'
 import { useBeRong } from './be-rong'
 import ChanTrang from './ChanTrang'
 import Drawer, { type LyDoDongDrawer } from './Drawer'
@@ -19,19 +16,7 @@ import Sidebar from './Sidebar'
 import ThanhTrenMobile from './ThanhTrenMobile'
 import { ThanhTrenProvider, type CauHinhThanhTren } from './thanh-tren'
 
-/** Các provider dùng chung của app (thứ tự: kết nối → toast → tìm kiếm → phím tắt). */
-export function NhaCungCapApp({ children }: { children: ReactNode }) {
-  return (
-    <KetNoiProvider>
-      <ToastProvider>
-        <TimKiemProvider>
-          <PhimTatProvider>{children}</PhimTatProvider>
-        </TimKiemProvider>
-      </ToastProvider>
-    </KetNoiProvider>
-  )
-}
-
+/** Link bỏ qua: phần tử focus được đầu tiên; ẩn tới khi được focus (F11). */
 function LinkBoQua() {
   function khiBam(e: MouseEvent<HTMLAnchorElement>) {
     // Tự focus <main> thay vì đổi #hash (không tạo lượt điều hướng của router).
@@ -49,7 +34,7 @@ function LinkBoQua() {
   )
 }
 
-function Khung() {
+export default function KhungApp() {
   const beRong = useBeRong()
   const [cauHinhThanhTren, datCauHinhThanhTren] = useState<CauHinhThanhTren | null>(null)
   const [moDrawer, datMoDrawer] = useState(false)
@@ -69,7 +54,9 @@ function Khung() {
   }
 
   // Chuyển trang (kể cả Lùi / Tiến của trình duyệt) khi drawer đang mở → đóng, focus về H1 trang mới.
-  useFocusSauDieuHuong(() => dongDrawer('dieu-huong'))
+  useFocusSauDieuHuong(() => {
+    if (moDrawer) dongDrawer('dieu-huong')
+  })
 
   const hep = beRong === 'hep'
 
@@ -112,16 +99,9 @@ function Khung() {
           <ChanTrang />
         </div>
       </div>
-      {hep && <Drawer mo={moDrawer} dong={dongDrawer} lyDoDongRef={lyDoDongRef} nutMenuRef={nutMenuRef} />}
-      <ScrollRestoration />
+      {hep && (
+        <Drawer mo={moDrawer} dong={dongDrawer} lyDoDongRef={lyDoDongRef} nutMenuRef={nutMenuRef} />
+      )}
     </ThanhTrenProvider>
-  )
-}
-
-export default function KhungApp() {
-  return (
-    <NhaCungCapApp>
-      <Khung />
-    </NhaCungCapApp>
   )
 }

@@ -202,7 +202,8 @@ function NoiDungTim({
             datChon(0)
           }}
           onKeyDown={khiPhim}
-          className="h-10 min-w-0 flex-1 border-0 bg-transparent p-0 text-[17px] leading-7 font-medium text-text outline-none placeholder:font-normal placeholder:text-muted focus-visible:outline-none"
+          // Frame vẽ ô không viền focus; đặc tả §11 thắng: giữ vòng focus chung (bo góc cho gọn).
+          className="h-10 min-w-0 flex-1 rounded-[var(--radius-sm)] border-0 bg-transparent p-0 text-[17px] leading-7 font-medium text-text placeholder:font-normal placeholder:text-muted"
         />
         <kbd
           aria-hidden="true"

@@ -1,24 +1,9 @@
 // Môi trường chung cho test router: fetch /api/meta giả, scrollTo, mở router bộ nhớ trên bảng route thật.
-// Khung app, phím tắt, tìm kiếm là module của agent khác: test file tự vi.mock bằng các bản giả ở đây.
-import { render } from '@testing-library/react'
-import type { ReactNode } from 'react'
-import { createMemoryRouter, Outlet, RouterProvider } from 'react-router'
+// File test tự vi.mock khung app, phím tắt, tìm kiếm, layCay bằng bản giả trong ./gia.
+import { act, render } from '@testing-library/react'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { vi } from 'vitest'
 import { cacRoute } from '../../../src/app/router'
-
-export function KhungGia() {
-  return (
-    <div data-testid="khung">
-      <main id="noi-dung-chinh">
-        <Outlet />
-      </main>
-    </div>
-  )
-}
-
-export function QuaMat({ children }: { children: ReactNode }) {
-  return <>{children}</>
-}
 
 export function datMoiTruong() {
   vi.stubGlobal(
@@ -39,8 +24,9 @@ export function datMoiTruong() {
   vi.stubGlobal('scrollTo', () => {})
 }
 
-export function moTrang(duongDan: string) {
+/** Mở router bộ nhớ ở đường dẫn; chờ lượt hỏi /api/meta đầu tiên xong để không có cập nhật trễ. */
+export async function moTrang(duongDan: string) {
   const router = createMemoryRouter(cacRoute, { initialEntries: [duongDan] })
-  const ketQua = render(<RouterProvider router={router} />)
+  const ketQua = await act(async () => render(<RouterProvider router={router} />))
   return { router, ...ketQua }
 }
