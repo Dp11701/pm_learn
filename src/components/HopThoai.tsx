@@ -8,6 +8,9 @@
 // - trai: drawer từ trái, mặc định 312px (F28), không bo góc;
 // - toan-man-hinh: sheet phủ kín màn hình (vd. tìm kiếm trên mobile, đề xuất 4.3).
 // vaiTro="alertdialog" (F19 phải, xoá): không đóng khi bấm ra ngoài, không có nút X mặc định.
+// Việc phải làm SAU khi dialog đóng hẳn (sau chuyển động đóng; vd. xoá thẻ làm mất nút mở, mục lục đưa focus tới khối
+// bài) truyền qua `khiDongXong`: chạy đúng lúc Radix trả focus (onCloseAutoFocus), thay cho việc trả focus khi nó trả
+// true — không đua với hẹn giờ.
 import {
   useRef,
   type CSSProperties,
@@ -46,6 +49,12 @@ export interface PropsHopThoai {
   children?: ReactNode
   /** Nút mở (Radix Trigger asChild): focus trả về đây khi đóng. Không có thì trả về phần tử đã focus trước. */
   nutMo?: ReactElement
+  /**
+   * Chạy khi dialog đã đóng hẳn (lúc trả focus). Trả true khi đã tự đặt focus: dialog không trả focus về nơi mở nữa.
+   */
+  khiDongXong?: () => boolean
+  /** Bấm ra ngoài không đóng (vd. hộp thoại đã có chữ đang gõ); alertdialog luôn như vậy. Esc vẫn đóng. */
+  chanBamRaNgoai?: boolean
   className?: string
 }
 
@@ -108,9 +117,12 @@ export default function HopThoai({
   chan,
   children,
   nutMo,
+  khiDongXong,
+  chanBamRaNgoai = false,
   className = '',
 }: PropsHopThoai) {
   const alert = vaiTro === 'alertdialog'
+  const chanNgoai = alert || chanBamRaNgoai
   const coNutDong = nutDong ?? (!alert && !anTieuDe)
   const coDau = !anTieuDe || coNutDong
   // Mở bằng state (phím tắt, menu) thì Radix không có trigger để trả focus: tự nhớ phần tử đã focus.
@@ -136,8 +148,8 @@ export default function HopThoai({
             // Esc lúc đang ghép chữ chỉ huỷ ghép, không đóng.
             if (dangGhepChu(e)) e.preventDefault()
           }}
-          onPointerDownOutside={alert ? (e) => e.preventDefault() : undefined}
-          onInteractOutside={alert ? (e) => e.preventDefault() : undefined}
+          onPointerDownOutside={chanNgoai ? (e) => e.preventDefault() : undefined}
+          onInteractOutside={chanNgoai ? (e) => e.preventDefault() : undefined}
           onOpenAutoFocus={(e) => {
             truocKhiMo.current = document.activeElement
             const dich = focusDau?.current
@@ -147,6 +159,10 @@ export default function HopThoai({
             }
           }}
           onCloseAutoFocus={(e) => {
+            if (khiDongXong?.()) {
+              e.preventDefault()
+              return
+            }
             if (nutMo) return
             e.preventDefault()
             const truoc = truocKhiMo.current

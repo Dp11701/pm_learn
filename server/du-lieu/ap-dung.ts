@@ -1,27 +1,18 @@
-import type { MauBai } from '../../shared/roadmap/types.ts'
 import type { TinhTrangBuoc } from '../../shared/domain/trang-thai.ts'
 
 // Hợp đồng API bước Áp dụng (đề xuất 2.1 bảng practice, 3.2; §1 "Hoặc chọn Không áp dụng và ghi lý do") —
-// TS thuần, không phụ thuộc Node: server (routes/ap-dung.ts) dùng để ghi DB và trả phản hồi, web
-// (src/app/du-lieu/ap-dung.ts) import để đọc phản hồi. Giá trị state lưu DB dùng thẳng làm giá trị API.
+// TS thuần, không phụ thuộc Node: server (routes/ap-dung.ts) dùng để ghi DB và trả phản hồi; web import hằng
+// (CAC_TRANG_THAI_AP_DUNG, LY_DO_AP_DUNG_TOI_DA). Giá trị state lưu DB dùng thẳng làm giá trị API.
 // Không có hàng / không có khoá = bước Áp dụng chưa làm.
 //
-// Phase 2a: chỉ "Không áp dụng" của Chứng chỉ (khối Kế hoạch thi). Từ phase 3 đường đầy đủ là
-// PUT /api/hoc/:id/thuc-hanh (hop-dong-hoc.ts) cho MỌI mẫu bài; /api/ap-dung giữ nguyên hình dạng như lối tắt
-// (bí danh) của đường đó để web 2a chạy tiếp, và cũng nhận mọi mẫu bài.
+// Đường đầy đủ là PUT /api/hoc/:id/thuc-hanh (hop-dong-hoc.ts) cho MỌI mẫu bài; /api/ap-dung (phase 2a) là lối tắt
+// (bí danh) của đường đó, web phase 3 không còn gọi.
 
 export const CAC_TRANG_THAI_AP_DUNG = ['dang-lam', 'xong', 'khong-ap-dung'] as const
 export type TrangThaiApDung = (typeof CAC_TRANG_THAI_AP_DUNG)[number]
 
 /** Lý do Không áp dụng: bắt buộc, sau khi bỏ khoảng trắng hai đầu dài 1–500 ký tự. */
 export const LY_DO_AP_DUNG_TOI_DA = 500
-
-/**
- * Mẫu bài mà web phase 2a tải /api/ap-dung (khối Kế hoạch thi). Server không còn dùng hằng này để chặn: từ phase
- * 3 mọi mẫu bài đánh dấu Không áp dụng được (qua /api/ap-dung hay /api/hoc/:id/thuc-hanh); web phase 3 đọc bước
- * Áp dụng từ GET /api/hoc/:id (thucHanh) rồi bỏ hằng này.
- */
-export const MAU_DANH_DAU_DUOC: readonly MauBai[] = ['chung-chi']
 
 /** Một mục trong dữ liệu Áp dụng. */
 export interface MucApDung {

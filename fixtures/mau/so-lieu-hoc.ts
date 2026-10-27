@@ -1,6 +1,7 @@
 // Số liệu phase 3 của bộ dữ liệu mẫu (§7, đề xuất mục 7): dự án, bài thực hành, Nói lại, tự kiểm tra, ghi chú,
-// flashcard + lịch sử ôn, phiên giờ, đồng hồ đang chạy. Chỉ dùng cho `npm run dev:mau` và test; app thật không
-// bao giờ nạp file này. Mốc giờ viết theo giờ Việt Nam như so-lieu.ts; chữ đều là câu giữ chỗ (§13 quy tắc 6).
+// flashcard + lịch sử ôn. Chỉ dùng cho `npm run dev:mau` và test; app thật không bao giờ nạp file này. Mốc giờ viết
+// theo giờ Việt Nam như so-lieu.ts; chữ đều là câu giữ chỗ (§13 quy tắc 6). Phạm vi rút gọn 27/10/2026 bỏ đồng hồ
+// học / giờ học: không còn phiên giờ, đồng hồ đang chạy (số §7 "giờ học", F03 "00:24:17" không dựng nữa).
 
 /** Dự án thực hành (§7 "Dự án thực hành: Cổng đặt lịch nội bộ, Execution"); vai trò để trống (F33 là C27). */
 export const DU_AN_MAU = {
@@ -63,88 +64,6 @@ export const LUOT_MO_LAI: readonly { slug: string; luc: string }[] = [
   { slug: 'scrum', luc: '2026-10-21 19:29' },
   { slug: 'moscow', luc: '2026-10-21 19:33' },
 ]
-
-/**
- * Phiên giờ [ngày, slug, giờ bắt đầu, số phút] — mỗi phiên trong một ngày, không chồng nhau, nằm trong lúc học
- * mục đó (so-lieu.ts). Cộng lại (§7): tổng 38 giờ 10 phút; tuần 43 = 4 giờ 35 phút; Scope Creep 35 phút (F11);
- * Risk Register 1 giờ 05 phút (F03, F15). Ngày có học: 17–28/09 (12 ngày = kỷ lục), 30/09–08/10, 10–16/10,
- * 18–22/10 (5 ngày = streak); 29/09, 09/10, 17/10 không học.
- */
-export const PHIEN_GIO: readonly (readonly [string, string, string, number])[] = [
-  // Tuần 38: 300 phút
-  ['2026-09-17', 'sdlc', '19:30', 50],
-  ['2026-09-17', 'pdlc', '20:25', 45],
-  ['2026-09-17', 'scrum', '21:15', 20],
-  ['2026-09-18', 'scrum', '20:00', 40],
-  ['2026-09-18', 'kanban', '20:45', 30],
-  ['2026-09-18', 'agile', '21:20', 20],
-  ['2026-09-19', 'kanban', '20:00', 25],
-  ['2026-09-19', 'agile', '20:30', 30],
-  ['2026-09-20', 'ci-cd', '09:50', 40],
-  // Tuần 39: 470 phút
-  ['2026-09-21', 'waterfall', '20:00', 55],
-  ['2026-09-21', 'iterative-approach', '21:10', 25],
-  ['2026-09-22', 'iterative-approach', '20:00', 35],
-  ['2026-09-22', 'incremental-approach', '20:45', 40],
-  ['2026-09-23', 'code-review', '20:30', 60],
-  ['2026-09-24', 'code-review', '20:00', 45],
-  ['2026-09-24', 'branching-strategy', '21:10', 20],
-  ['2026-09-25', 'branching-strategy', '20:00', 40],
-  ['2026-09-26', 'tech-debt', '15:00', 90],
-  ['2026-09-27', 'tech-debt', '15:00', 60],
-  // Tuần 40: 400 phút (29/09 không học)
-  ['2026-09-28', 'lean-principles', '20:00', 60],
-  ['2026-09-28', 'v-model', '21:10', 15],
-  ['2026-09-30', 'poc', '19:30', 40],
-  ['2026-09-30', 'mvp', '20:15', 40],
-  ['2026-09-30', 'test-strategy-test-plan', '21:20', 15],
-  ['2026-10-01', 'test-strategy-test-plan', '20:00', 60],
-  ['2026-10-01', 'confluence', '21:20', 20],
-  ['2026-10-02', 'confluence', '20:00', 35],
-  ['2026-10-03', 'definition-of-done', '15:00', 60],
-  ['2026-10-04', 'definition-of-done', '15:00', 55],
-  // Tuần 41: 420 phút (09/10 không học)
-  ['2026-10-05', 'definition-of-ready', '20:00', 55],
-  ['2026-10-05', 'functional-requirements', '21:10', 20],
-  ['2026-10-06', 'functional-requirements', '19:45', 40],
-  ['2026-10-06', 'non-functional-requirements', '20:30', 45],
-  ['2026-10-07', 'moscow', '20:00', 55],
-  ['2026-10-07', 't-shirt-sizing', '21:10', 15],
-  ['2026-10-08', 't-shirt-sizing', '20:00', 40],
-  ['2026-10-08', 'story-points-estimation-planning-poker', '20:50', 25],
-  ['2026-10-10', 'burndown-burnup-charts', '14:30', 55],
-  ['2026-10-10', 'project-sponsor', '15:40', 30],
-  ['2026-10-11', 'project-sponsor', '15:00', 40],
-  // Tuần 42: 425 phút (17/10 không học)
-  ['2026-10-12', 'initiation', '20:00', 55],
-  ['2026-10-12', 'planning', '21:10', 15],
-  ['2026-10-13', 'planning', '20:00', 60],
-  ['2026-10-13', 'execution', '21:10', 20],
-  ['2026-10-14', 'execution', '20:00', 45],
-  ['2026-10-14', 'meeting-notes', '21:00', 20],
-  ['2026-10-15', 'meeting-notes', '20:00', 65],
-  ['2026-10-15', 'decision-log', '21:20', 15],
-  ['2026-10-16', 'decision-log', '20:00', 40],
-  ['2026-10-16', 'presales', '20:50', 40],
-  ['2026-10-18', 'change-control-board-ccb', '20:00', 9],
-  ['2026-10-18', 'change-request-cr', '20:10', 18],
-  ['2026-10-18', 'scope-creep', '20:30', 23],
-  // Tuần 43: 275 phút = 4 giờ 35 phút
-  ['2026-10-19', 'change-control-board-ccb', '19:15', 45],
-  ['2026-10-19', 'schedule-creation-milestones-phases-critical-path', '20:10', 5],
-  ['2026-10-19', 'change-request-cr', '20:20', 5],
-  ['2026-10-20', 'change-request-cr', '20:05', 60],
-  ['2026-10-20', 'qualitative-risk-assessment', '21:25', 5],
-  ['2026-10-21', 'dedicated-team', '19:45', 30],
-  ['2026-10-21', 'risk-register', '20:30', 45],
-  ['2026-10-21', 'jira', '21:30', 30],
-  ['2026-10-21', 'risk-register', '22:15', 20],
-  ['2026-10-22', 'power-interest-grid', '20:40', 18],
-  ['2026-10-22', 'scope-creep', '21:05', 12],
-]
-
-/** Đồng hồ đang chạy (§7, F03 "00:24:17"): Risk Register, bắt đầu GIO_MAU − 24 phút 17 giây. */
-export const DONG_HO_MAU = { slug: 'risk-register', batDau: '2026-10-22 21:17:43' } as const
 
 /** Giờ ôn thẻ mỗi sáng (tự đặt). */
 export const GIO_ON = '07:30'
@@ -264,7 +183,7 @@ export const THE_MAU: readonly (readonly [string, string, string])[] = [
   ['power-interest-grid', '10-22 20:57', ''],
 ]
 
-/** Số liệu đích (§7, F03, F11, F15, F31, F32) mà seed phải ra — test đối chiếu. */
+/** Số liệu đích (§7, F11, F31) mà seed phải ra — test đối chiếu. */
 export const DICH_HOC = {
   soThe: 85,
   hop: [34, 21, 15, 9, 6],
@@ -272,12 +191,5 @@ export const DICH_HOC = {
   tiLeNho30Ngay: 81,
   canOnLai: ['scrum', 'moscow', 'definition-of-done'],
   thucHanhXong: 7,
-  phutTuanNay: 4 * 60 + 35,
-  phutTong: 38 * 60 + 10,
-  streak: 5,
-  kyLuc: 12,
-  phutScopeCreep: 35,
-  phutRiskRegister: 65,
-  dongHoGiay: 24 * 60 + 17,
   soGhiChu: 6,
 } as const

@@ -1,5 +1,6 @@
 // C34 Sidebar 264px (§6.1; F11, F27, F28): logo, ô tìm (/), menu, khối Đang học, chân ghim đáy (D4)
-// có đồng hồ, nút Giao diện (D5), nút "?". `mobile` = trong drawer (F28): hàng 44px, có nút "Đóng menu".
+// có nút Giao diện (D5), nút "?". `mobile` = trong drawer (F28): hàng 44px, có nút "Đóng menu".
+// Không có khu đồng hồ: phạm vi rút gọn 27/10/2026 bỏ đồng hồ học (đề xuất mục 10).
 import { useId, type MouseEvent } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Award, FileText, Search, X, type LucideIcon } from 'lucide-react'
@@ -209,15 +210,6 @@ export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSideb
       </section>
 
       <div className="mt-auto flex flex-col gap-3 border-t border-border pt-4">
-        <div className="flex flex-col gap-1 rounded-[var(--radius-md)] border border-border bg-surface-2 p-3">
-          {duLieu.dongHo?.sidebar ?? (
-            // Phase 1 chưa có đồng hồ: trạng thái nghỉ của frame, chưa có nút Bắt đầu (phase 3 cắm
-            // khối đồng hồ thật qua DuLieuKhung.dongHo.sidebar).
-            <p className="m-0 flex min-h-8 items-center text-[length:var(--fs-meta)] leading-[var(--lh-meta)] text-muted">
-              Chưa bấm giờ
-            </p>
-          )}
-        </div>
         <div className="flex gap-2">
           <NutGiaoDien className={`flex-1 ${hang} px-1.5`} />
           <button

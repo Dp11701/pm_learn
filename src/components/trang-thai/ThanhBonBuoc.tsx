@@ -1,14 +1,16 @@
 // C10 Thanh 4 bước (F02, F11, §1, đề xuất 3.2; quyết định 1: màu mực, không dùng xanh lá).
+// Tình trạng từng bước tính ở shared/domain/bon-buoc.ts (tinhBonBuoc); propsTuKetQua đưa kết quả đó vào thanh.
 // Bản đầy đủ ở đầu bài: lưới 4 cột cách 8 (mobile 2×2 — frame không vẽ, tự đặt để không cắt chữ),
 // mỗi bước cao 40 (mobile 44), viền 1px, bo 6, chữ 15/24; ghi chú "· …" cùng dòng tên như F11, không đủ chỗ
 // thì xuống dòng dưới tên (bỏ dấu ·) và tự ngắt dòng — bước cao thêm, các bước cùng hàng cao bằng nhau, chữ
 // trạng thái không bao giờ bị cắt "…" (§11 icon + chữ; vd. D8 "Không áp dụng · chưa có câu hỏi"),
-// chấm 20px — Xong: check trên nền mực · Đang làm: vòng mực 2px có chấm 8px, viền bước 1,5px mực,
-// chữ 600, aria-current="step" · Chưa làm: vòng rỗng viền border-input · Không áp dụng: vòng rỗng có
-// gạch ngang. Bấm bước cuộn tới khối tương ứng (link #neo).
+// chấm 20px (ChamBuoc, dùng lại ở F19) — Xong: check trên nền mực · Đang làm: vòng mực 2px có chấm 8px, viền
+// bước 1,5px mực, chữ 600, aria-current="step" · Chưa làm: vòng rỗng viền border-input · Không áp dụng: vòng
+// rỗng có gạch ngang. Bấm bước cuộn tới khối tương ứng (link #neo).
 // Bản mini trên thẻ, hàng: 4 ô 14×6 cách 3 + "2/4 · Tiếp: Áp dụng"; aria theo D34.
 import type { MouseEvent } from 'react'
 import { Check, CircleAlert, Minus } from 'lucide-react'
+import { daQua, type KetQuaBonBuoc } from '../../../shared/domain/bon-buoc'
 import {
   CAC_BUOC,
   TEN_BUOC,
@@ -28,11 +30,6 @@ const CHU_TINH_TRANG: Record<TinhTrangBuoc, string> = {
 
 // Chữ cho trình đọc màn hình ở bản đầy đủ khi không có chữ hiện ra (F11 "— đã xong").
 const CHU_DOC: Record<TinhTrangBuoc, string> = { ...CHU_TINH_TRANG, xong: 'đã xong' }
-
-/** Bước tính là đã qua (x/4 đếm cả Không áp dụng — đề xuất 3.2). */
-function daQua(tt: TinhTrangBuoc) {
-  return tt === 'xong' || tt === 'khong-ap-dung'
-}
 
 /** Số bước đã qua (xong + không áp dụng). */
 export function soBuocXong(tinhTrang: TinhTrangBonBuoc): number {
@@ -56,9 +53,25 @@ export function chuBonBuoc(tinhTrang: TinhTrangBonBuoc): string {
   return xong > 0 && tiep ? `${xong}/4 · Tiếp: ${TEN_BUOC[tiep]}` : `${xong}/4`
 }
 
+/**
+ * Props của thanh (bản đầy đủ) từ kết quả tinhBonBuoc: tình trạng, ghi chú riêng (Kiểm tra chưa có câu hỏi —
+ * D8) và bước không bấm được.
+ */
+export function propsTuKetQua(
+  kq: KetQuaBonBuoc,
+): Pick<PropsThanhBonBuoc, 'tinhTrang' | 'ghiChu' | 'voHieu'> {
+  const ghiChu: Partial<Record<Buoc, string>> = {}
+  for (const b of CAC_BUOC) {
+    const chu = kq.buoc[b].ghiChu
+    if (chu) ghiChu[b] = chu
+  }
+  return { tinhTrang: kq.tinhTrang, ghiChu, voHieu: kq.voHieu }
+}
+
 // ---------- Bản đầy đủ ----------
 
-function ChamBuoc({ tt, voHieu }: { tt: TinhTrangBuoc; voHieu: boolean }) {
+/** Chấm 20px của một bước (thanh C10, danh sách bước của F19). */
+export function ChamBuoc({ tt, voHieu = false }: { tt: TinhTrangBuoc; voHieu?: boolean }) {
   const nen = 'flex size-5 shrink-0 items-center justify-center rounded-full'
   if (voHieu) return <span aria-hidden="true" className={`${nen} border-[1.5px] border-border`} />
   switch (tt) {

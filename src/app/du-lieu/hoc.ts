@@ -1,16 +1,19 @@
 // Lớp dữ liệu học của MỘT mục trên web (đề xuất 2.1, 3.2, 3.5; §1 vòng 4 bước; §11 "Tự lưu, không tải đè lên ô
 // đang gõ"): GET /api/hoc/:id + các lần ghi Nói lại, Thực hành, Tự kiểm tra, Ghi chú (file này) và flashcard
-// (the.ts) của mục. TanStack Query, cùng cách làm với trang-thai.tsx / ap-dung.ts:
+// (the.ts) của mục. TanStack Query, cùng cách làm với trang-thai.tsx:
 // - Cache của mục = giá trị server đã xác nhận ⊕ các lần ghi đang chờ (theo thứ tự bấm) ⊕ chữ đang gõ chưa lưu.
 //   Vì vậy lưu lỗi thì tự trả về giá trị server đã xác nhận (trừ khoá mà lần ghi sau còn chờ sẽ quyết), và tải
 //   lại (revision của /api/meta mới hơn) không bao giờ đè chữ đang gõ.
 // - Mọi lần ghi của một mục chạy nối tiếp (TanStack scope): server nhận đúng thứ tự bấm. Lần ghi có đổi dữ liệu
-//   trả revision: ghi nhận là của chính tab (revision.ts), ảnh chụp trạng thái học / Áp dụng / dữ liệu học các mục
-//   khác nhận revision đó nên không phải tải lại vì lần ghi này.
+//   trả revision: ghi nhận là của chính tab (revision.ts), ảnh chụp trạng thái học / dữ liệu học các mục khác nhận
+//   revision đó nên không phải tải lại vì lần ghi này.
 // - Ô chữ (Nói lại, Ghi chú, Kết quả thực hành, câu trả lời Tự kiểm tra) tự lưu: mỗi lần gõ giữ bản tạm
 //   (src/app/nhap-tam.ts) và hẹn gửi sau TRE_TU_LUU ms (lần gõ sau thay lần trước, chữ mới nhất thắng); trạng
 //   thái C25 "Đang lưu…" / "Đã lưu lúc 21:42" / "Lỗi lưu — Thử lại"; lưu xong mới xoá bản tạm. Lần ghi khác
 //   của cùng khối (Xong, Xem đáp án…) mang theo chữ chưa lưu của ô đó.
+// - Rời trang (đóng tab / cửa sổ, tải lại, ẩn tab): chữ đang hẹn gửi hoặc đang gửi được gửi ngay bằng fetch keepalive
+//   (sống tiếp sau khi trang đóng) — bản tạm ở sessionStorage mất theo tab nên không đủ. Chữ có thể mất (lần gửi
+//   trước lỗi, hoặc dài quá giới hạn keepalive) thì beforeunload để trình duyệt hỏi "Rời trang?".
 // - Ngoài QueryClientProvider (gallery, test component lẻ): không gọi API, chưa có dữ liệu.
 import {
   createElement,
@@ -40,7 +43,6 @@ import {
   type TrangThaiThucHanh,
 } from '../../../shared/domain/bon-buoc'
 import { layCay, type MauBai } from '../../../shared/roadmap'
-import type { AnhChupApDung, MucApDung } from '../../../server/du-lieu/ap-dung'
 import type { AnhChupHoc } from '../../../server/du-lieu/hop-dong-trang-thai'
 import { TRE_TOAST } from '../../components/HopThoaiPrompt'
 import TenMuc from '../../components/TenMuc'
@@ -48,7 +50,6 @@ import { useToast, type ApiToast } from '../../components/Toast'
 import { DA_BO_DANH_DAU_KHONG_AP_DUNG, DA_DANH_DAU_KHONG_AP_DUNG } from '../../copy/cho-duyet'
 import { useKetNoi } from '../ket-noi'
 import { docNhapTam, luuNhapTam, xoaNhapTam } from '../nhap-tam'
-import { KHOA_AP_DUNG } from './ap-dung'
 import { goiApi, LoiGoiApi } from './api'
 import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
 import { KHOA_GHI, KHOA_TRANG_THAI, layClientRong } from './trang-thai'
@@ -80,6 +81,11 @@ export interface CauTraLoi {
   /** Lần chấm mới nhất */
   cham: MucCham | null
   chamLuc: string | null
+  /**
+   * Chữ câu hỏi lúc lưu (server ghi, đề xuất 1.5) — hiện ở "Câu trả lời cho câu hỏi cũ"; null / thiếu = chưa biết.
+   * Câu đổi chữ ít đã được server gán lại sang khoá mới khi trả GET /api/hoc/:id.
+   */
+  cauHoi?: string | null
 }
 
 /** Flashcard của mục (đề xuất 3.5: Leitner hộp 1–5, hạn ôn theo ngày lịch do server tính). */
@@ -102,12 +108,6 @@ export interface DuLieuHoc {
   tuKiemTra: Record<string, CauTraLoi>
   ghiChu: ChuCoLuc | null
   the: The[]
-  /** Tài liệu: có Bản của tôi "Hoàn thành" (phase 7c) */
-  banCuaToi: { coHoanThanh: boolean }
-  /** Chứng chỉ: kế hoạch thi có ngày thi (P1) */
-  keHoachThi: { coNgayThi: boolean }
-  /** Tổng giây đã học của mục (phiên đã ghi, không gồm đồng hồ đang chạy) — "Đã học 35 phút" */
-  daHocGiay: number
 }
 
 const chuoiHoacNull = z
@@ -131,6 +131,7 @@ export const LuocDoCauTraLoi: z.ZodType<CauTraLoi> = z.object({
   daXem: z.boolean(),
   cham: z.enum(CAC_MUC_CHAM).nullable(),
   chamLuc: chuoiHoacNull,
+  cauHoi: chuoiHoacNull,
 })
 
 export const LuocDoThe: z.ZodType<The> = z.object({
@@ -149,9 +150,6 @@ export const LuocDoHoc: z.ZodType<DuLieuHoc> = z.object({
   tuKiemTra: z.record(z.string(), LuocDoCauTraLoi),
   ghiChu: LuocDoChu.nullable(),
   the: z.array(LuocDoThe),
-  banCuaToi: z.object({ coHoanThanh: z.boolean() }).default({ coHoanThanh: false }),
-  keHoachThi: z.object({ coNgayThi: z.boolean() }).default({ coNgayThi: false }),
-  daHocGiay: z.number().default(0),
 })
 
 /** Phản hồi mọi lần ghi: { revision, daDoi } như /api/trang-thai, kèm dữ liệu mới nếu server gửi. */
@@ -226,12 +224,14 @@ export interface BienGhi {
   luc: string
   /** Lần ghi mang chữ của một ô tự lưu */
   chu?: { truong: TruongChu; giaTri: string }
+  /** Gửi bằng fetch keepalive (lúc rời trang) */
+  keepalive?: boolean
 }
 
-function goiGhi({ itemId, yc }: BienGhi): Promise<PhanHoiGhi> {
+function goiGhi({ itemId, yc, keepalive }: BienGhi): Promise<PhanHoiGhi> {
   const goc = duongDanHoc(itemId)
   const gui = (duongDan: string, method: 'PUT' | 'POST' | 'DELETE', body?: unknown) =>
-    goiApi(duongDan, LuocDoPhanHoiGhi, { method, body })
+    goiApi(duongDan, LuocDoPhanHoiGhi, { method, body, keepalive })
   switch (yc.loai) {
     case 'noi-lai':
       return gui(`${goc}/noi-lai`, 'PUT', { text: yc.text })
@@ -320,6 +320,7 @@ export function apDungGhi(d: DuLieuHoc, yc: YeuCauGhi, luc: string): DuLieuHoc {
       const cu = d.tuKiemTra[yc.khoa] ?? CAU_TRONG
       const p = yc.patch
       const moi: CauTraLoi = {
+        ...cu,
         traLoi: p.traLoi ?? cu.traLoi,
         daXem: p.daXem ?? cu.daXem,
         cham: p.cham ?? cu.cham,
@@ -432,6 +433,8 @@ interface OChu {
   /** Lần gửi gần nhất của ô và chữ của nó */
   lanGuiCuoi: number
   giaTriGuiCuoi: string | null
+  /** Chữ đã gửi thẳng bằng keepalive lúc rời trang gần nhất (không gửi trùng giữa beforeunload và pagehide) */
+  guiRoiTrang: string | null
   soDangGui: number
   trangThai: TrangThaiTuLuu
 }
@@ -476,6 +479,7 @@ class KhoHoc {
         hen: null,
         lanGuiCuoi: 0,
         giaTriGuiCuoi: null,
+        guiRoiTrang: null,
         soDangGui: 0,
         trangThai: TU_LUU_YEN,
       }
@@ -546,26 +550,6 @@ export function nhanRevisionCuaTab(
       (cu) => cu && { ...cu, revision: revisionSauGhi(cu.revision, revision) },
     )
   }
-  client.setQueryData<AnhChupApDung>(
-    KHOA_AP_DUNG,
-    (cu) => cu && { ...cu, revision: revisionSauGhi(cu.revision, revision) },
-  )
-}
-
-/** Dữ liệu Áp dụng của 2a (useApDung) theo Thực hành vừa lưu. */
-function dongBoApDung(client: QueryClient, itemId: string, th: ThucHanh): void {
-  const muc: MucApDung | null = th.trangThai
-    ? th.trangThai === 'khong-ap-dung' && th.lyDo
-      ? { trangThai: th.trangThai, lyDo: th.lyDo }
-      : { trangThai: th.trangThai }
-    : null
-  client.setQueryData<AnhChupApDung>(KHOA_AP_DUNG, (cu) => {
-    if (!cu) return cu
-    const apDung = { ...cu.apDung }
-    if (muc) apDung[itemId] = muc
-    else delete apDung[itemId]
-    return { ...cu, apDung }
-  })
 }
 
 function datTrangThaiO(o: OChu, moi: TrangThaiTuLuu): void {
@@ -603,7 +587,6 @@ function xongGhi(client: QueryClient, b: BienGhi, kq: PhanHoiGhi, tuyChon: TuyCh
   if (doiTrangThai && client.isMutating({ mutationKey: KHOA_GHI }) <= 1) {
     void client.invalidateQueries({ queryKey: KHOA_TRANG_THAI })
   }
-  if (b.yc.loai === 'thuc-hanh' && m.xacNhan) dongBoApDung(client, b.itemId, m.xacNhan.thucHanh)
   if (b.yc.loai === 'tao-the' && !layTheTrong(kq)) {
     queueMicrotask(() => void client.invalidateQueries({ queryKey: khoaHoc(b.itemId) }))
   }
@@ -782,6 +765,38 @@ function guiChu(client: QueryClient, itemId: string, truong: TruongChu): void {
   guiGhiHoc(client, itemId, ycChu(truong, chu), {}, { truong, giaTri: chu })
 }
 
+/** Thân yêu cầu keepalive tối đa (trình duyệt cho 64 KiB cho mọi yêu cầu keepalive đang bay): để dư. */
+export const KEEPALIVE_TOI_DA = 60_000
+
+/** Chữ gửi được bằng keepalive (UTF-8 + phần JSON bọc ngoài). */
+function vuaKeepalive(chu: string): boolean {
+  return new TextEncoder().encode(chu).length + 200 <= KEEPALIVE_TOI_DA
+}
+
+/**
+ * Trang sắp ẩn / đóng mà ô còn chữ chưa lưu (đang hẹn gửi, đang gửi, hoặc lần trước lỗi): gửi THẲNG bằng fetch
+ * keepalive ngay trong sự kiện — hàng chờ ghi của TanStack chạy ở nhịp sau (và chờ lần ghi trước của mục), trang đóng
+ * thì không kịp; yêu cầu thường đang bay cũng bị huỷ khi trang đóng. Chữ đang hẹn vẫn gửi qua hàng chờ như thường để
+ * trạng thái C25 đúng nếu trang ở lại (huỷ "Rời trang?", ẩn tab). PUT chữ là ghi đè nên gửi hai lần không sao.
+ * Trả true khi chữ có thể mất — lần gửi trước lỗi (máy chủ có thể không nhận), hoặc chữ dài quá giới hạn keepalive —
+ * để beforeunload hỏi người dùng.
+ */
+function guiKhiRoiTrang(client: QueryClient, itemId: string, truong: TruongChu): boolean {
+  const o = layKho(client).muc.get(itemId)?.o.get(truong)
+  const chu = o?.chuaLuu ?? null
+  if (!o || chu === null) return false
+  const daLoi = o.trangThai.tinhTrang === 'loi'
+  const keepalive = vuaKeepalive(chu)
+  if (keepalive && o.guiRoiTrang !== chu) {
+    o.guiRoiTrang = chu
+    goiGhi({ itemId, yc: ycChu(truong, chu), lan: 0, luc: nowIso(), keepalive: true }).catch(() => {
+      // Không gửi được (máy chủ tắt): chữ còn trong bản tạm nếu tab còn
+    })
+  }
+  if (o.hen !== null) guiChu(client, itemId, truong)
+  return daLoi || !keepalive
+}
+
 /** Một lần gõ: giữ bản tạm, hẹn gửi; chữ mới thay chữ đang hẹn. */
 function goChu(client: QueryClient, itemId: string, truong: TruongChu, chu: string): void {
   const kho = layKho(client)
@@ -844,13 +859,34 @@ function useTuLuu(itemId: string, truong: TruongChu, hoc: DuLieuHoc | undefined)
     else goChu(client, itemId, truong, ban)
   }, [client, kho, itemId, truong, khoa, coDuLieu])
 
-  // Rời ô / trang: gửi ngay chữ đang hẹn
+  // Rời ô / trang trong app: gửi ngay chữ đang hẹn
   useEffect(
     () => () => {
       if (kho.muc.get(itemId)?.o.get(truong)?.hen) guiChu(client, itemId, truong)
     },
     [client, kho, itemId, truong],
   )
+
+  // Đóng tab / cửa sổ, tải lại, ẩn tab: gửi ngay bằng keepalive; chữ có thể mất thì để trình duyệt hỏi "Rời trang?"
+  useEffect(() => {
+    const roi = () => {
+      guiKhiRoiTrang(client, itemId, truong)
+    }
+    const khiAn = () => {
+      if (document.visibilityState === 'hidden') roi()
+    }
+    const truocKhiDong = (e: BeforeUnloadEvent) => {
+      if (guiKhiRoiTrang(client, itemId, truong)) e.preventDefault()
+    }
+    window.addEventListener('pagehide', roi)
+    document.addEventListener('visibilitychange', khiAn)
+    window.addEventListener('beforeunload', truocKhiDong)
+    return () => {
+      window.removeEventListener('pagehide', roi)
+      document.removeEventListener('visibilitychange', khiAn)
+      window.removeEventListener('beforeunload', truocKhiDong)
+    }
+  }, [client, itemId, truong])
 
   const luu = useCallback(
     (chu: string) => goChu(client, itemId, truong, chu),
@@ -1041,9 +1077,13 @@ export interface ApiThucHanh {
   /**
    * Ghi ngay các trường khác (lạc quan; lỗi → giá trị server đã xác nhận + toast). Không áp dụng cần lyDo (bỏ
    * khoảng trắng hai đầu, 1–500 ký tự); Xong của Chủ đề cần ô Kết quả có chữ (server kiểm). Đánh dấu / bỏ đánh
-   * dấu Không áp dụng có toast + Hoàn tác như 2a.
+   * dấu Không áp dụng có toast + Hoàn tác như 2a. `khiXong`: máy chủ đã nhận lần ghi (kể cả lần "Thử lại" sau lỗi),
+   * vd. để xoá bản tạm của ô lý do.
    */
-  dat: (patch: Omit<PatchThucHanh, 'ketQua'>, tuyChon?: { treToast?: boolean }) => void
+  dat: (
+    patch: Omit<PatchThucHanh, 'ketQua'>,
+    tuyChon?: { treToast?: boolean; khiXong?: () => void },
+  ) => void
   /** Tick / bỏ tick một tiêu chí tự kiểm */
   datTieuChi: (khoa: string, dat: boolean) => void
   /** Có lần ghi (không tính ô Kết quả) chưa xong */
@@ -1060,7 +1100,7 @@ export function useLuuThucHanh(itemId: string): ApiThucHanh {
   const dat = useCallback(
     function ghi(
       patch: Omit<PatchThucHanh, 'ketQua'>,
-      tuyChon: { treToast?: boolean; hoanTac?: boolean } = {},
+      tuyChon: { treToast?: boolean; hoanTac?: boolean; khiXong?: () => void } = {},
     ) {
       const cu = client.getQueryData<DuLieuHoc>(khoaHoc(itemId))?.thucHanh
       const p: PatchThucHanh = { ...patch }
@@ -1071,6 +1111,7 @@ export function useLuuThucHanh(itemId: string): ApiThucHanh {
         { loai: 'thuc-hanh', patch: p },
         {
           khiXong: (kq) => {
+            tuyChon.khiXong?.()
             if (kq.daDoi === false || !cu || p.trangThai === undefined) return
             const danhDau = p.trangThai === 'khong-ap-dung' && cu.trangThai !== 'khong-ap-dung'
             const boDanhDau = cu.trangThai === 'khong-ap-dung' && p.trangThai !== 'khong-ap-dung'
@@ -1101,7 +1142,9 @@ export function useLuuThucHanh(itemId: string): ApiThucHanh {
             if (tuyChon.treToast) window.setTimeout(hien, TRE_TOAST)
             else hien()
           },
-          khiLoi: baoLoiGhi(client, toast, () => ghi(patch, { hoanTac: tuyChon.hoanTac })),
+          khiLoi: baoLoiGhi(client, toast, () =>
+            ghi(patch, { hoanTac: tuyChon.hoanTac, khiXong: tuyChon.khiXong }),
+          ),
         },
       )
     },

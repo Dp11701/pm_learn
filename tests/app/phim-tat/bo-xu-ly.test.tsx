@@ -166,30 +166,30 @@ describe('IME, phím bổ trợ, lặp', () => {
   })
 
   it('giữ phím (repeat) hoặc sự kiện đã bị chặn → bỏ qua', () => {
-    const xuLy = khung('KeyT')
-    go({ key: 't', code: 'KeyT', repeat: true })
-    const e = new KeyboardEvent('keydown', { code: 'KeyT', bubbles: true, cancelable: true })
+    const xuLy = khung('Digit4')
+    go({ key: '4', code: 'Digit4', repeat: true })
+    const e = new KeyboardEvent('keydown', { code: 'Digit4', bubbles: true, cancelable: true })
     e.preventDefault()
     document.body.dispatchEvent(e)
     expect(xuLy).not.toHaveBeenCalled()
   })
 
   it('phím không có trong sổ hoặc chưa ai đăng ký → không chặn', () => {
-    khung('KeyT')
-    expect(go({ key: 'm', code: 'KeyM' }).defaultPrevented).toBe(false)
+    khung('Digit4')
+    expect(go({ key: '[', code: 'BracketLeft' }).defaultPrevented).toBe(false)
     expect(go({ key: 'x', code: 'KeyX' }).defaultPrevented).toBe(false)
   })
 })
 
 describe('vùng tự xử lý phím', () => {
   it('menu, listbox, combobox: bỏ qua (typeahead của chúng)', () => {
-    const xuLy = khung('KeyT')
+    const xuLy = khung('Digit4')
     const vung = document.createElement('div')
     vung.innerHTML =
       '<div role="menu"><div role="menuitem" tabindex="-1">a</div></div><div role="listbox"><div role="option">b</div></div><button role="combobox">c</button>'
     document.body.append(vung)
     for (const dich of vung.querySelectorAll('[role=menuitem], [role=option], [role=combobox]'))
-      go({ key: 't', code: 'KeyT' }, dich)
+      go({ key: '4', code: 'Digit4' }, dich)
     expect(xuLy).not.toHaveBeenCalled()
     vung.remove()
   })
@@ -207,18 +207,18 @@ describe('vùng tự xử lý phím', () => {
   })
 
   it('đang mở dialog modal → phím của trang không chạy', () => {
-    const xuLy = khung('KeyT')
+    const xuLy = khung('Digit4')
     const modal = document.createElement('div')
     modal.setAttribute('aria-modal', 'true')
     document.body.append(modal)
-    go({ key: 't', code: 'KeyT' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).not.toHaveBeenCalled()
     // Đang chạy hiệu ứng đóng: không còn chặn
     modal.dataset.state = 'closed'
-    go({ key: 't', code: 'KeyT' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).toHaveBeenCalledTimes(1)
     modal.remove()
-    go({ key: 't', code: 'KeyT' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).toHaveBeenCalledTimes(2)
   })
 })
@@ -228,17 +228,17 @@ describe('usePhimTat', () => {
     const xuLy = vi.fn<XuLy>()
     const { rerender } = render(
       <PhimTatProvider>
-        <DangKy ma="KeyE" xuLy={xuLy} enabled={false} />
+        <DangKy ma="Digit4" xuLy={xuLy} enabled={false} />
       </PhimTatProvider>,
     )
-    go({ key: 'e', code: 'KeyE' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).not.toHaveBeenCalled()
     rerender(
       <PhimTatProvider>
-        <DangKy ma="KeyE" xuLy={xuLy} enabled />
+        <DangKy ma="Digit4" xuLy={xuLy} enabled />
       </PhimTatProvider>,
     )
-    go({ key: 'e', code: 'KeyE' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).toHaveBeenCalledTimes(1)
   })
 
@@ -326,19 +326,19 @@ describe('usePhimTat', () => {
     const trang = vi.fn<XuLy>()
     const panel = vi.fn<XuLy>()
     function Trang({ children }: { children?: ReactNode }) {
-      usePhimTat('KeyT', trang)
+      usePhimTat('Digit4', trang)
       return <>{children}</>
     }
     render(
       <StrictMode>
         <PhimTatProvider>
           <Trang>
-            <DangKy ma="KeyT" xuLy={panel} />
+            <DangKy ma="Digit4" xuLy={panel} />
           </Trang>
         </PhimTatProvider>
       </StrictMode>,
     )
-    go({ key: 't', code: 'KeyT' })
+    go({ key: '4', code: 'Digit4' })
     expect(panel).toHaveBeenCalledTimes(1)
     expect(trang).not.toHaveBeenCalled()
   })
@@ -348,23 +348,23 @@ describe('usePhimTat', () => {
     const moi = vi.fn<XuLy>()
     const { rerender } = render(
       <PhimTatProvider>
-        <DangKy ma="KeyM" xuLy={cu} />
+        <DangKy ma="BracketLeft" xuLy={cu} />
       </PhimTatProvider>,
     )
     rerender(
       <PhimTatProvider>
-        <DangKy ma="KeyM" xuLy={moi} />
+        <DangKy ma="BracketLeft" xuLy={moi} />
       </PhimTatProvider>,
     )
-    go({ key: 'm', code: 'KeyM' })
+    go({ key: '[', code: 'BracketLeft' })
     expect(cu).not.toHaveBeenCalled()
     expect(moi).toHaveBeenCalledTimes(1)
   })
 
   it('không có PhimTatProvider thì không có bộ nghe; lỡ gắn 2 provider, gỡ 1 vẫn chạy', () => {
     const xuLy = vi.fn<XuLy>()
-    const { unmount } = render(<DangKy ma="KeyT" xuLy={xuLy} />)
-    go({ key: 't', code: 'KeyT' })
+    const { unmount } = render(<DangKy ma="Digit4" xuLy={xuLy} />)
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).not.toHaveBeenCalled()
     unmount()
 
@@ -372,7 +372,7 @@ describe('usePhimTat', () => {
       return (
         <>
           <PhimTatProvider>
-            <DangKy ma="KeyT" xuLy={xuLy} />
+            <DangKy ma="Digit4" xuLy={xuLy} />
           </PhimTatProvider>
           {coThuHai && <PhimTatProvider>{null}</PhimTatProvider>}
         </>
@@ -380,7 +380,7 @@ describe('usePhimTat', () => {
     }
     const { rerender } = render(<Hai coThuHai />)
     rerender(<Hai coThuHai={false} />)
-    go({ key: 't', code: 'KeyT' })
+    go({ key: '4', code: 'Digit4' })
     expect(xuLy).toHaveBeenCalledTimes(1)
   })
 })

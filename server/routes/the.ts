@@ -3,7 +3,8 @@
 // - PUT    /api/the/:id            { truoc?, sau? };
 // - DELETE /api/the/:id            xoá (giữ bản để Hoàn tác);
 // - POST   /api/the/:id/khoi-phuc  Hoàn tác xoá (cùng id, giữ hộp, hạn, lịch sử ôn).
-// itemId phải là mục học của cây (bất biến 8), thẻ không có → 404. Mỗi lần ghi: một transaction + tăng revision.
+// itemId phải là mục học của cây (bất biến 8), thẻ không có → 404; khôi phục thẻ của mục đã bỏ khỏi cây → 409 (giữ
+// bản xoá). Mỗi lần ghi: một transaction + tăng revision.
 import { Router, type Request } from 'express'
 import { z } from 'zod'
 import type { Cay } from '../../shared/roadmap/index.ts'
@@ -52,6 +53,7 @@ const LOI_SUA: CauHinhLoi = {
 
 export function routeThe(db: Db, cay: Pick<Cay, 'mucTheoId'>): Router {
   const r = Router()
+  const laMuc = (id: string) => cay.mucTheoId.has(id)
 
   /** id thẻ của route; không phải số nguyên dương → 404 như thẻ không có. */
   function idThe(req: Request<{ id: string }>): number {
@@ -82,8 +84,12 @@ export function routeThe(db: Db, cay: Pick<Cay, 'mucTheoId'>): Router {
   })
 
   r.post('/the/:id/khoi-phuc', (req: Request<{ id: string }>, res) => {
-    const phanHoi: KetQuaGhiThe | undefined = khoiPhucThe(db, idThe(req))
-    if (!phanHoi) throw new LoiApi(404, TB_HOC.theKhongKhoiPhuc(req.params.id))
+    const kq = khoiPhucThe(db, idThe(req), laMuc)
+    if (!kq) throw new LoiApi(404, TB_HOC.theKhongKhoiPhuc(req.params.id))
+    if ('mucKhongCon' in kq) {
+      throw new LoiApi(409, TB_HOC.theMucKhongCon(req.params.id, kq.mucKhongCon))
+    }
+    const phanHoi: KetQuaGhiThe = kq
     res.json(phanHoi)
   })
 

@@ -286,4 +286,24 @@ export const dsMigration: Migration[] = [
       `)
     },
   },
+  {
+    // Bước 1 (đề xuất 1.5 "Khi bài đổi"): lưu chữ câu hỏi / tiêu chí cùng dữ liệu để gán lại khoá khi câu đổi chữ
+    // (Dice ≥ 0,8 và hơn ứng viên thứ hai ≥ 0,15; không được thì giữ là "câu hỏi cũ", không bao giờ xoá).
+    // - self_check.question_text: chữ câu hỏi lúc lưu; hàng cũ NULL (server điền khi khoá còn trong bài).
+    // - practice.criteria: { khoá: true } → { khoá: chữ tiêu chí | null }; hàng cũ thành null (chưa biết chữ).
+    ten: 'chu-cau-hoi',
+    chay: (db) => {
+      db.exec(`
+        ALTER TABLE self_check ADD COLUMN question_text TEXT;
+
+        UPDATE practice SET criteria = (
+          SELECT CASE WHEN count(*) = 0 THEN NULL
+                      ELSE json_group_object(key, CASE type WHEN 'text' THEN value END) END
+          FROM json_each(practice.criteria)
+          WHERE type IN ('true', 'text')
+        )
+        WHERE criteria IS NOT NULL;
+      `)
+    },
+  },
 ]

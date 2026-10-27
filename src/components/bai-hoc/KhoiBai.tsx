@@ -2,10 +2,10 @@
 // - KhoiBai: <section id> + h2 22/32 (mobile 20/30) + nội dung; bản `card` có nền surface, viền, bo 10.
 //   Section nhận focus bằng code (tabIndex -1) để thanh 4 bước / mục lục đưa focus tới khối sau khi cuộn.
 // - OKhoiThieu: khối ★ chưa có chữ → ô nét đứt (nét đứt = "chưa có", §5.1) "Chưa có <khối> — khối bắt buộc,
-//   bài vẫn đọc được." + "Thêm" mở trình soạn (đề xuất 3.6, F12).
+//   bài vẫn đọc được." (đề xuất 3.6, F12). Không có nút "Thêm": trình soạn trong app đã bỏ (đề xuất mục 10) — bổ sung
+//   khối bằng cách sửa file .md rồi nhập lại.
 import type { ReactNode } from 'react'
-import { FileX, Plus } from 'lucide-react'
-import { NutLink } from '../Nut'
+import { FileX } from 'lucide-react'
 
 /** h2 tên khối: 22/32 600, mobile 20/30 (§5.2, F11, F13). */
 export const LOP_H2_KHOI =
@@ -70,12 +70,10 @@ export interface PropsOKhoiThieu {
   id: string
   /** Tên khối, vd. "Tự kiểm tra" */
   ten: string
-  /** Trình soạn ở đúng chỗ (phase 7b) */
-  den: string
 }
 
 /** Ô "Chưa có <khối>" của khối ★ chưa có chữ (F12): viền nét đứt 1,5px, padding 20, icon file-x 20. */
-export function OKhoiThieu({ id, ten, den }: PropsOKhoiThieu) {
+export function OKhoiThieu({ id, ten }: PropsOKhoiThieu) {
   return (
     <section
       id={id}
@@ -88,9 +86,6 @@ export function OKhoiThieu({ id, ten, den }: PropsOKhoiThieu) {
         <strong className="font-semibold">Chưa có {ten}</strong>
         <span className="text-muted"> — khối bắt buộc, bài vẫn đọc được.</span>
       </h2>
-      <NutLink to={den} bien="phu" icon={Plus} aria-label={`Thêm ${ten}`}>
-        Thêm
-      </NutLink>
     </section>
   )
 }

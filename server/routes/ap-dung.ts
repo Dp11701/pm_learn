@@ -1,5 +1,6 @@
 // API bước Áp dụng kiểu phase 2a (đề xuất 2.1 bảng practice, 3.2; §1). Từ phase 3 là lối tắt (bí danh) của
-// PUT /api/hoc/:id/thuc-hanh (routes/hoc.ts), giữ nguyên hình dạng để web 2a chạy tiếp, và nhận MỌI mẫu bài:
+// PUT /api/hoc/:id/thuc-hanh (routes/hoc.ts) và nhận MỌI mẫu bài; web phase 3 không còn gọi (dùng /api/hoc/:id),
+// giữ cho công cụ / test. Không đọc bài nên không lọc tick theo bài (đề xuất 1.5 làm ở GET /api/hoc/:id):
 // - GET    /api/ap-dung      { revision, apDung: { [id]: { trangThai, lyDo? } } }, chỉ mục còn trong cây;
 // - PUT    /api/ap-dung/:id  { khongApDung: true, lyDo } = thuc-hanh { trangThai: 'khong-ap-dung', lyDo };
 // - DELETE /api/ap-dung/:id  bỏ đánh dấu Không áp dụng = thuc-hanh { trangThai: null } khi đang Không áp dụng
@@ -73,8 +74,6 @@ export interface ThamSoKhongApDung {
 export function danhDauKhongApDung(db: Db, thamSo: ThamSoKhongApDung): KetQuaGhiApDung {
   const kq = ghiThucHanh(db, {
     id: thamSo.id,
-    // Không áp dụng nhận ở mọi mẫu bài; mẫu chỉ chặn trường khác của Chủ đề
-    mau: 'chu-de',
     yeuCau: { trangThai: 'khong-ap-dung', lyDo: thamSo.lyDo },
     luc: thamSo.luc ?? now(),
   })
@@ -98,7 +97,7 @@ export function boDanhDauKhongApDung(db: Db, id: string, luc: number = now()): K
       const muc = sangMuc(hienTai)
       return { revision: layRevision(db), id, muc, truoc: muc, daDoi: false }
     }
-    const kq = ghiThucHanh(db, { id, mau: 'chu-de', yeuCau: { trangThai: null }, luc })
+    const kq = ghiThucHanh(db, { id, yeuCau: { trangThai: null }, luc })
     return {
       revision: kq.revision,
       id,

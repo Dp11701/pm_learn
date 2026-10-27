@@ -1,5 +1,6 @@
 // API dữ liệu học của một mục (phase 3; đề xuất 2.1, 3.2, Cần chốt 6; bất biến 8): migration 5, GET /api/hoc/:id,
 // Nói lại, bài thực hành (mọi mẫu bài), tự kiểm tra, ghi chú, dự án — transaction + revision, câu lỗi tiếng Việt.
+// Gán lại khoá khi bài đổi (đề xuất 1.5, migration 6) ở hoc-gan-lai.test.ts.
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { capNhatSchema, layPhienBan, moKetNoi } from '../../server/db/index.ts'
@@ -7,7 +8,15 @@ import { dsMigration } from '../../server/db/migrations.ts'
 import { layRevision } from '../../server/db/settings.ts'
 import { THUC_HANH_TRONG } from '../../server/du-lieu/hop-dong-hoc.ts'
 import { datGio, quaPhut, taoThuMucTam } from './tro-giup.ts'
-import { ID_LA, cay, dem, mucSlug, taoMoiTruongHoc, type MoiTruongHoc } from './tro-giup-hoc.ts'
+import {
+  ID_LA,
+  cay,
+  dem,
+  ghiBaiHoc,
+  mucSlug,
+  taoMoiTruongHoc,
+  type MoiTruongHoc,
+} from './tro-giup-hoc.ts'
 
 const chuDe = mucSlug('scope-creep')
 const taiLieu = mucSlug('risk-register')
@@ -46,6 +55,7 @@ describe('migration 5 — bảng phase 3 (đề xuất 2.1)', () => {
       'graded_at',
       'created_at',
       'updated_at',
+      'question_text',
     ])
     expect(cot('projects')).toEqual(['id', 'name', 'role', 'phase', 'created_at', 'updated_at'])
     expect(cot('notes')).toEqual(['item_id', 'body', 'created_at', 'updated_at'])
@@ -95,11 +105,13 @@ describe('migration 5 — bảng phase 3 (đề xuất 2.1)', () => {
     const chay = (sql: string) => () => db.prepare(sql).run()
     expect(chay("INSERT INTO restatements VALUES ('a', '  ', 'x', 'x')")).toThrow(/CHECK/)
     expect(chay("INSERT INTO notes VALUES ('a', '', 'x', 'x')")).toThrow(/CHECK/)
+    const COT_SC =
+      '(item_id, question_key, answer, revealed_at, grade, graded_at, created_at, updated_at)'
     expect(
-      chay("INSERT INTO self_check VALUES ('a', 'k', 'tl', NULL, 'dung', 'x', 'x', 'x')"),
+      chay(`INSERT INTO self_check ${COT_SC} VALUES ('a', 'k', 'tl', NULL, 'dung', 'x', 'x', 'x')`),
     ).toThrow(/CHECK/)
     expect(
-      chay("INSERT INTO self_check VALUES ('a', 'k', 'tl', 'x', 'dung', NULL, 'x', 'x')"),
+      chay(`INSERT INTO self_check ${COT_SC} VALUES ('a', 'k', 'tl', 'x', 'dung', NULL, 'x', 'x')`),
     ).toThrow(/CHECK/)
     expect(
       chay(
@@ -182,7 +194,7 @@ describe('migration 5 — bảng phase 3 (đề xuất 2.1)', () => {
 })
 
 describe('GET /api/hoc/:id', () => {
-  it('mục chưa có gì: giá trị trống; Bản của tôi / kế hoạch thi luôn false ở phase 3', async () => {
+  it('mục chưa có gì: giá trị trống; Bản của tôi / kế hoạch thi luôn false (đã bỏ khỏi phạm vi)', async () => {
     const res = await mt.get(url(chuDe.id))
     expect(res.status).toBe(200)
     expect(res.headers['cache-control']).toBe('no-store')
@@ -191,6 +203,7 @@ describe('GET /api/hoc/:id', () => {
       noiLai: null,
       thucHanh: THUC_HANH_TRONG,
       tuKiemTra: {},
+      tieuChiCu: [],
       ghiChu: null,
       the: [],
       banCuaToi: { coHoanThanh: false },
@@ -221,8 +234,9 @@ describe('GET /api/hoc/:id', () => {
     expect(gan(body.noiLai.capNhat, '2026-10-22T14:42:00Z')).toBe(true)
     expect(body.ghiChu.text).toBe('Ghi chú')
     expect(body.thucHanh).toMatchObject({ trangThai: 'dang-lam', ketQua: 'Đã làm' })
+    // Mục chưa có bài: khoá không có trong bài nên không biết chữ câu hỏi (vẫn lưu câu trả lời)
     expect(body.tuKiemTra).toEqual({
-      [K1]: { traLoi: 'Trả lời', daXem: false, cham: null, chamLuc: null },
+      [K1]: { traLoi: 'Trả lời', daXem: false, cham: null, chamLuc: null, cauHoi: null },
     })
     expect(body.the).toEqual([
       {
@@ -302,6 +316,9 @@ describe('PUT /api/hoc/:id/noi-lai và /ghi-chu', () => {
 
 describe('PUT /api/hoc/:id/thuc-hanh — Chủ đề (đề xuất 3.2)', () => {
   it('ghi kết quả / dự án / tiêu chí khi chưa làm → Đang làm; Xong cần kết quả; truoc để Hoàn tác', async () => {
+    const {
+      tc: [K1, K2],
+    } = ghiBaiHoc(mt, chuDe, { tieuChi: ['Tiêu chí một', 'Tiêu chí hai'] })
     const duAn = (await mt.post('/api/du-an', { ten: 'Dự án A' })).body.duAn
     const ghi = await thucHanh(chuDe.id, { ketQua: 'Bản nháp kết quả' })
     expect(ghi.body).toEqual({
@@ -410,26 +427,40 @@ describe('PUT /api/hoc/:id/thuc-hanh — Chủ đề (đề xuất 3.2)', () => 
   })
 })
 
-describe('PUT /api/hoc/:id/thuc-hanh — Tài liệu, Chứng chỉ (mọi mẫu bài nhận Không áp dụng)', () => {
-  it('Không áp dụng + lý do và bỏ đánh dấu được; trạng thái / trường khác → 409, không ghi', async () => {
-    for (const [m, khoi] of [
-      [taiLieu, 'Bản của tôi'],
-      [chungChi, 'Kế hoạch thi'],
-    ] as const) {
+describe('PUT /api/hoc/:id/thuc-hanh — Tài liệu, Chứng chỉ (phạm vi rút gọn 27/10/2026: như Chủ đề)', () => {
+  it('Không áp dụng + lý do và bỏ đánh dấu được', async () => {
+    for (const m of [taiLieu, chungChi]) {
       const ok = await thucHanh(m.id, { trangThai: 'khong-ap-dung', lyDo: 'Không cần' })
       expect(ok.status).toBe(200)
       expect(ok.body.thucHanh).toMatchObject({ trangThai: 'khong-ap-dung', lyDo: 'Không cần' })
-      for (const body of [{ trangThai: 'xong' }, { trangThai: 'dang-lam' }, { ketQua: 'x' }]) {
-        const res = await thucHanh(m.id, body)
-        expect(res.status).toBe(409)
-        expect(res.body.loi).toBe(
-          `Mục ${m.mau === 'tai-lieu' ? 'Tài liệu' : 'Chứng chỉ'}: bước Áp dụng tính theo khối ${khoi}; ở đây chỉ đánh dấu Không áp dụng (kèm lý do) được.`,
-        )
-      }
       const bo = await thucHanh(m.id, { trangThai: null })
       expect(bo.body.thucHanh).toEqual(THUC_HANH_TRONG)
     }
     expect(dem(mt.db, 'practice')).toBe(0)
+  })
+
+  it('kết quả, dự án, Đang làm, Xong nhận như Chủ đề (hết 409 "tính theo khối Bản của tôi / Kế hoạch thi")', async () => {
+    const duAn = (await mt.post('/api/du-an', { ten: 'Dự án A' })).body.duAn
+    for (const m of [taiLieu, chungChi]) {
+      const dangLam = await thucHanh(m.id, { trangThai: 'dang-lam' })
+      expect(dangLam.status).toBe(200)
+      expect(dangLam.body.thucHanh.trangThai).toBe('dang-lam')
+      const chuaKetQua = await thucHanh(m.id, { trangThai: 'xong' })
+      expect(chuaKetQua.status).toBe(409)
+      expect(chuaKetQua.body.loi).toBe(
+        'Ghi “Kết quả của bạn” trước khi đánh dấu bài thực hành Xong.',
+      )
+      const kq = await thucHanh(m.id, { ketQua: 'Bản kết quả', duAnId: duAn.id })
+      expect(kq.status).toBe(200)
+      const xong = await thucHanh(m.id, { trangThai: 'xong' })
+      expect(xong.status).toBe(200)
+      expect(xong.body.thucHanh).toMatchObject({
+        trangThai: 'xong',
+        ketQua: 'Bản kết quả',
+        duAnId: duAn.id,
+      })
+      expect((await mt.get(url(m.id))).body.thucHanh.trangThai).toBe('xong')
+    }
   })
 
   it('GET /api/ap-dung (bí danh 2a) thấy cùng dữ liệu', async () => {
@@ -455,7 +486,7 @@ describe('PUT /api/hoc/:id/tu-kiem-tra/:khoa (đề xuất 3.2, quyết định 
       revision: 1,
       daDoi: true,
       khoa: K1,
-      cau: { traLoi: 'Hỏi khách trước', daXem: false, cham: null, chamLuc: null },
+      cau: { traLoi: 'Hỏi khách trước', daXem: false, cham: null, chamLuc: null, cauHoi: null },
       truoc: null,
     })
     const chamSom = await tk({ cham: 'dung' })

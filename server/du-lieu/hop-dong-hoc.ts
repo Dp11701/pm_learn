@@ -2,7 +2,7 @@ import type { TrangThaiApDung } from './ap-dung.ts'
 import type { TheHoc } from './hop-dong-the.ts'
 
 // Hợp đồng API dữ liệu học của một mục (phase 3; đề xuất 2.1, 3.2, 3.5; Cần chốt 6) — TS thuần, không phụ thuộc
-// Node: server (routes/hoc.ts, routes/du-an.ts) dùng để ghi DB và trả phản hồi, web import để đọc phản hồi.
+// Node: server (routes/hoc.ts — gồm cả /api/du-an) dùng để ghi DB và trả phản hồi, web import để đọc phản hồi.
 // - GET /api/hoc/:id                       DuLieuHoc
 // - PUT /api/hoc/:id/noi-lai               { text }                         → KetQuaGhiNoiLai
 // - PUT /api/hoc/:id/thuc-hanh             YeuCauThucHanh                   → KetQuaGhiThucHanh
@@ -11,6 +11,9 @@ import type { TheHoc } from './hop-dong-the.ts'
 // - GET /api/du-an                         DuAn[];  POST /api/du-an { ten, vaiTro?, giaiDoan? } → KetQuaThemDuAn
 // Mọi lần ghi tăng revision (như /api/trang-thai) và trả { revision, daDoi }; daDoi false = không có gì đổi,
 // không ghi, revision giữ nguyên. id không phải mục học của cây → 404 (bất biến 8). Thời điểm ISO UTC do server.
+// Khoá câu hỏi / tiêu chí theo bài HIỆN TẠI (đề xuất 1.5): GET đọc bài của mục, gán lại câu trả lời / tick có khoá
+// không còn trong bài sang câu mới đủ giống (shared/noi-dung/gan-lai-khoa.ts; có gán thì tăng revision); tick
+// không gán được không tính vào bài thực hành (nằm ở tieuChiCu). Bài lỗi đọc file → không gán, không lọc.
 
 /** Chữ đã lưu kèm lúc lưu gần nhất (ISO UTC) — Nói lại, Ghi chú. */
 export interface VanBanLuu {
@@ -25,7 +28,11 @@ export interface ThucHanh {
   duAnId: number | null
   /** "Kết quả của bạn" (Markdown); '' khi chưa viết */
   ketQua: string
-  /** Tiêu chí tự kiểm đã tick: khoá tiêu chí (taoKhoa của shared/noi-dung) → true */
+  /**
+   * Tiêu chí đã tick (tiêu chí tự kiểm của Chủ đề, dòng Checklist chất lượng của Tài liệu): khoá (taoKhoa của
+   * shared/noi-dung) → true. Chỉ khoá đang có trong bài; tick dưới khoá cũ nằm ở DuLieuHoc.tieuChiCu, không tính
+   * vào bước Áp dụng.
+   */
   tieuChi: Record<string, boolean>
   /** Chỉ khi trangThai = 'khong-ap-dung' */
   lyDo: string | null
@@ -43,6 +50,18 @@ export interface CauTuKiemTra {
   /** Lần chấm mới nhất; null = chưa chấm */
   cham: DiemCham | null
   chamLuc: string | null
+  /**
+   * Chữ câu hỏi lúc lưu (đề xuất 1.5) — để hiện "Câu trả lời cho câu hỏi cũ" và gán lại khi câu đổi chữ; null =
+   * chưa biết (hàng trước migration 6, hoặc khoá không có trong bài lúc lưu).
+   */
+  cauHoi: string | null
+}
+
+/** Tick dưới khoá tiêu chí không còn trong bài và không gán lại được (đề xuất 1.5: giữ, không xoá). */
+export interface TieuChiCu {
+  khoa: string
+  /** Chữ tiêu chí lúc tick; null = chưa biết */
+  chu: string | null
 }
 
 /** GET /api/hoc/:id */
@@ -50,14 +69,25 @@ export interface DuLieuHoc {
   revision: number
   noiLai: VanBanLuu | null
   thucHanh: ThucHanh
-  /** khoá câu (taoKhoa) → câu đã trả lời / xem / chấm */
+  /**
+   * khoá câu (taoKhoa) → câu đã trả lời / xem / chấm. Gồm cả câu có khoá không còn trong bài (web hiện dưới "Câu
+   * trả lời cho câu hỏi cũ", chữ câu ở cauHoi); bước Kiểm tra chỉ đếm khoá của bài.
+   */
   tuKiemTra: Record<string, CauTuKiemTra>
   ghiChu: VanBanLuu | null
   /** Thẻ của mục, cũ trước */
   the: TheHoc[]
-  /** Phase 7c điền (Bản của tôi); giờ luôn false */
+  /**
+   * Tick dưới khoá tiêu chí không còn trong bài (không tính vào Áp dụng). Server luôn gửi (mảng rỗng khi không có);
+   * tuỳ chọn trong kiểu chỉ để máy chủ giả cũ của web còn hợp kiểu.
+   */
+  tieuChiCu?: TieuChiCu[]
+  /**
+   * Luôn false: "Bản của tôi" bị bỏ (phạm vi rút gọn 27/10/2026), không còn tính vào bước Áp dụng — giữ trong phản
+   * hồi tới khi web bỏ trường này.
+   */
   banCuaToi: { coHoanThanh: boolean }
-  /** P1 (kế hoạch thi); giờ luôn false */
+  /** Luôn false: kế hoạch thi (P1) bị bỏ; như banCuaToi */
   keHoachThi: { coNgayThi: boolean }
   /** Tổng giây đã học của mục (phiên đã ghi; không gồm đồng hồ đang chạy) — "Đã học 35 phút" */
   daHocGiay: number
@@ -86,8 +116,9 @@ export interface KetQuaGhiGhiChu {
  * - 'khong-ap-dung' cần lyDo (1–500 ký tự sau khi bỏ khoảng trắng hai đầu), gửi kèm hoặc đã có;
  * - 'xong' (Chủ đề) cần ketQua có chữ (gửi kèm hoặc đã có); xoá hết ketQua khi đang Xong → 'dang-lam';
  * - ghi duAnId / ketQua / tieuChi khi chưa làm → 'dang-lam';
- * - tieuChi là bản vá: { khoá: true } tick, { khoá: false } bỏ tick;
- * - Tài liệu / Chứng chỉ chỉ nhận trangThai 'khong-ap-dung' | null và lyDo (409 cho trường khác).
+ * - tieuChi là bản vá: { khoá: true } tick, { khoá: false } bỏ tick; chỉ tick được tiêu chí đang có trong bài
+ *   (409; khoá cũ đã tick sẵn thì bỏ qua — web gửi lại cả bảng tick);
+ * - như nhau cho mọi mẫu bài (phạm vi rút gọn 27/10/2026: Tài liệu / Chứng chỉ cũng làm bài thực hành).
  */
 export interface YeuCauThucHanh {
   trangThai?: TrangThaiApDung | null

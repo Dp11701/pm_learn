@@ -114,13 +114,13 @@ describe('gallery F02 (component phần 1)', () => {
     expect(screen.getByText('99+')).toBeTruthy()
   })
 
-  it('chip "Chưa có nội dung" là link tới trang Soạn bài của mục mẫu (slug từ cây)', async () => {
+  it('chip "Chưa có nội dung" là link tới tab Nhập gán sẵn mục mẫu (slug từ cây; trình soạn đã bỏ)', async () => {
     await dung('/_dev/thanh-phan/f02')
     const slug = muc(mauF02.mucSoan)?.slug
     expect(slug).toBeTruthy()
     const links = screen.getAllByRole('link', { name: 'Chưa có nội dung' })
     expect(links).toHaveLength(2)
-    for (const l of links) expect(l.getAttribute('href')).toBe(`/hoc/${slug}/soan`)
+    for (const l of links) expect(l.getAttribute('href')).toBe(`/noi-dung?tab=nhap&muc=${slug}`)
     // Disabled · chỉ đọc: không còn là link
     expect(screen.queryByRole('link', { name: 'Bản nháp · Tự viết' })).toBeNull()
   })

@@ -48,11 +48,11 @@ describe('goiYChoDuongDan', () => {
     ])
   })
 
-  it('gợi ý đúng trang của loại nút: lĩnh vực, phần, mục học dù gõ nhầm route', () => {
+  it('gợi ý đúng trang của loại nút: lĩnh vực, phần (Lộ trình lọc theo phần — trang Phần đã bỏ), mục học dù gõ nhầm route', () => {
     expect(goiY('/linh-vuc/scope-managment')).toEqual([
       ['Scope Management', '/linh-vuc/scope-management'],
     ])
-    expect(goiY('/phan/tool')).toEqual([['Tools', '/phan/tools']])
+    expect(goiY('/phan/tool')).toEqual([['Tools', '/lo-trinh?xem=danh-sach&phan=tools']])
     expect(goiY('/linh-vuc/scope-creep')[0]).toEqual(['Scope Creep', '/hoc/scope-creep'])
   })
 

@@ -13,3 +13,4 @@ export {
   type KetQuaTimKiem,
   type TuyChonTim,
 } from './chi-muc'
+export { dice, khongNhoHon } from './dice'

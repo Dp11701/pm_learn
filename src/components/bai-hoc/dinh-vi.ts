@@ -13,8 +13,8 @@ import {
 } from '../../../shared/roadmap'
 
 /**
- * Trang của một nút. Trước phase 10 mọi link tới phần dẫn tới Lộ trình dạng danh sách lọc theo phần
- * (đề xuất 3.9); nhóm không có trang riêng: là điểm neo #slug trên trang cha (§3).
+ * Trang của một nút. Phần không có trang riêng (trang Phần đã bỏ — đề xuất mục 10): link tới phần dẫn tới Lộ trình
+ * dạng danh sách lọc theo phần (đề xuất 3.9); nhóm không có trang riêng: là điểm neo #slug trên trang cha (§3).
  */
 export function duongDanNut(cay: Cay, nut: Nut): string {
   switch (nut.kind) {
@@ -32,10 +32,11 @@ export function duongDanNut(cay: Cay, nut: Nut): string {
   }
 }
 
-/** "Xem trên bản đồ" (§6.2): bản đồ mở sẵn panel của mục (phase 6; dưới 1024 tự đổi sang danh sách). */
-export const duongDanBanDo = (muc: MucHoc) => `/lo-trinh?xem=ban-do&muc=${muc.slug}`
-/** Trình soạn (phase 7b). */
-export const duongDanSoan = (muc: MucHoc) => `/hoc/${muc.slug}/soan`
+/**
+ * "Xem trong danh sách" (thay "Xem trên bản đồ" của §6.2 — bản đồ đã bỏ, đề xuất mục 10): Lộ trình dạng danh sách
+ * mở tới đúng mục (bước 2; tới lúc đó route hiện trang chờ).
+ */
+export const duongDanDanhSach = (muc: MucHoc) => `/lo-trinh?xem=danh-sach&muc=${muc.slug}`
 /** "Nhập file .md" trên trang chưa có nội dung (đề xuất 3.6): file thả vào được gán sẵn mục này. */
 export const duongDanNhap = (muc: MucHoc) => `/noi-dung?tab=nhap&muc=${muc.slug}`
 /** "Quét lại" của banner bảo vệ bản Đã duyệt (đề xuất 1.6): tab Nhập (phase 2b), ?quet=1 → quét lại ngay. */

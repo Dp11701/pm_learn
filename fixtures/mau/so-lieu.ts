@@ -101,7 +101,7 @@ export interface LichSuDangHoc {
 
 /**
  * 6 mục Đang học, theo thứ tự mở gần nhất (§7): sidebar hiện 3 mục đầu + "Xem tất cả (6)"; Học tiếp =
- * Risk Register. Risk Register mở lúc 21:17:20, trước khi bấm đồng hồ (started_at = GIO_MAU − 24:17, phase 3).
+ * Risk Register. Risk Register mở lúc 21:17:20 (bộ mẫu không còn đồng hồ đang chạy — phạm vi rút gọn 27/10/2026).
  */
 export const DANG_HOC: readonly LichSuDangHoc[] = [
   { slug: 'risk-register', batDau: '2026-10-21 20:30', moCuoi: '2026-10-22 21:17:20' },

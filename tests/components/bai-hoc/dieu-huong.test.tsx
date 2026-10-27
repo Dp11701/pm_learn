@@ -218,7 +218,7 @@ describe('Khung bài trống (F17, F18)', () => {
   /** Khối do app tạo: nơi dùng vẽ chính khối đó (trang thật: KhoiApp); ở đây chỉ là một đoạn đánh dấu. */
   const veKhoiApp = (k: { id: string; tieuDe: string }) => <p data-khoi-that={k.id}>{k.tieuDe}</p>
 
-  it('Chủ đề: "0/9 khối bắt buộc", khối 7 ghi đủ 3 tên, Mục liên quan tuỳ chọn, không có Nói lại', async () => {
+  it('Chủ đề: "0/9 khối bắt buộc", khối 7 ghi đủ 3 tên, Mục liên quan tuỳ chọn, không có Nói lại; Thực hành vẽ qua veKhoiApp (phần làm bài của bước Áp dụng)', async () => {
     const { container } = render(<KhungBaiTrong mau="chu-de" veKhoiApp={veKhoiApp} />)
     expect(container.textContent).toContain('0/9 khối bắt buộc')
     const hang = within(screen.getByRole('list')).getAllByRole('listitem')
@@ -226,12 +226,19 @@ describe('Khung bài trống (F17, F18)', () => {
     expect(hang).toHaveLength(11)
     expect(hang[6].textContent).toBe('So sánh · Thuật ngữ · Thực hành công cụ · tuỳ chọnChưa có')
     expect(hang[0].textContent).toBe('Tóm tắt ★ (bắt buộc)Chưa có')
-    expect(hang.every((h) => h.className.includes('border-dashed'))).toBe(true)
+    // Hồi quy review: Chủ đề chưa có bài từng không có chỗ nào làm bước Áp dụng — Thực hành là khối chứa việc của
+    // người học, vẽ như ở trang bài (không phải ô nét đứt)
+    const thucHanh = container.querySelector('[data-khoi-app="thuc-hanh-tren-du-an-that"]')!
+    expect(thucHanh.querySelector('[data-khoi-that="thuc-hanh-tren-du-an-that"]')).not.toBeNull()
+    expect(thucHanh.className).not.toContain('border-dashed')
+    expect(
+      hang.filter((h) => h !== thucHanh).every((h) => h.className.includes('border-dashed')),
+    ).toBe(true)
     // Mục liên quan đọc lien_quan của file: vẫn là ô "Chưa có" (F17)
     expect(container.querySelector('[data-khoi="muc-lien-quan"]')?.textContent).toBe(
       'Mục liên quan · tuỳ chọnChưa có',
     )
-    expect(container.querySelector('[data-khoi-that]')).toBeNull()
+    expect(container.querySelectorAll('[data-khoi-that]')).toHaveLength(1)
     await expectNoAxeViolations(container)
   })
 

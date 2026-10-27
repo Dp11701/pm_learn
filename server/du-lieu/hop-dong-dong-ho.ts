@@ -1,7 +1,8 @@
 import { congNgay, dauTuanIso } from '../../shared/lich.ts'
 
 // Hợp đồng API đồng hồ học + phiên giờ (phase 3; đề xuất 2.1, 2.2 bất biến 6, 3.4; Cần chốt 12) và quy tắc thuần
-// (quên tắt, số giây ghi, tuần, streak) — TS thuần, không phụ thuộc Node: server và web cùng import.
+// (quên tắt, số giây ghi, tuần, streak) — TS thuần, không phụ thuộc Node. Phạm vi rút gọn 27/10/2026 bỏ giao diện
+// đồng hồ / giờ học: API giữ nguyên, web không còn import file này.
 // - GET    /api/dong-ho[?itemId=]          TrangThaiDongHo (lichSu: 5 phiên gần nhất, của mục đó nếu có itemId)
 // - POST   /api/dong-ho/bat-dau            { itemId, chuyen?, ghiGiay? } → KetQuaDongHo
 //     409 { loi, dangChay }                   mục khác đang chạy và chuyen không phải true;

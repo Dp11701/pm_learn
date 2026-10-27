@@ -38,18 +38,14 @@ const taiLieu = cay.mucHoc.find((m) => m.mau === 'tai-lieu')!
 const cacChuDe = cay.mucHoc.filter((m) => m.mau === 'chu-de')
 const chungChi = cay.mucHoc.find((m) => m.mau === 'chung-chi')!
 
+/** Phạm vi rút gọn (đề xuất mục 10): Thống kê, Bộ hồ sơ dự án, Chứng chỉ, Thuật ngữ, Ghi chú, Cài đặt đã bỏ. */
 const THU_TU_MENU: [string, string][] = [
   ['Tổng quan', '/'],
   ['Lộ trình', '/lo-trinh'],
   ['Ôn tập', '/on-tap'],
   ['Nội dung', '/noi-dung'],
-  ['Thống kê', '/thong-ke'],
-  ['Bộ hồ sơ dự án', '/ho-so'],
-  ['Chứng chỉ', '/chung-chi'],
-  ['Thuật ngữ', '/thuat-ngu'],
-  ['Ghi chú', '/ghi-chu'],
-  ['Cài đặt', '/cai-dat'],
 ]
+const MENU_DA_BO = ['Thống kê', 'Bộ hồ sơ dự án', 'Chứng chỉ', 'Thuật ngữ', 'Ghi chú', 'Cài đặt']
 
 const FOCUS_DUOC =
   'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -129,14 +125,18 @@ describe('Sidebar C34 (≥ 1280)', () => {
     expect(screen.getByRole('link', { name: 'Tổng quan' }).hasAttribute('aria-current')).toBe(false)
   })
 
-  it('trang con (bài học) tô mục cha với aria-current="true"', () => {
+  it('trang con (bài học mọi mẫu, kể cả Chứng chỉ) tô Lộ trình với aria-current="true"', () => {
     moKhung(`/hoc/${cacChuDe[0].slug}`)
     expect(screen.getByRole('link', { name: 'Lộ trình' }).getAttribute('aria-current')).toBe('true')
     cleanup()
     moKhung(`/hoc/${chungChi.slug}`)
-    expect(screen.getByRole('link', { name: 'Chứng chỉ' }).getAttribute('aria-current')).toBe(
-      'true',
-    )
+    expect(screen.getByRole('link', { name: 'Lộ trình' }).getAttribute('aria-current')).toBe('true')
+  })
+
+  it('không còn mục menu của phần đã bỏ (đề xuất mục 10)', () => {
+    moKhung('/')
+    const ten = linkMenu().map((a) => a.textContent)
+    for (const bo of MENU_DA_BO) expect(ten).not.toContain(bo)
   })
 
   it('ô tìm có gợi ý "/" và gọi useTimKiem().mo() khi bấm', () => {
@@ -204,16 +204,18 @@ describe('Sidebar C34 (≥ 1280)', () => {
     expect(tatCa.getAttribute('href')).toBe('/lo-trinh?xem=danh-sach&trang-thai=dang-hoc')
   })
 
-  it('chân sidebar: đồng hồ ở trạng thái nghỉ "Chưa bấm giờ", không có nút Bắt đầu; phase 3 cắm qua dongHo.sidebar', () => {
+  it('chân sidebar chỉ có Giao diện và "?" — không có khu đồng hồ (phạm vi rút gọn 27/10/2026)', () => {
     moKhung('/')
-    expect(screen.getByText('Chưa bấm giờ')).toBeTruthy()
-    expect(screen.queryByRole('button', { name: /Bắt đầu/ })).toBeNull()
-    cleanup()
-    moKhung('/', {
-      duLieu: { ...DU_LIEU_KHUNG_TRONG, dongHo: { sidebar: <p>Ô đồng hồ phase 3</p> } },
-    })
-    expect(screen.getByText('Ô đồng hồ phase 3')).toBeTruthy()
+    const sidebar = screen.getByRole('complementary', { name: 'Điều hướng chính' })
+    const chan = within(sidebar).getByRole('button', { name: 'Bảng phím tắt' }).parentElement!
+      .parentElement!
+    expect(
+      within(chan)
+        .getAllByRole('button')
+        .map((n) => n.getAttribute('aria-label')),
+    ).toEqual([expect.stringMatching(/^Giao diện:/), 'Bảng phím tắt'])
     expect(screen.queryByText('Chưa bấm giờ')).toBeNull()
+    expect(sidebar.textContent).not.toMatch(/bấm giờ|Đồng hồ|Bắt đầu/)
   })
 
   it('nút Giao diện đổi vòng Sáng → Tối → Theo hệ thống (mặc định Theo hệ thống), nhãn ghi giao diện đang dùng', () => {
@@ -314,10 +316,8 @@ describe('Rail 72px (1024–1279)', () => {
     expect(noiDung.querySelector('[data-kieu="vien"]')?.textContent).toBe('99+')
   })
 
-  it('tìm, Giao diện, "?" và chỗ cắm đồng hồ (chấm khi chạy) ở rail', () => {
-    moKhung('/', {
-      duLieu: { ...DU_LIEU_KHUNG_TRONG, dongHo: { rail: <span>Đồng hồ rail</span> } },
-    })
+  it('tìm, Giao diện, "?" ở rail; chân rail không có đồng hồ', () => {
+    moKhung('/')
     fireEvent.click(screen.getByRole('button', { name: 'Tìm mục' }))
     expect(moTimKiem).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: 'Bảng phím tắt' }))
@@ -325,7 +325,10 @@ describe('Rail 72px (1024–1279)', () => {
     const giaoDien = screen.getByRole('button', { name: /^Giao diện: Theo hệ thống/ })
     fireEvent.click(giaoDien)
     expect(document.documentElement.dataset.theme).toBe('light')
-    expect(screen.getByText('Đồng hồ rail')).toBeTruthy()
+    const rail = screen.getByRole('complementary', { name: 'Điều hướng chính' })
+    const chan = within(rail).getByRole('button', { name: 'Bảng phím tắt' }).parentElement!
+    expect(within(chan).getAllByRole('button')).toHaveLength(2)
+    expect(rail.textContent).not.toMatch(/bấm giờ|Đồng hồ/)
   })
 
   it('axe', async () => {

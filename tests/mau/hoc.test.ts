@@ -1,6 +1,6 @@
-// Bộ dữ liệu mẫu phase 3 (§7, đề xuất mục 7; F03, F11, F15, F31, F38): flashcard 85 thẻ hộp 34/21/15/9/6, 12 đến
-// hạn, nhớ 81% (30 ngày), Cần ôn lại 3 mục; giờ học (tuần 4 giờ 35 phút, tổng 38 giờ 10 phút, streak 5, kỷ lục
-// 12); đồng hồ Risk Register 00:24:17; 7 bài thực hành Xong; Nói lại, ghi chú như frame — qua DB và API thật.
+// Bộ dữ liệu mẫu phase 3 (§7, đề xuất mục 7; F11, F15, F31, F38): flashcard 85 thẻ hộp 34/21/15/9/6, 12 đến
+// hạn, nhớ 81% (30 ngày), Cần ôn lại 3 mục; 7 bài thực hành Xong; Nói lại, ghi chú như frame — qua DB và API thật.
+// Phạm vi rút gọn 27/10/2026 bỏ đồng hồ học / giờ học: bộ mẫu không có phiên giờ, không có đồng hồ đang chạy.
 import Database from 'better-sqlite3'
 import request from 'supertest'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
@@ -9,17 +9,9 @@ import { congNgay } from '../../shared/lich.ts'
 import { taoApp } from '../../server/app.ts'
 import { docCauHinh } from '../../server/cau-hinh.ts'
 import type { Db } from '../../server/db/index.ts'
-import { docMoiPhien } from '../../server/du-lieu/dong-ho.ts'
-import { giayTuanNay, tinhStreak } from '../../server/du-lieu/hop-dong-dong-ho.ts'
 import { sauKhiOn, theMoi } from '../../server/du-lieu/hop-dong-the.ts'
 import { DANG_HOC, GIO_MAU, luc } from '../../fixtures/mau/so-lieu.ts'
-import {
-  DICH_HOC,
-  GHI_CHU_MAU,
-  PHIEN_GIO,
-  THE_MAU,
-  THUC_HANH_XONG,
-} from '../../fixtures/mau/so-lieu-hoc.ts'
+import { DICH_HOC, GHI_CHU_MAU, THE_MAU, THUC_HANH_XONG } from '../../fixtures/mau/so-lieu-hoc.ts'
 import type { KetQuaChuanBi } from '../../fixtures/mau/kich-ban.ts'
 import { cay, dungKichBan, laGioMau, mucSlug, thuMucTam } from './ho-tro.ts'
 
@@ -155,17 +147,16 @@ describe.skipIf(!laGioMau)('API trên DB mẫu lúc GIO_MAU', () => {
     expect(new Set([...dangHoc, ...st.canOnLai]).size).toBe(9)
   })
 
-  it('GET /api/dong-ho: Risk Register chạy từ GIO_MAU − 24 phút 17 giây (F03 "00:24:17")', async () => {
-    const { dangChay, lichSu } = (await get('/api/dong-ho')).body
-    expect(dangChay.itemId).toBe(mucSlug('risk-register').id)
-    expect((Date.parse(GIO_MAU) - Date.parse(dangChay.batDau)) / 1000).toBe(DICH_HOC.dongHoGiay)
-    expect(lichSu).toHaveLength(5)
-    expect(lichSu[0]).toMatchObject({ itemId: mucSlug('scope-creep').id, ngay: HOM_NAY, giay: 720 })
+  it('GET /api/dong-ho: không có đồng hồ đang chạy, không có phiên giờ (bỏ đồng hồ 27/10/2026)', async () => {
+    const res = await get('/api/dong-ho')
+    expect(res.status).toBe(200)
+    expect(res.body.dangChay).toBeNull()
+    expect(res.body.lichSu).toEqual([])
   })
 
-  it('GET /api/hoc: Scope Creep (F11) — Đã học 35 phút, Nói lại + ghi chú lưu 21:42, Áp dụng đang làm trên dự án mẫu', async () => {
+  it('GET /api/hoc: Scope Creep (F11) — Nói lại + ghi chú lưu 21:42, Áp dụng đang làm trên dự án mẫu; không có giờ học', async () => {
     const sc = (await get(`/api/hoc/${mucSlug('scope-creep').id}`)).body
-    expect(sc.daHocGiay).toBe(DICH_HOC.phutScopeCreep * 60)
+    expect(sc.daHocGiay).toBe(0)
     expect(sc.noiLai.capNhat).toBe(new Date(Date.parse(GIO_MAU)).toISOString())
     expect(sc.ghiChu.capNhat).toBe(new Date(Date.parse(GIO_MAU)).toISOString())
     expect(sc.thucHanh).toMatchObject({ trangThai: 'dang-lam', ketQua: '', xongLuc: null })
@@ -177,40 +168,17 @@ describe.skipIf(!laGioMau)('API trên DB mẫu lúc GIO_MAU', () => {
     expect(sc.the).toHaveLength(3)
 
     const rr = (await get(`/api/hoc/${mucSlug('risk-register').id}`)).body
-    expect(rr.daHocGiay).toBe(DICH_HOC.phutRiskRegister * 60) // F15 "Tổng 1 giờ 05 phút"
+    expect(rr.daHocGiay).toBe(0)
     expect(rr.noiLai.capNhat).toBe(new Date(luc('2026-10-22 21:18')).toISOString())
     expect(rr.the).toEqual([])
   })
 })
 
-describe.skipIf(!laGioMau)('giờ học §7 / F03 / F32', () => {
-  it('tổng 38 giờ 10 phút; tuần này 4 giờ 35 phút; streak 5 ngày, kỷ lục 12', () => {
-    const phien = docMoiPhien(db)
-    expect(phien).toHaveLength(PHIEN_GIO.length)
-    expect(kq.tomTat?.soPhienGio).toBe(PHIEN_GIO.length)
-    expect(phien.reduce((t, p) => t + p.giay, 0)).toBe(DICH_HOC.phutTong * 60)
-    expect(giayTuanNay(phien, HOM_NAY)).toBe(DICH_HOC.phutTuanNay * 60)
-    expect(tinhStreak(phien, HOM_NAY)).toEqual({
-      hienTai: DICH_HOC.streak,
-      kyLuc: DICH_HOC.kyLuc,
-    })
-  })
-
-  it('phiên không chồng nhau, không chồng đồng hồ đang chạy; ngày = ngày bắt đầu; bắt đầu từ 17/09/2026', () => {
-    const ds = db.prepare('SELECT * FROM time_entries ORDER BY started_at').all() as {
-      date: string
-      seconds: number
-      started_at: string
-      ended_at: string
-    }[]
-    for (let i = 0; i < ds.length; i++) {
-      expect(ds[i].date).toBe(ngayCua(Date.parse(ds[i].started_at)))
-      expect(Date.parse(ds[i].ended_at) - Date.parse(ds[i].started_at)).toBe(ds[i].seconds * 1000)
-      if (i > 0) expect(ds[i].started_at >= ds[i - 1].ended_at).toBe(true)
-    }
-    expect(ds[0].date).toBe('2026-09-17')
-    const dongHo = db.prepare('SELECT started_at FROM active_timer').get() as { started_at: string }
-    expect(ds[ds.length - 1].ended_at <= dongHo.started_at).toBe(true)
+describe.skipIf(!laGioMau)('không seed giờ học (phạm vi rút gọn 27/10/2026)', () => {
+  it('time_entries, active_timer rỗng; tóm tắt seed không còn số phiên giờ', () => {
+    expect(db.prepare('SELECT count(*) AS n FROM time_entries').get()).toEqual({ n: 0 })
+    expect(db.prepare('SELECT count(*) AS n FROM active_timer').get()).toEqual({ n: 0 })
+    expect(kq.tomTat).not.toHaveProperty('soPhienGio')
   })
 })
 
@@ -228,6 +196,24 @@ describe.skipIf(!laGioMau)('4 bước, ghi chú (§7 độ sâu, F11, F38)', () 
     expect(
       db.prepare("SELECT count(*) AS n FROM practice WHERE state = 'khong-ap-dung'").get(),
     ).toEqual({ n: 0 })
+  })
+
+  it('tiêu chí đã tick và câu tự kiểm tra lưu kèm chữ trong bài (đề xuất 1.5: để gán lại khi câu đổi chữ)', () => {
+    for (const x of db
+      .prepare('SELECT criteria FROM practice WHERE criteria IS NOT NULL')
+      .all() as {
+      criteria: string
+    }[]) {
+      for (const chu of Object.values(JSON.parse(x.criteria) as Record<string, unknown>)) {
+        expect(typeof chu).toBe('string')
+      }
+    }
+    expect(
+      db.prepare('SELECT count(*) AS n FROM self_check WHERE question_text IS NULL').get(),
+    ).toEqual({ n: 0 })
+    expect(
+      (db.prepare('SELECT count(*) AS n FROM self_check').get() as { n: number }).n,
+    ).toBeGreaterThan(0)
   })
 
   it('Nói lại: 37 mục Đã xong + Scope Creep + Risk Register; mục Đã xong đã tự chấm mọi câu', () => {

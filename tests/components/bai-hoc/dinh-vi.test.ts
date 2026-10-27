@@ -6,10 +6,9 @@ import type { TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import {
   cungCap,
   demTienDo,
-  duongDanBanDo,
+  duongDanDanhSach,
   duongDanNhap,
   duongDanNut,
-  duongDanSoan,
   nhanPager,
   ranhGioi,
   truocTiep,
@@ -22,7 +21,7 @@ const nut = (slug: string) => cay.nutTheoSlug.get(slug)!
 const tra = (bang: Record<string, TrangThaiHoc>) => (id: string) => bang[id] ?? 'chua-hoc'
 
 describe('duongDanNut', () => {
-  it('mục học → /hoc, lĩnh vực → /linh-vuc, phần → Lộ trình lọc theo phần (trước phase 10)', () => {
+  it('mục học → /hoc, lĩnh vực → /linh-vuc, phần → Lộ trình lọc theo phần (trang Phần đã bỏ)', () => {
     expect(duongDanNut(cay, muc('scope-creep'))).toBe('/hoc/scope-creep')
     expect(duongDanNut(cay, muc('risk-register'))).toBe('/hoc/risk-register')
     expect(duongDanNut(cay, nut('scope-management'))).toBe('/linh-vuc/scope-management')
@@ -41,10 +40,9 @@ describe('duongDanNut', () => {
     )
   })
 
-  it('đường dẫn của bản đồ, trình soạn, tab Nhập (gán sẵn mục)', () => {
+  it('đường dẫn "Xem trong danh sách" (thay bản đồ — đề xuất mục 10), tab Nhập (gán sẵn mục)', () => {
     const m = muc('salience-model')
-    expect(duongDanBanDo(m)).toBe('/lo-trinh?xem=ban-do&muc=salience-model')
-    expect(duongDanSoan(m)).toBe('/hoc/salience-model/soan')
+    expect(duongDanDanhSach(m)).toBe('/lo-trinh?xem=danh-sach&muc=salience-model')
     expect(duongDanNhap(m)).toBe('/noi-dung?tab=nhap&muc=salience-model')
   })
 })

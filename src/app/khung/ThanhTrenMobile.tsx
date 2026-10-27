@@ -1,5 +1,5 @@
 // MobileTopBar < 1024px (D6; F04, F13): menu mở drawer bên trái, tiêu đề trang hoặc "‹ cấp cha", nút
-// tìm kiếm, chip đồng hồ (phase 3). Cao 56; tên cấp cha dài thì cắt 1 dòng + "…", tên đủ ở title và
+// tìm kiếm (không có chip đồng hồ — phạm vi rút gọn 27/10/2026, đề xuất mục 10). Cao 56; tên cấp cha dài thì cắt 1 dòng + "…", tên đủ ở title và
 // tên truy cập (câu hỏi 2 của designer). Dính đầu trang để menu, tìm kiếm luôn trong tầm tay.
 // Tiêu đề: trang tự đặt (useThanhTrenMobile) → handle.tenTrang của route → tên mục menu đang mở.
 // Là <p>, không phải heading: H1 của trang nằm trong <main> (TieuDeTrang, nơi focus về khi đổi trang).
@@ -7,7 +7,6 @@ import type { Ref } from 'react'
 import { Link, useLocation, useMatches } from 'react-router'
 import { ChevronLeft, Menu, Search } from 'lucide-react'
 import { useTimKiem } from '../../components/tim-kiem/TimKiem'
-import { useDuLieuKhung } from './du-lieu-khung'
 import { tenTrangTuRoute, tieuDeMacDinh } from './menu'
 import type { CauHinhThanhTren } from './thanh-tren'
 
@@ -30,7 +29,6 @@ export default function ThanhTrenMobile({
   const { pathname } = useLocation()
   const cacRoute = useMatches()
   const { mo: moTimKiem } = useTimKiem()
-  const { dongHo } = useDuLieuKhung()
   const capCha = cauHinh?.capCha
   const tieuDe = cauHinh?.tieuDe ?? tenTrangTuRoute(cacRoute) ?? tieuDeMacDinh(pathname)
 
@@ -79,7 +77,6 @@ export default function ThanhTrenMobile({
       >
         <Search size={20} strokeWidth={1.75} aria-hidden="true" />
       </button>
-      {dongHo?.chip}
     </header>
   )
 }

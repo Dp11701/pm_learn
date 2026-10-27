@@ -2,9 +2,12 @@
 // khối nội dung của mẫu là một ô nét đứt 1,5px (nét đứt = "chưa có", §5.1), cao ≥ 56 (mobile 48), bo 10: tên
 // khối 600 + " ★" (bắt buộc) hoặc " · tuỳ chọn", bên phải "Chưa có". Khối 7 của Chủ đề ghi đủ 3 tên (D13).
 // Gồm các khối viết trong file, Mục liên quan (đọc lien_quan của file) và khối do app tạo chứa việc của người
-// học (Bản của tôi, Kế hoạch thi). Khối do app tạo KHÔNG phải khối nội dung nên không bao giờ là ô nét đứt
-// "Chưa có": nơi dùng vẽ chính khối đó (veKhoiApp, như ở trang bài) đúng vị trí trong mẫu. Bỏ "Nói lại bằng
-// lời của bạn" (F17 không vẽ) và khối P2.
+// học (Bản của tôi, Kế hoạch thi của tôi — thẻ Thực hành của bước Áp dụng). Khối do app tạo KHÔNG phải khối nội dung
+// nên không bao giờ là ô nét đứt
+// "Chưa có": nơi dùng vẽ chính khối đó (veKhoiApp, như ở trang bài) đúng vị trí trong mẫu. Riêng "Thực hành trên
+// dự án thật" (Chủ đề) là khối nội dung chứa việc của người học: đề bài chưa có nhưng phần làm bài (bước Áp dụng:
+// Kết quả, Xong / Không áp dụng) vẫn phải có, nên cũng vẽ qua veKhoiApp (hồi quy review: Chủ đề chưa có bài không có
+// đường nào xong bước Áp dụng). Bỏ "Nói lại bằng lời của bạn" (F17 không vẽ) và khối P2.
 import type { ReactNode } from 'react'
 import { MAU_BAI, cacTen, duKhoiChuaCo, type KhoiMau } from '../../../shared/noi-dung'
 import { TEN_LOAI } from '../../../shared/domain/trang-thai'
@@ -17,14 +20,17 @@ export function khoiKhungBai(mau: MauBai): KhoiMau[] {
   return MAU_BAI[mau].khoi.filter((k) => k.kieu !== 'noi-lai' && k.uuTien !== 'P2')
 }
 
-/** Khối do app tạo chứa việc của người học (mọi khối nguồn app trừ Mục liên quan): không phải khối nội dung. */
+/**
+ * Khối chứa việc của người học, vẽ như ở trang bài thay cho ô nét đứt: mọi khối nguồn app trừ Mục liên quan, và khối
+ * Thực hành (phần làm bài của bước Áp dụng luôn có, kể cả khi chưa có đề bài).
+ */
 export function laKhoiCuaNguoiHoc(k: KhoiMau): boolean {
-  return k.nguon === 'app' && k.kieu !== 'muc-lien-quan'
+  return (k.nguon === 'app' && k.kieu !== 'muc-lien-quan') || k.kieu === 'thuc-hanh'
 }
 
 export interface PropsKhungBaiTrong {
   mau: MauBai
-  /** Vẽ khối do app tạo (laKhoiCuaNguoiHoc) như ở trang bài, vd. Kế hoạch thi kèm nút "Không áp dụng". */
+  /** Vẽ khối do app tạo (laKhoiCuaNguoiHoc) như ở trang bài, vd. thẻ Thực hành ở khối Kế hoạch thi của tôi. */
   veKhoiApp: (khoi: KhoiMau) => ReactNode
 }
 

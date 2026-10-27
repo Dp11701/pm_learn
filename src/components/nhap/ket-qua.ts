@@ -8,7 +8,8 @@
 //   ghi lại bản chụp (POST giu-ban-cu/:id); bản chép nằm chỗ khác (chưa nhận): server bỏ vào thùng rác trong
 //   POST thuc-hien. Dòng ⟳ mà file đã nhận không còn trên đĩa: chỉ "Giữ bản cũ" được.
 // - ◎ Đã duyệt nhưng app chưa có bản chụp: chỉ khi tick "Nhận là Đã duyệt" (mặc định không tick).
-// - ✕ Lỗi frontmatter: không nhập; gán mục chỉ để mở trình soạn đúng bài.
+// - ✕ Lỗi frontmatter: không nhập, không gán (trình soạn trong app đã bỏ — đề xuất mục 10); dòng có "Sao chép dòng
+//   lỗi" để sửa file ở ngoài.
 import { layCay, taoSlug } from '../../../shared/roadmap'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import type {

@@ -80,64 +80,27 @@ export const PILL_LOI_LUU = ', lỗi lưu'
 /** aria của vòng tiến độ khi mẫu số bằng 0, thay "Tiến độ n%" (src/components/trang-thai/TienDo.tsx). */
 export const TIEN_DO_CHUA_TINH_DUOC = 'Tiến độ chưa tính được phần trăm'
 
-// ---------- Trình soạn (F20) ----------
-
-/** Link "‹ Về …" của trình soạn tổng quan phần (src/pages/TrangSoan.tsx); soạn bài dùng "Về bài" (đề xuất). */
-/** Nút quay về trang cha trên trang "Có ở phase n" (TrangSapCo). */
-export const veTrangCha = (nhan: string) => `Về ${nhan}`
-
-export const VE_PHAN = 'Về phần'
-
-/** Link "‹ Về …" của trình soạn tổng quan lĩnh vực (src/pages/TrangSoan.tsx). */
-export const VE_LINH_VUC = 'Về lĩnh vực'
-
 // ---------- Trang "Có ở phase n" (C38) ----------
 
-/** Câu "trang sẽ làm gì" dưới C38 của từng route chưa làm tới. */
+/** Nút quay về mục menu cha trên trang "Có ở phase n" (src/pages/TrangSapCo.tsx), vd. "Về Lộ trình". */
+export const veTrangCha = (nhan: string) => `Về ${nhan}`
+
+/**
+ * Câu "trang sẽ làm gì" dưới C38 của từng route chưa làm tới. Trang của phần đã bỏ khỏi phạm vi (đề xuất mục 10:
+ * P1, bản đồ, trình soạn, "Bản của tôi") không còn route nên không còn câu.
+ */
 export const MO_TA_SAP_CO = {
   /** `/` (src/pages/cac-trang.ts) */
-  tongQuan: 'Tiến độ cả roadmap, mục đang học, thẻ cần ôn hôm nay, giờ học và độ phủ nội dung.',
+  tongQuan: 'Tiến độ cả roadmap, mục đang học và thẻ cần ôn hôm nay.',
   /** `/lo-trinh` (cac-trang.ts) */
-  loTrinh:
-    'Cả roadmap dạng danh sách cây (phase 4) và bản đồ (phase 6), lọc theo trạng thái, loại, phần, lĩnh vực.',
+  loTrinh: 'Cả roadmap dạng danh sách cây, lọc theo trạng thái, loại, phần, lĩnh vực.',
   /** `/on-tap` (cac-trang.ts) */
   onTap: 'Thẻ đến hạn hôm nay, các hộp Leitner, tỉ lệ nhớ 30 ngày và danh sách Cần ôn lại.',
   /** `/on-tap/phien` (cac-trang.ts) */
   phienOn: 'Ôn từng flashcard đến hạn: lật thẻ rồi tự chấm Quên hoặc Nhớ.',
-  /** `/lo-trinh-goi-y` (cac-trang.ts) */
-  loTrinhGoiY:
-    'Thứ tự học đề xuất theo chặng, chỉ có hiệu lực sau khi bạn duyệt; tới lúc đó Trước/Tiếp vẫn theo thứ tự cây.',
-  /** `/thong-ke` (cac-trang.ts) */
-  thongKe:
-    'Giờ học, đường burnup kèm dự báo ngày xong, heatmap theo tuần; biểu đồ nào cũng có dạng bảng.',
-  /** `/ho-so` (cac-trang.ts) */
-  hoSo: 'Các tài liệu của dự án thực hành, nhóm theo lĩnh vực: Chưa tạo, Đang viết hay Hoàn thành.',
-  /** `/chung-chi` (cac-trang.ts) */
-  chungChi: 'Các chứng chỉ trong roadmap, mức theo đuổi và kế hoạch thi của từng chứng chỉ.',
-  /** `/chao-mung` (cac-trang.ts) */
-  chaoMung: 'Thư mục nội dung, dự án thực hành, mục tiêu giờ học mỗi tuần và tự đánh giá đầu vào.',
-  /** `/thuat-ngu` (cac-trang.ts) */
-  thuatNgu: 'Giải nghĩa của các mục đã có nội dung và bảng viết tắt có trong cây.',
-  /** `/ghi-chu` (cac-trang.ts) */
-  ghiChu: 'Mọi ghi chú theo mục, tìm và lọc theo phần, lĩnh vực.',
-  /** `/cai-dat` (cac-trang.ts) */
-  caiDat:
-    'Giao diện, quy tắc Cần ôn lại, thư mục nội dung, mục tiêu giờ, xuất/nhập tiến độ JSON, sao lưu và đặt lại.',
   /** `/linh-vuc/:slug` (src/pages/TrangLinhVuc.tsx) */
   linhVuc:
     'Tiến độ của lĩnh vực, các nhóm và mục học dạng cây, kệ tài liệu và chuyển sang lĩnh vực kề.',
-  /** `/hoc/:slug` (src/pages/TrangMucHoc.tsx) */
-  mucHoc: 'Bài học, trạng thái học, vị trí trong lĩnh vực và Trước/Tiếp theo thứ tự cây.',
-  /** `/phan/:slug` (src/pages/TrangPhan.tsx) */
-  phan: 'Tiến độ và độ phủ nội dung của phần, các nhóm và mục học, phần tổng quan do bạn soạn.',
-  /** `/hoc/:slug/ban-cua-toi/:id` (src/pages/TrangBanCuaToi.tsx) */
-  banCuaToi:
-    'Bản tài liệu của bạn cho dự án thực hành: tạo từ mẫu, lưu từng phiên bản, đánh dấu Hoàn thành và tải về .md / .csv.',
-  /** `/hoc/:slug/soan` (src/pages/TrangSoan.tsx) */
-  soanBai: 'Trình soạn Markdown: khung bài theo mẫu, báo lỗi theo dòng, xem trước và lưu bản nháp.',
-  /** `/linh-vuc/:slug/soan`, `/phan/:slug/soan` (src/pages/TrangSoan.tsx) */
-  soanTongQuan:
-    'Trình soạn Markdown cho phần tổng quan (_tong-quan.md): xem trước và lưu bản nháp.',
 } as const
 
 // ---------- Phase 2a — trang bài học /hoc/:slug (src/pages/bai-hoc, src/components/bai-hoc) ----------
@@ -155,59 +118,69 @@ export const DA_SAO_CHEP_PROMPT = 'Đã sao chép prompt soạn bài.'
 export const KHONG_SAO_CHEP_DUOC =
   'Không sao chép tự động được — prompt đã được chọn sẵn, nhấn ⌘C hoặc Ctrl+C để sao chép.'
 
-/** Dòng "Có ở phase 3" trong thẻ Thực hành (C20 chỉ đọc, src/components/bai-hoc/TheThucHanh.tsx). */
-export const THUC_HANH_SAP_CO = 'Chọn dự án, ghi kết quả, đánh dấu Xong hoặc Không áp dụng.'
-
-/** Dưới nút "Xem đáp án" đang tắt của câu tự kiểm tra (C21 chỉ đọc, src/components/bai-hoc/CauTuKiemTra.tsx). */
-export const CAU_HOI_SAP_CO = 'Ô trả lời, Xem đáp án và tự chấm có ở phase 3.'
-
-/** Mô tả ô C38 "Có ở phase 11" của khối Kế hoạch thi của tôi (src/pages/bai-hoc/KhoiApp.tsx). */
-export const KE_HOACH_THI_SAP_CO =
-  'Ngày thi dự kiến và số ngày còn lại; có ngày thi thì bước Áp dụng được tính là xong.'
-
 /** Tên vùng cuộn ngang của bảng Markdown trong bài (src/components/bai-hoc/Markdown.tsx); C17 dùng câu F15. */
 export const nhanBangCuon = (tenKhoi: string) => `Bảng trong khối ${tenKhoi}, cuộn ngang`
 
 /** Chữ ẩn sau link ngoài trong bài (Markdown.tsx), cùng cụm với NHAN_LINK_ROADMAP_SH. */
 export const MO_TAB_MOI = '(mở tab mới)'
 
+/**
+ * Nút ở đầu bài thay "Xem trên bản đồ" (bản đồ đã bỏ — đề xuất mục 10): mở Lộ trình dạng danh sách tới đúng mục
+ * (src/pages/bai-hoc/DauBai.tsx).
+ */
+export const XEM_TRONG_DANH_SACH = 'Xem trong danh sách'
+
+/**
+ * Nút thay "Mở trong trình soạn" (trình soạn trong app đã bỏ — đề xuất mục 10) ở banner lỗi đọc file của trang bài
+ * (src/pages/bai-hoc/BannerBai.tsx) và dòng ✕ Lỗi frontmatter của tab Nhập (src/components/nhap/BangKetQua.tsx):
+ * sao chép tên file + dòng lỗi để sửa file ở trình soạn bạn quen dùng.
+ */
+export const SAO_CHEP_DONG_LOI = 'Sao chép dòng lỗi'
+
+/** Chữ được sao chép, vd. "vuca.md · Dòng 3: thiếu dấu ":" sau loai" (`dongLoi` = voiDong của shared/noi-dung). */
+export const chuDongLoi = (tenFile: string, dongLoi: string) => `${tenFile} · ${dongLoi}`
+
+/** Toast sau khi sao chép dòng lỗi (src/components/NutSaoChepDongLoi.tsx). */
+export const DA_SAO_CHEP_DONG_LOI = 'Đã sao chép dòng lỗi.'
+
+/** Toast lỗi khi trình duyệt không cho ghi clipboard (NutSaoChepDongLoi.tsx). */
+export const KHONG_SAO_CHEP_DUOC_DONG_LOI =
+  'Không sao chép tự động được — hãy chọn dòng lỗi rồi nhấn ⌘C hoặc Ctrl+C.'
+
 /** Chữ ẩn đọc thay dấu ★ ở khung bài (src/components/bai-hoc/KhungBaiTrong.tsx). */
 export const BAT_BUOC = 'bắt buộc'
 
-// ---------- Phase 2a — "Không áp dụng" của khối Kế hoạch thi (Chứng chỉ; đề xuất 3.2) ----------
+// ---------- Phase 2a — "Không áp dụng" của bước Áp dụng (mọi mẫu từ phase 3; đề xuất 3.2) ----------
 // Nhãn "Không áp dụng" là chữ của §1 / 3.2; trạng thái đã đánh dấu "Không áp dụng" + `Lý do: "…"` theo C20 ở
 // F02b; "Huỷ" theo F19; toast lỗi / Thử lại / Hoàn tác nguyên văn 3.1 — các chữ đó nằm tại chỗ.
 
-/** Nút phụ khi khối đã đánh dấu Không áp dụng (src/pages/bai-hoc/KhoiApp.tsx, KhoiKeHoachThi). */
+/** Nút phụ khi bước Áp dụng đã đánh dấu Không áp dụng (src/components/bai-hoc/TheThucHanh.tsx). */
 export const BO_DANH_DAU = 'Bỏ đánh dấu'
 
-/** Tiêu đề dialog C32 ghi lý do (KhoiApp.tsx, HopThoaiKhongApDung). */
+/** Tiêu đề dialog C32 ghi lý do (src/components/bai-hoc/HopThoaiKhongApDung.tsx). */
 export const TIEU_DE_KHONG_AP_DUNG = 'Đánh dấu Không áp dụng'
 
-/** Đoạn mô tả của dialog (KhoiApp.tsx, HopThoaiKhongApDung). */
+/** Đoạn mô tả của dialog cho Chứng chỉ (HopThoaiKhongApDung.tsx); Chủ đề, Tài liệu: MO_TA_KHONG_AP_DUNG_THEO_MAU. */
 export const MO_TA_KHONG_AP_DUNG =
   'Bước Áp dụng của chứng chỉ này được tính là xong mà không cần kế hoạch thi. Bỏ đánh dấu được bất cứ lúc nào.'
 
-/** Nhãn ô C36 lý do (KhoiApp.tsx); F02b ghi "Lý do: …" ở trạng thái đã đánh dấu. */
+/** Nhãn ô C36 lý do (HopThoaiKhongApDung.tsx, HopThoaiBoQua.tsx); F02b ghi "Lý do: …" ở trạng thái đã đánh dấu. */
 export const NHAN_LY_DO = 'Lý do'
 
-/** Gợi ý dưới ô lý do (KhoiApp.tsx); `toiDa` = LY_DO_AP_DUNG_TOI_DA của server/du-lieu/ap-dung.ts. */
+/** Gợi ý dưới ô lý do (HopThoaiKhongApDung.tsx); `toiDa` = LY_DO_AP_DUNG_TOI_DA của server/du-lieu/ap-dung.ts. */
 export const goiYLyDo = (toiDa: number) => `Bắt buộc · tối đa ${toiDa} ký tự`
 
-/** Câu lỗi C36 khi bấm Lưu / Enter mà ô lý do trống (KhoiApp.tsx). */
+/** Câu lỗi C36 khi bấm Lưu / Enter mà ô lý do trống (HopThoaiKhongApDung.tsx). */
 export const LOI_THIEU_LY_DO = 'Ghi lý do để đánh dấu Không áp dụng.'
 
-/** Nút chính của dialog (KhoiApp.tsx). */
+/** Nút chính của dialog lý do (HopThoaiKhongApDung.tsx, HopThoaiBoQua.tsx). */
 export const NUT_LUU = 'Lưu'
 
-/** Toast sau khi đánh dấu, trước tên mục (src/app/du-lieu/ap-dung.ts): "Đã đánh dấu Không áp dụng: <tên>". */
+/** Toast sau khi đánh dấu, trước tên mục (src/app/du-lieu/hoc.ts): "Đã đánh dấu Không áp dụng: <tên>". */
 export const DA_DANH_DAU_KHONG_AP_DUNG = 'Đã đánh dấu Không áp dụng:'
 
-/** Toast sau khi bỏ đánh dấu, trước tên mục (src/app/du-lieu/ap-dung.ts). */
+/** Toast sau khi bỏ đánh dấu, trước tên mục (src/app/du-lieu/hoc.ts). */
 export const DA_BO_DANH_DAU_KHONG_AP_DUNG = 'Đã bỏ đánh dấu Không áp dụng:'
-
-/** Dưới khối Kế hoạch thi khi GET /api/ap-dung hỏng (KhoiApp.tsx); như "Lỗi: không đọc được tiến độ bước" của C10. */
-export const LOI_DOC_AP_DUNG = 'Lỗi: không đọc được bước Áp dụng'
 
 // ---------- Phase 2b — trang Nội dung /noi-dung, tab Nhập (src/pages/noi-dung, src/components/nhap, C30) ----------
 // Chữ nguyên văn F22 / §8.8 / đề xuất 1.6–1.7, 3.8 ("Kéo thả file hoặc thư mục .md vào đây", "Quét lại thư mục",
@@ -357,15 +330,151 @@ export const GAN_MUC = {
   huy: 'Huỷ',
 } as const
 
-// ---------- Phase 3 — lớp dữ liệu học (src/app/du-lieu/the.ts, dong-ho.ts) ----------
+// ---------- Phase 3 — lớp dữ liệu học (src/app/du-lieu/the.ts) ----------
 // Toast lỗi / Thử lại / Hoàn tác nguyên văn 3.1; "Đã đánh dấu / Đã bỏ đánh dấu Không áp dụng:" dùng lại câu 2a ở
-// trên cho Thực hành mọi mẫu (src/app/du-lieu/hoc.ts).
+// trên cho Thực hành mọi mẫu (src/app/du-lieu/hoc.ts). Đồng hồ học đã bỏ khỏi phạm vi (đề xuất mục 10): không còn
+// câu nào của đồng hồ.
 
 /** Toast sau khi xoá một flashcard (kèm Hoàn tác; src/app/du-lieu/the.ts). */
 export const DA_XOA_THE = 'Đã xoá thẻ'
 
-/** Toast sau "Chuyển sang mục này" (kèm Hoàn tác) và sau Hoàn tác, trước tên mục (src/app/du-lieu/dong-ho.ts). */
-export const DA_CHUYEN_DONG_HO_SANG = 'Đã chuyển đồng hồ sang'
+// ---------- Phase 3 (bước 1) — câu của designer sửa theo phạm vi rút gọn (bỏ đồng hồ) ----------
 
-/** Toast sau khi xoá một phiên trong Lịch sử của card đồng hồ (kèm Hoàn tác; dong-ho.ts). */
-export const DA_XOA_PHIEN_HOC = 'Đã xoá phiên học'
+/** F17: câu thứ hai của card "Mục này chưa có nội dung." (src/pages/bai-hoc/ChuaCoNoiDung.tsx); frame: "…, bấm giờ và…". */
+export const CHUA_CO_NOI_DUNG_VAN_HOC_DUOC = 'Bạn vẫn đổi trạng thái và ghi chú được.'
+
+/** F26: câu sau lỗi đọc file của banner trang bài (src/pages/bai-hoc/BannerBai.tsx); frame: "…, đồng hồ và ghi chú.". */
+export const LOI_DOC_FILE_VAN_HIEN = 'Bài vẫn hiện trạng thái học và ghi chú.'
+
+// ---------- Phase 3 — vòng 4 bước trên trang bài (src/components/bai-hoc, src/pages/bai-hoc) ----------
+// Chữ nguyên văn F11 / F19 / F02b / §1 / đề xuất 1.5, 3.2 ("1–3 câu. Viết xong thì bước Hiểu được đánh dấu.",
+// "Kết quả của bạn", "Không áp dụng (ghi lý do)", "Kết quả đã lưu · sửa được", "Câu trả lời của bạn", "Viết câu
+// trả lời để mở đáp án.", "Tự chấm sau khi xem đáp án:", "Đáp án:", "Câu trả lời cho câu hỏi cũ (n)", "Quay lại học
+// tiếp", "Vẫn đánh dấu Đã xong"…) nằm tại chỗ; dưới đây là câu tự đặt.
+
+/** Dòng lỗi trong khối học khi GET /api/hoc/:id hỏng (src/components/bai-hoc/DongLoiHoc.tsx), như LOI_DOC_TRANG_THAI. */
+export const LOI_DOC_DU_LIEU_HOC = 'Lỗi: không đọc được dữ liệu học'
+
+/** Lựa chọn trống của ô Dự án (src/components/bai-hoc/TheThucHanh.tsx). */
+export const CHUA_CHON_DU_AN = 'Chưa chọn dự án'
+
+/** Nút cạnh ô Dự án và tiêu đề dialog C32 thêm dự án (TheThucHanh.tsx, HopThoaiThemDuAn.tsx; đề xuất 4.3). */
+export const THEM_DU_AN = 'Thêm dự án'
+
+/** Dialog thêm dự án (src/components/bai-hoc/HopThoaiThemDuAn.tsx). */
+export const DU_AN = {
+  moTa: 'Dự án thật bạn đang làm, để gắn với các bài thực hành.',
+  ten: 'Tên dự án',
+  vaiTro: 'Vai trò của bạn',
+  giaiDoan: 'Giai đoạn',
+  tuyChon: 'Tuỳ chọn',
+  thieuTen: 'Ghi tên dự án.',
+} as const
+
+/** Dòng lỗi dưới ô Dự án khi GET /api/du-an hỏng (TheThucHanh.tsx). */
+export const LOI_DOC_DU_AN = 'Lỗi: không đọc được danh sách dự án'
+
+/** Cạnh nút "Xong" đang tắt vì ô Kết quả trống (TheThucHanh.tsx; đề xuất 3.2), cùng kiểu câu F11 "Viết câu trả lời để mở đáp án." */
+export const XONG_CAN_KET_QUA = 'Ghi kết quả của bạn để bật Xong.'
+
+/** Nút thay "Xong" khi bài thực hành đã Xong (TheThucHanh.tsx); C20 F02b chỉ vẽ "Kết quả đã lưu · sửa được". */
+export const BO_DANH_DAU_XONG = 'Bỏ đánh dấu Xong'
+
+/**
+ * Ô nét đứt thay đề bài khi bài Chủ đề thiếu khối "Thực hành trên dự án thật" hoặc chưa có file (TheThucHanh.tsx,
+ * KhoiApp.tsx): phần làm bài của bước Áp dụng vẫn có.
+ */
+export const THUC_HANH_CHUA_CO_DE_BAI =
+  'Chưa có đề bài thực hành — bạn vẫn ghi kết quả đã làm hoặc đánh dấu Không áp dụng.'
+
+/**
+ * Đoạn mô tả của dialog Không áp dụng theo mẫu bài (src/components/bai-hoc/HopThoaiKhongApDung.tsx); Chứng chỉ
+ * dùng MO_TA_KHONG_AP_DUNG của phase 2a.
+ */
+export const MO_TA_KHONG_AP_DUNG_THEO_MAU = {
+  'chu-de':
+    'Bước Áp dụng của mục này được tính là xong mà không cần bài thực hành. Bỏ đánh dấu được bất cứ lúc nào.',
+  'tai-lieu':
+    'Bước Áp dụng của tài liệu này được tính là xong mà không cần bản của bạn. Bỏ đánh dấu được bất cứ lúc nào.',
+} as const
+
+/**
+ * Thẻ Thực hành (C20) ở vị trí bước Áp dụng của Tài liệu (khối "Bản của tôi") và Chứng chỉ (khối "Kế hoạch thi của
+ * tôi"): app không lưu bản tài liệu / kế hoạch thi (đề xuất mục 10), bạn làm ở ngoài rồi ghi kết quả như bài thực hành
+ * Chủ đề. `deBai` hiện dưới "Đề bài", `goiYKetQua` là placeholder ô "Kết quả của bạn" (src/pages/bai-hoc/KhoiApp.tsx,
+ * TheThucHanh.tsx).
+ */
+export const AP_DUNG_THEO_MAU = {
+  'tai-lieu': {
+    deBai: 'Làm tài liệu này cho dự án thật của bạn, bằng công cụ bạn quen dùng.',
+    goiYKetQua: 'Ghi tài liệu để ở đâu (link, thư mục) và bạn rút ra được gì.',
+  },
+  'chung-chi': {
+    deBai:
+      'Lên kế hoạch ôn và thi chứng chỉ này: ngày thi dự kiến, tài liệu ôn, lịch học mỗi tuần.',
+    goiYKetQua: 'Ghi kế hoạch ôn thi của bạn, hoặc dán link tới nơi bạn lưu kế hoạch.',
+  },
+} as const
+
+/**
+ * Mô tả dưới tiêu đề thu gọn "Câu trả lời cho câu hỏi cũ (n)" (src/components/bai-hoc/CauTuKiemTra.tsx): câu đổi chữ
+ * ít đã được server nối lại sang câu mới; còn ở đây là câu không nối được.
+ */
+export const CAU_TRA_LOI_CU_MO_TA =
+  'Câu hỏi đã đổi hoặc không còn trong bài; câu trả lời của bạn vẫn được giữ.'
+
+/** Dòng lần tự chấm của một câu trả lời cũ (CauTuKiemTra.tsx); `muc` là "Đúng" / "Một phần" / "Sai". */
+export const lanTuChamCuoi = (muc: string) => `Lần tự chấm cuối: ${muc}`
+
+/** Lý do Bỏ qua dưới segmented (src/components/bai-hoc/HopThoaiBoQua.tsx; §1, đề xuất 3.1, F02 "Bỏ qua kèm lý do (tuỳ chọn)"). */
+export const LY_DO_BO_QUA = {
+  chuaCo: 'Chưa ghi lý do bỏ qua.',
+  ghi: 'Ghi lý do (tuỳ chọn)',
+  sua: 'Sửa lý do',
+  tieuDe: 'Lý do bỏ qua',
+  moTa: 'Tuỳ chọn. Mục Bỏ qua không tính vào tiến độ; lý do giúp bạn nhớ vì sao đã bỏ qua.',
+  daDung: 'Lý do đã dùng',
+} as const
+
+/**
+ * Toast khi mục đang Bỏ qua chỉ đổi lý do (kèm Hoàn tác), trước tên mục (src/app/du-lieu/trang-thai.tsx); đổi trạng
+ * thái thì vẫn là "Đã chuyển … sang …" (3.1).
+ */
+export const DA_LUU_LY_DO_BO_QUA = 'Đã lưu lý do bỏ qua:'
+
+/** Gợi ý dưới ô lý do Bỏ qua (HopThoaiBoQua.tsx); `toiDa` = LY_DO_TOI_DA của hop-dong-trang-thai.ts. */
+export const goiYLyDoTuyChon = (toiDa: number) => `Tuỳ chọn · tối đa ${toiDa} ký tự`
+
+// ---------- Phase 3 (bước 1) — cột phải trang bài: mục lục, ghi chú, flashcard (src/pages/bai-hoc/cot-phai,
+// src/components/bai-hoc/MucLuc.tsx, src/components/ghi-chu, src/components/the) ----------
+// Chữ của frame (F11, F15, F02b C22) nằm tại chỗ: "Mục lục", "Trong lĩnh vực", "Điều hướng trong bài", "Công cụ của
+// bài", "Ghi chú riêng cho mục này", "Flashcard · n thẻ", "Hộp n · ôn lại dd/MM/yyyy", "Chưa có thẻ cho mục này.
+// Bước Ghi nhớ cần ít nhất 1 thẻ.", "Tạo thẻ", "Mặt trước", "Mặt sau".
+
+/** Tab Mục lục khi bài không có khối nào hiện (chưa có nội dung, lỗi đọc file; D15; MucLuc.tsx). */
+export const MUC_LUC_TRONG = 'Bài chưa có khối nào nên chưa có mục lục.'
+
+/** Card Ghi chú không tải được dữ liệu học của mục (kèm "Thử lại"; src/components/ghi-chu/TheGhiChu.tsx). */
+export const LOI_DOC_GHI_CHU = 'Lỗi: không đọc được ghi chú'
+
+/** Card Flashcard không tải được thẻ của mục (kèm "Thử lại"; src/components/the/TheFlashcard.tsx). */
+export const LOI_DOC_THE = 'Lỗi: không đọc được flashcard'
+
+/** Nút bút chì trên mỗi thẻ (tên truy cập, mô tả = mặt trước) và tiêu đề hộp thoại sửa (HopThoaiThe.tsx). */
+export const SUA_THE = 'Sửa thẻ'
+
+/** Nút thùng rác trên mỗi thẻ và nút xác nhận (nguy hiểm) của alertdialog xoá (TheFlashcard.tsx). */
+export const NUT_XOA_THE = 'Xoá thẻ'
+
+/** Tiêu đề alertdialog xoá thẻ; dòng phụ là mặt trước của thẻ (TheFlashcard.tsx). */
+export const TIEU_DE_XOA_THE = 'Xoá thẻ này?'
+
+/** Mô tả alertdialog xoá thẻ (TheFlashcard.tsx). */
+export const MO_TA_XOA_THE = 'Sau khi xoá, bạn có 5 giây để bấm Hoàn tác.'
+
+/** Lỗi ô "Mặt trước" / "Mặt sau" để trống khi lưu thẻ (HopThoaiThe.tsx). */
+export const LOI_THIEU_MAT_TRUOC = 'Ghi mặt trước của thẻ.'
+export const LOI_THIEU_MAT_SAU = 'Ghi mặt sau của thẻ.'
+
+/** Toast sau khi tạo thẻ (từ card Flashcard hoặc "Tạo flashcard" của câu Tự kiểm tra; HopThoaiThe.tsx). */
+export const DA_TAO_THE = 'Đã tạo thẻ'

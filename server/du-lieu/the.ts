@@ -1,7 +1,7 @@
 import { homNay, ngayCua, now } from '../../shared/clock.ts'
 import type { Db } from '../db/index.ts'
 import { layRevision, tangRevision } from '../db/settings.ts'
-import { catBanXoa, layBanXoa } from './ban-ghi-da-xoa.ts'
+import { catBanXoa, layBanXoa, xemBanXoa, type MucKhongCon } from './ban-ghi-da-xoa.ts'
 import {
   sauKhiOn,
   theMoi,
@@ -13,7 +13,8 @@ import {
 
 // Flashcard (đề xuất 2.1, 3.5): tạo / sửa / xoá / khôi phục + ghi một lần ôn (Leitner) + "Cần ôn lại" (bất biến
 // 3: luôn suy ra). Mỗi lần ghi: MỘT transaction gồm thay đổi + tăng revision. Ngày lịch (hạn, ngày ôn) do server
-// quyết theo shared/clock. Kiểm itemId có trong cây là việc của route. `luc` (ms) chỉ để seed / test.
+// quyết theo shared/clock. Kiểm itemId có trong cây (bất biến 8) là việc của route; riêng khôi phục nhận `laMuc` vì
+// itemId nằm trong bản xoá. `luc` (ms) chỉ để seed / test.
 
 interface DongThe {
   id: number
@@ -144,14 +145,22 @@ export function xoaThe(db: Db, id: number, luc: number = now()): KetQuaGhiThe | 
 
 /**
  * POST /api/the/:id/khoi-phuc — Hoàn tác xoá: cùng id, giữ hộp, hạn, lịch sử ôn. Thẻ vẫn còn → daDoi false;
- * không có bản vừa xoá → undefined.
+ * không có bản vừa xoá → undefined. Khôi phục là ghi bản ghi mới nên mục của thẻ phải còn trong cây (`laMuc`,
+ * bất biến 8): không còn → { mucKhongCon }, không ghi, không tăng revision, giữ bản xoá (cây đổi lại trong hạn
+ * giữ thì vẫn khôi phục được).
  */
-export function khoiPhucThe(db: Db, id: number): KetQuaGhiThe | undefined {
-  return db.transaction((): KetQuaGhiThe | undefined => {
+export function khoiPhucThe(
+  db: Db,
+  id: number,
+  laMuc: (itemId: string) => boolean,
+): KetQuaGhiThe | MucKhongCon | undefined {
+  return db.transaction((): KetQuaGhiThe | MucKhongCon | undefined => {
     const conThe = docThe(db, id)
     if (conThe) return { revision: layRevision(db), daDoi: false, the: conThe }
-    const ban = layBanXoa<BanXoaThe>(db, 'flashcards', id)
+    const ban = xemBanXoa<BanXoaThe>(db, 'flashcards', id)
     if (!ban) return undefined
+    if (!laMuc(ban.the.item_id)) return { mucKhongCon: ban.the.item_id }
+    layBanXoa(db, 'flashcards', id) // gỡ bản xoá: thẻ sắp có lại
     const t = ban.the
     db.prepare(`INSERT INTO flashcards (${COT_THE}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
       t.id,

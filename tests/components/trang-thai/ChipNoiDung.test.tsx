@@ -68,14 +68,14 @@ describe('ChipNoiDung (C8, D1)', () => {
     expect(container.querySelector('.size-1\\.5.rounded-full')).toBeNull()
   })
 
-  it('có `den` thì là link (vd. Chưa có → Soạn bài), hover theo F02, vùng chạm 44 trên mobile', () => {
+  it('có `den` thì là link (vd. Chưa có → tab Nhập), hover theo F02, vùng chạm 44 trên mobile', () => {
     render(
       <MemoryRouter>
-        <ChipNoiDung trangThai={{ loai: 'chua-co' }} den="/soan/x" />
+        <ChipNoiDung trangThai={{ loai: 'chua-co' }} den="/noi-dung?tab=nhap&muc=x" />
       </MemoryRouter>,
     )
     const link = screen.getByRole('link', { name: 'Chưa có nội dung' })
-    expect(link.getAttribute('href')).toBe('/soan/x')
+    expect(link.getAttribute('href')).toBe('/noi-dung?tab=nhap&muc=x')
     expect(link.className).toContain('hover:border-text')
     expect(link.className).toContain('hover:bg-surface-2')
     expect(link.className).toContain('hover:underline')
@@ -86,7 +86,11 @@ describe('ChipNoiDung (C8, D1)', () => {
   it('disabled (chỉ đọc): chữ muted, không phải link dù có `den`', () => {
     const { container } = render(
       <MemoryRouter>
-        <ChipNoiDung trangThai={{ loai: 'ban-nhap', nguon: 'tu-viet' }} den="/soan/x" voHieu />
+        <ChipNoiDung
+          trangThai={{ loai: 'ban-nhap', nguon: 'tu-viet' }}
+          den="/noi-dung?tab=nhap&muc=x"
+          voHieu
+        />
       </MemoryRouter>,
     )
     expect(screen.queryByRole('link')).toBeNull()
@@ -111,7 +115,7 @@ describe('ChipNoiDung (C8, D1)', () => {
           {CA.map(([tt], i) => (
             <ChipNoiDung key={i} trangThai={tt} />
           ))}
-          <ChipNoiDung trangThai={{ loai: 'chua-co' }} den="/soan/x" />
+          <ChipNoiDung trangThai={{ loai: 'chua-co' }} den="/noi-dung?tab=nhap&muc=x" />
           <ChipNoiDung trangThai={{ loai: 'ban-nhap', nguon: 'ai' }} voHieu />
           <ChipNoiDung trangThai={{ loai: 'chua-co' }} loi="Lỗi frontmatter · dòng 3" />
         </div>

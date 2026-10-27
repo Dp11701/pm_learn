@@ -1,5 +1,6 @@
 // C8 Chip nội dung (F02, F01 mục 4, §5.1, D1): cao 24, padding 0 10, bo 6, chữ 12/18/600, icon 14,
-// màu trung tính, luôn có icon. Chưa có nội dung: viền nét đứt + file-x (bấm được thì mở Soạn bài).
+// màu trung tính, luôn có icon. Chưa có nội dung: viền nét đứt + file-x (bấm được thì mở tab Nhập — F02 vẽ mở
+// Soạn bài, trình soạn trong app đã bỏ).
 // Bản nháp: file-pen. Đã duyệt: file-check + "dd/MM/yyyy"; có bản sửa: file-check + chấm.
 // Lỗi đọc file: viền + chữ danger, icon alert-circle.
 import { CircleAlert, FileCheck, FilePen, FileX, type LucideIcon } from 'lucide-react'
@@ -40,7 +41,7 @@ const MAU_CHU: Record<TrangThaiNoiDung['loai'], string> = {
   'da-duyet': 'text-text',
 }
 
-// Hover của chip bấm được: F02 "Hover · mở Soạn bài" (viền màu chữ, nền surface-2, gạch chân).
+// Hover của chip bấm được: như F02 "Hover · mở Soạn bài" (viền màu chữ, nền surface-2, gạch chân).
 const MAU_HOVER: Record<TrangThaiNoiDung['loai'], string> = {
   'chua-co': 'hover:border-text hover:bg-surface-2 hover:text-text hover:underline',
   'ban-nhap': 'hover:border-text hover:underline',
@@ -49,7 +50,7 @@ const MAU_HOVER: Record<TrangThaiNoiDung['loai'], string> = {
 
 export interface PropsChipNoiDung {
   trangThai: TrangThaiNoiDung
-  /** Chip là link (react-router), vd. Chưa có nội dung → trang Soạn bài. */
+  /** Chip là link (react-router), vd. Chưa có nội dung → tab Nhập gán sẵn mục. */
   den?: To
   /** Chỉ đọc: chữ muted, không bấm được (F02 "Disabled · chỉ đọc"). */
   voHieu?: boolean

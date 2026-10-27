@@ -152,10 +152,13 @@ function NoiDungTim({
   moMuc: (muc: MucHoc) => void
 }) {
   const id = useId()
-  const { trangThaiCua } = useTrangThai()
+  const { trangThaiCua, canOnLaiCua } = useTrangThai()
   const traMucThat = useCallback(
-    (idMuc: string): ThongTinMucTim => ({ trangThai: trangThaiCua(idMuc) }),
-    [trangThaiCua],
+    (idMuc: string): ThongTinMucTim => ({
+      trangThai: trangThaiCua(idMuc),
+      canOnLai: canOnLaiCua(idMuc),
+    }),
+    [trangThaiCua, canOnLaiCua],
   )
   const tra = traMuc ?? traMucThat
   const idO = `${id}o`
@@ -321,7 +324,8 @@ function HangKetQua({
 }) {
   const muc = kq.nut
   const trangThai = thongTin?.trangThai ?? 'chua-hoc'
-  const canOnLai = thongTin?.canOnLai ?? false
+  // Cờ "Cần ôn lại" chỉ có ở mục Đã xong (đề xuất 3.3)
+  const canOnLai = (thongTin?.canOnLai ?? false) && trangThai === 'da-xong'
   return (
     // Các mục không nhận focus (focus ở ô tìm, mục đang chọn qua aria-activedescendant); bàn phím
     // do ô tìm xử lý, chuột bấm để mở. Giữ focus ở ô tìm khi bấm.

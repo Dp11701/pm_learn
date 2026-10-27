@@ -115,7 +115,11 @@ describe('mucLuc (D15), soCauHoi (D8), neoBonBuoc', () => {
         coLienQuan: false,
       },
     )
-    expect(neoBonBuoc(thieu)).toEqual({ hieu: '#noi-lai-bang-loi-cua-ban' })
+    // Ô "Chưa có" không phải neo — trừ Thực hành: phần làm bài luôn có (hồi quy review: bước Áp dụng không có neo)
+    expect(neoBonBuoc(thieu)).toEqual({
+      hieu: '#noi-lai-bang-loi-cua-ban',
+      'ap-dung': '#thuc-hanh-tren-du-an-that',
+    })
   })
 
   it('tenKhoi: tên viết hoa / thường khác vẫn hiện đúng tên của mẫu', () => {

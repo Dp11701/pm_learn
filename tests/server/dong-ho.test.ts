@@ -6,7 +6,7 @@ import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ngayCua } from '../../shared/clock.ts'
 import { layRevision } from '../../server/db/settings.ts'
-import { batDau } from '../../server/du-lieu/dong-ho.ts'
+import { batDau, khoiPhucPhien } from '../../server/du-lieu/dong-ho.ts'
 import {
   canHoiQuenTat,
   giaySeGhi,
@@ -345,6 +345,31 @@ describe('chạy qua tắt / mở server; lịch sử; xoá + khôi phục phiê
     expect((await mt.post(`/api/phien-gio/${p.id}/khoi-phuc`)).body.daDoi).toBe(false)
     expect((await mt.post('/api/phien-gio/77/khoi-phuc')).status).toBe(404)
     expect((await mt.del('/api/phien-gio/abc')).body.loi).toBe('Không có phiên giờ id abc.')
+  })
+
+  it('bất biến 8: khôi phục phiên của mục đã bỏ khỏi cây → 409 tiếng Việt, không ghi, giữ bản xoá', async () => {
+    datGio('2026-10-22T08:00:00')
+    const id = Number(
+      mt.db
+        .prepare(
+          `INSERT INTO time_entries (item_id, date, seconds, started_at, ended_at, created_at, updated_at)
+           VALUES (?, '2026-10-21', 600, '2026-10-21T01:00:00.000Z', '2026-10-21T01:10:00.000Z', 'x', 'x')`,
+        )
+        .run(ID_LA).lastInsertRowid,
+    )
+    expect((await mt.del(`/api/phien-gio/${id}`)).status).toBe(200)
+    const rev = layRevision(mt.db)
+    const res = await mt.post(`/api/phien-gio/${id}/khoi-phuc`)
+    expect(res.status).toBe(409)
+    expect(res.body.loi).toBe(
+      `Không khôi phục được phiên giờ id ${id}: mục học id "${ID_LA}" của phiên không còn trong cây roadmap.`,
+    )
+    expect(layRevision(mt.db)).toBe(rev)
+    expect(dem(mt.db, 'time_entries')).toBe(0)
+    expect(dem(mt.db, 'deleted_rows', `WHERE tbl = 'time_entries' AND row_id = ${id}`)).toBe(1)
+    // Mục có lại trong cây trước hạn dọn: khôi phục cùng id, gỡ bản xoá
+    expect(khoiPhucPhien(mt.db, id, () => true)).toMatchObject({ daDoi: true, phien: { id } })
+    expect(dem(mt.db, 'deleted_rows')).toBe(0)
   })
 
   it('mục đang chạy không còn trong cây: dừng không ghi phiên (bất biến 8)', async () => {

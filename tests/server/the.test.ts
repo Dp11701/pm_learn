@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { homNay } from '../../shared/clock.ts'
 import { layRevision } from '../../server/db/settings.ts'
 import { HOP_TOI_DA, KHOANG_ON_NGAY, sauKhiOn, theMoi } from '../../server/du-lieu/hop-dong-the.ts'
-import { ghiLanOn, mucCanOnLai, taoThe } from '../../server/du-lieu/the.ts'
+import { ghiLanOn, khoiPhucThe, mucCanOnLai, taoThe } from '../../server/du-lieu/the.ts'
 import { datTrangThai } from '../../server/du-lieu/trang-thai.ts'
 import { datGio, quaNgay, quaPhut } from './tro-giup.ts'
 import {
@@ -202,6 +202,46 @@ describe('PUT / DELETE / khôi phục /api/the/:id', () => {
     await mt.del(`/api/the/${b.id}`)
     expect((await mt.post(`/api/the/${a.id}/khoi-phuc`)).status).toBe(404)
     expect((await mt.post(`/api/the/${b.id}/khoi-phuc`)).status).toBe(200)
+  })
+
+  it('bất biến 8: khôi phục thẻ của mục đã bỏ khỏi cây → 409 tiếng Việt, không ghi, giữ bản xoá', async () => {
+    // Thẻ của một mục mà lần thay cây sau đó đã bỏ (ghi thẳng DB: API không tạo thẻ cho mục ngoài cây)
+    const the = taoThe(mt.db, { itemId: ID_LA, truoc: 'H', sau: 'Đ' }).the
+    ghiLanOn(mt.db, { theId: the.id, ketQua: 'nho' })
+    expect((await mt.del(`/api/the/${the.id}`)).status).toBe(200)
+    const rev = layRevision(mt.db)
+    for (let lan = 0; lan < 2; lan++) {
+      const res = await mt.post(`/api/the/${the.id}/khoi-phuc`)
+      expect(res.status).toBe(409)
+      expect(res.body.loi).toBe(
+        `Không khôi phục được thẻ id ${the.id}: mục học id "${ID_LA}" của thẻ không còn trong cây roadmap.`,
+      )
+    }
+    expect(layRevision(mt.db)).toBe(rev)
+    expect(dem(mt.db, 'flashcards')).toBe(0)
+    expect(dem(mt.db, 'flashcard_reviews')).toBe(0)
+    expect(dem(mt.db, 'deleted_rows', `WHERE tbl = 'flashcards' AND row_id = ${the.id}`)).toBe(1)
+    // Mục có lại trong cây trước hạn dọn bản xoá: khôi phục đủ hộp, lịch sử ôn, gỡ bản xoá
+    expect(khoiPhucThe(mt.db, the.id, () => true)).toMatchObject({
+      daDoi: true,
+      the: { id: the.id, itemId: ID_LA, hop: 2 },
+    })
+    expect(dem(mt.db, 'flashcard_reviews', `WHERE card_id = ${the.id}`)).toBe(1)
+    expect(dem(mt.db, 'deleted_rows')).toBe(0)
+  })
+
+  it('bất biến 8 ở lớp dữ liệu: thẻ của mục có thật bị xoá, rồi cây bỏ mục đó → { mucKhongCon }, giữ bản xoá', async () => {
+    const the = await tao()
+    await mt.del(`/api/the/${the.id}`)
+    const rev = layRevision(mt.db)
+    expect(khoiPhucThe(mt.db, the.id, (id) => id !== scrum.id)).toEqual({ mucKhongCon: scrum.id })
+    expect(layRevision(mt.db)).toBe(rev)
+    expect(dem(mt.db, 'flashcards')).toBe(0)
+    expect(dem(mt.db, 'deleted_rows')).toBe(1)
+    expect((await mt.post(`/api/the/${the.id}/khoi-phuc`)).body).toMatchObject({
+      daDoi: true,
+      the: { id: the.id, itemId: scrum.id },
+    })
   })
 })
 

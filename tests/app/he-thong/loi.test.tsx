@@ -24,9 +24,9 @@ vi.mock('../../../src/components/tim-kiem/TimKiem', async () => ({
   TimKiemProvider: (await import('./gia')).QuaMat,
   useTimKiem: () => ({ mo: () => {} }),
 }))
-vi.mock('../../../src/pages/TrangPhan', async (importOriginal) => ({
+vi.mock('../../../src/pages/TrangLinhVuc', async (importOriginal) => ({
   default: (await import('./gia')).trangCoTheHong(
-    (await importOriginal<typeof import('../../../src/pages/TrangPhan')>()).default,
+    (await importOriginal<typeof import('../../../src/pages/TrangLinhVuc')>()).default,
   ),
 }))
 
@@ -66,7 +66,7 @@ function moChiTiet(chiTiet: string) {
 describe('lỗi một trang', () => {
   it('hiện "Lỗi trang" của F26 trong khung; Tải lại, Chi tiết lỗi', async () => {
     hong.trang = true
-    await moTrang('/phan/tools')
+    await moTrang('/linh-vuc/scope-management')
     const khung = screen.getByTestId('khung')
     expect(khung.contains(h1())).toBe(true)
     expect(h1().textContent).toBe('Trang này gặp lỗi khi hiển thị.')
@@ -79,13 +79,13 @@ describe('lỗi một trang', () => {
 
   it('trang khác vẫn chạy', async () => {
     hong.trang = true
-    await moTrang('/thong-ke')
-    expect(h1().textContent).toBe('Thống kê')
+    await moTrang('/on-tap')
+    expect(h1().textContent).toBe('Ôn tập')
   })
 
   it('không vi phạm axe', async () => {
     hong.trang = true
-    const { container } = await moTrang('/phan/tools')
+    const { container } = await moTrang('/linh-vuc/scope-management')
     fireEvent.click(screen.getByRole('button', { name: /Chi tiết lỗi/ }))
     await expectNoAxeViolations(container)
   })
@@ -111,7 +111,7 @@ describe('khung app hỏng', () => {
 })
 
 describe('cây roadmap không nạp được (bất biến 1)', () => {
-  it.each(['/', '/hoc/scope-creep', '/hoc/scope-creep/soan', '/khong-co'])(
+  it.each(['/', '/hoc/scope-creep', '/linh-vuc/scope-management', '/khong-co'])(
     '%s → "Không đọc được cây roadmap." + Thử lại = tải lại trang',
     async (duongDan) => {
       hong.cay = true

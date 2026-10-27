@@ -36,8 +36,9 @@ describe('câu F19 (đề xuất 3.2, nguyên văn)', () => {
     expect(CAU_THIEU.hieu).toBe('Thiếu · chưa nói lại bằng lời')
     expect(CAU_THIEU.apDungDangLam).toBe('Thiếu · đang làm bài thực hành')
     expect(CAU_THIEU.apDungChuaLam).toBe('Thiếu · chưa làm bài thực hành')
-    expect(CAU_THIEU.apDungTaiLieu).toBe('Thiếu · chưa có bản Hoàn thành')
-    expect(CAU_THIEU.apDungChungChi).toBe('Thiếu · chưa có kế hoạch thi')
+    // Phạm vi rút gọn 27/10/2026: không còn câu riêng của Tài liệu ("chưa có bản Hoàn thành") / Chứng chỉ
+    expect(Object.keys(CAU_THIEU)).not.toContain('apDungTaiLieu')
+    expect(Object.keys(CAU_THIEU)).not.toContain('apDungChungChi')
     expect(CAU_THIEU.kiemTraChuaCham).toBe('Thiếu · chưa tự chấm câu nào')
     expect(CAU_THIEU.kiemTraDaCham(1, 3)).toBe('Thiếu · đã chấm 1/3 câu')
     expect(CAU_THIEU.ghiNho).toBe('Thiếu · chưa có flashcard')
@@ -120,26 +121,32 @@ describe('Áp dụng', () => {
       thieu: 'Thiếu · chưa làm bài thực hành',
     })
   })
-  it('Tài liệu: ≥ 1 Bản của tôi Hoàn thành → xong; chưa có → "chưa có bản Hoàn thành"', () => {
-    expect(tinh({ banCuaToi: { coHoanThanh: true } }, 'tai-lieu').buoc['ap-dung'].tinhTrang).toBe(
-      'xong',
-    )
-    expect(tinh({}, 'tai-lieu').buoc['ap-dung']).toMatchObject({
-      tinhTrang: 'chua-lam',
-      thieu: 'Thiếu · chưa có bản Hoàn thành',
+  // Phạm vi rút gọn 27/10/2026 (bỏ "Bản của tôi", kế hoạch thi): Tài liệu / Chứng chỉ làm bài thực hành như Chủ đề
+  for (const mau of ['tai-lieu', 'chung-chi'] as const) {
+    it(`${mau}: bài thực hành Xong (có kết quả) → xong; câu F19 như Chủ đề`, () => {
+      const xongThucHanh = thucHanh({ trangThai: 'xong', ketQua: 'x' })
+      expect(tinh({ thucHanh: xongThucHanh }, mau).buoc['ap-dung']).toMatchObject({
+        tinhTrang: 'xong',
+        thieu: null,
+        nhan: 'Đã xong',
+      })
+      expect(tinh({}, mau).buoc['ap-dung']).toMatchObject({
+        tinhTrang: 'chua-lam',
+        thieu: 'Thiếu · chưa làm bài thực hành',
+      })
+      expect(tinh({ thucHanh: thucHanh({ ketQua: 'Nháp' }) }, mau).buoc['ap-dung']).toMatchObject({
+        tinhTrang: 'dang-lam',
+        thieu: 'Thiếu · đang làm bài thực hành',
+      })
     })
-    // Thực hành "Xong" không tính cho Tài liệu
-    const xongThucHanh = thucHanh({ trangThai: 'xong', ketQua: 'x' })
-    expect(tinh({ thucHanh: xongThucHanh }, 'tai-lieu').buoc['ap-dung'].tinhTrang).toBe('chua-lam')
-  })
-  it('Chứng chỉ: kế hoạch thi có ngày thi → xong; chưa có → "chưa có kế hoạch thi"', () => {
-    expect(tinh({ keHoachThi: { coNgayThi: true } }, 'chung-chi').buoc['ap-dung'].tinhTrang).toBe(
-      'xong',
-    )
-    expect(tinh({}, 'chung-chi').buoc['ap-dung']).toMatchObject({
-      tinhTrang: 'chua-lam',
-      thieu: 'Thiếu · chưa có kế hoạch thi',
-    })
+  }
+  it('dữ liệu cũ còn banCuaToi / keHoachThi (luôn false trong phản hồi server) không đổi kết quả', () => {
+    const cu = { ...hoc(), banCuaToi: { coHoanThanh: true }, keHoachThi: { coNgayThi: true } }
+    for (const mau of ['tai-lieu', 'chung-chi'] as const) {
+      expect(tinhBonBuoc({ mau, cauHoiKhoa: CAU, hoc: cu }).buoc['ap-dung'].tinhTrang).toBe(
+        'chua-lam',
+      )
+    }
   })
   it('mọi mẫu: "Không áp dụng" kèm lý do → Không áp dụng, không tính thiếu, đếm vào x/4', () => {
     for (const mau of ['chu-de', 'tai-lieu', 'chung-chi'] as const) {

@@ -36,6 +36,16 @@ export {
 } from './phan-tich'
 export { TOI_DA_BYTE_BAI, soKb } from './gioi-han'
 export {
+  danhSachTrongBai,
+  ganLaiKhoa,
+  DANH_SACH_TRONG_BAI_RONG,
+  NGUONG_GAN_LAI,
+  CACH_BIET_GAN_LAI,
+  type DanhSachTrongBai,
+  type DongTrongBai,
+  type DongCu,
+} from './gan-lai-khoa'
+export {
   tachO,
   timBang,
   tieuDeCap,

@@ -1,6 +1,6 @@
 import { KHOA_FRONTMATTER, type LoaiFile } from '../../shared/noi-dung/index.ts'
 import { taoSlug, type MucHoc, type Nut } from '../../shared/roadmap/index.ts'
-import { foldVi } from '../../shared/tim-kiem/index.ts'
+import { dice, foldVi, khongNhoHon } from '../../shared/tim-kiem/index.ts'
 import type { CayNoiDung } from '../noi-dung/duong-dan.ts'
 
 // Khớp file nhập với mục (đề xuất 1.7 "Khớp", 0.1 Dice):
@@ -140,24 +140,8 @@ export function khopTen(
   return id === undefined ? undefined : mucHocTheoId(cay, id)
 }
 
-function demBigram(s: string): Map<string, number> {
-  const kq = new Map<string, number>()
-  for (let i = 0; i < s.length - 1; i++) {
-    const bg = s.slice(i, i + 2)
-    kq.set(bg, (kq.get(bg) ?? 0) + 1)
-  }
-  return kq
-}
-
-/** Hệ số Dice trên bigram (đa tập) của hai chuỗi đã gấp (đề xuất 0.1: risk registr → risk register 0,87). */
-export function dice(a: string, b: string): number {
-  if (a.length < 2 || b.length < 2) return a !== '' && a === b ? 1 : 0
-  const da = demBigram(a)
-  const db = demBigram(b)
-  let chung = 0
-  for (const [bg, n] of da) chung += Math.min(n, db.get(bg) ?? 0)
-  return (2 * chung) / (a.length - 1 + b.length - 1)
-}
+/** Dice bigram (shared/tim-kiem/dice.ts) — giữ export ở đây cho nơi đang import từ khop.ts. */
+export { dice }
 
 export interface DiemDich {
   dich: Dich
@@ -184,9 +168,7 @@ export function ganSanTheoDiem(ds: readonly DiemDich[]): DiemDich | undefined {
   const [nhat, nhi] = ds
   if (!nhat || nhat.diem < NGUONG_GAN_SAN) return undefined
   // So trên số đã làm tròn 1e-9 để 0,7 − 0,6 không hụt vì dấu phẩy động
-  if (nhi && Math.round((nhat.diem - nhi.diem) * 1e9) < Math.round(CACH_BIET_GAN_SAN * 1e9)) {
-    return undefined
-  }
+  if (nhi && !khongNhoHon(nhat.diem - nhi.diem, CACH_BIET_GAN_SAN)) return undefined
   return nhat
 }
 

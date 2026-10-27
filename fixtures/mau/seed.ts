@@ -1,8 +1,10 @@
 // Seed DB của bộ dữ liệu mẫu (§7, đề xuất mục 7) cho `npm run dev:mau`. Ghi các bảng đã có tới phase 3:
 // settings, item_status + status_events, item_visits, content_approvals, content_files (2a, 2b); projects,
-// practice, restatements, self_check, notes, flashcards + flashcard_reviews, time_entries, active_timer (3).
-// Ghi qua đúng hàm của server (datTrangThai, ghiLuotMo, ghiDongSo, ghiThucHanh, taoThe, ghiLanOn, batDau…) với
+// practice, restatements, self_check, notes, flashcards + flashcard_reviews (3).
+// Ghi qua đúng hàm của server (datTrangThai, ghiLuotMo, ghiDongSo, ghiThucHanh, taoThe, ghiLanOn…) với
 // thời điểm cố định nên lần chạy nào cũng ra cùng dữ liệu.
+// Phạm vi rút gọn 27/10/2026 bỏ đồng hồ học / giờ học: không seed time_entries, active_timer (API đồng hồ của
+// server vẫn còn, bộ mẫu không có đồng hồ đang chạy nào, không có phiên giờ nào).
 //
 // Cách mở rộng: mỗi phase thêm bảng thì thêm một phần vào PHAN_SEED (chỉ ghi bảng của phase đó, đọc số
 // liệu từ so-lieu.ts) và gỡ dòng tương ứng khỏi CHUA_SEED.
@@ -12,11 +14,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { ngayCua } from '../../shared/clock.ts'
 import type { TrangThaiHoc } from '../../shared/domain/trang-thai.ts'
-import { docFrontmatter, phanTichBai, type CauTrucKhoi } from '../../shared/noi-dung/index.ts'
+import {
+  danhSachTrongBai,
+  docFrontmatter,
+  phanTichBai,
+  DANH_SACH_TRONG_BAI_RONG,
+  type DanhSachTrongBai,
+} from '../../shared/noi-dung/index.ts'
 import type { Cay, MucHoc } from '../../shared/roadmap/index.ts'
 import type { Db } from '../../server/db/index.ts'
-import { ghiSetting, tangRevision } from '../../server/db/settings.ts'
-import { batDau, themPhien } from '../../server/du-lieu/dong-ho.ts'
+import { ghiSetting } from '../../server/db/settings.ts'
 import { themDuAn } from '../../server/du-lieu/du-an.ts'
 import { ghiGhiChu, ghiNoiLai, ghiThucHanh, ghiTuKiemTra } from '../../server/du-lieu/hoc.ts'
 import { ghiDongSo } from '../../server/du-lieu/so-noi-dung.ts'
@@ -24,13 +31,11 @@ import { ghiLanOn, taoThe } from '../../server/du-lieu/the.ts'
 import { datTrangThai, ghiLuotMo } from '../../server/du-lieu/trang-thai.ts'
 import {
   CHU_MAU,
-  DONG_HO_MAU,
   DU_AN_MAU,
   GHI_CHU_MAU,
   GIO_ON,
   LUOT_MO_LAI,
   NOI_LAI_DANG_HOC,
-  PHIEN_GIO,
   THE_MAU,
   THUC_HANH_DANG_LAM,
   THUC_HANH_XONG,
@@ -190,20 +195,15 @@ function seedSoNoiDung({ db, cay, noiDungDir }: NguCanhSeed): void {
   }
 }
 
-// ---------- Phase 3: 4 bước, ghi chú, flashcard, giờ học (so-lieu-hoc.ts) ----------
+// ---------- Phase 3: 4 bước, ghi chú, flashcard (so-lieu-hoc.ts) ----------
 
 const PHUT = 60_000
 
-/** Cấu trúc khối (Thực hành, Tự kiểm tra) của bài mẫu trong thư mục nội dung. */
-function cauTrucCua(
-  ng: NguCanhSeed,
-  muc: MucHoc,
-  kieu: CauTrucKhoi['kieu'],
-): CauTrucKhoi | undefined {
+/** Câu Tự kiểm tra và tiêu chí (khoá + chữ) của bài mẫu trong thư mục nội dung — như server đọc (đề xuất 1.5). */
+function trongBaiCua(ng: NguCanhSeed, muc: MucHoc): DanhSachTrongBai {
   const tep = path.join(ng.noiDungDir, muc.duongDanTuongDoi)
-  if (!fs.existsSync(tep)) return undefined
-  const bai = phanTichBai(fs.readFileSync(tep, 'utf8'), muc)
-  return bai.khoi.find((k) => k.cauTruc?.kieu === kieu)?.cauTruc ?? undefined
+  if (!fs.existsSync(tep)) return DANH_SACH_TRONG_BAI_RONG
+  return danhSachTrongBai(phanTichBai(fs.readFileSync(tep, 'utf8'), muc))
 }
 
 /** id dự án mẫu (seed 'du-an' chạy trước). */
@@ -226,22 +226,24 @@ function seedThucHanh(ng: NguCanhSeed): void {
     const moc = xong.get(slug)
     if (!moc || muc.mau !== 'chu-de')
       throw new Error(`Bài thực hành Xong phải là Chủ đề Đã xong: ${slug}`)
-    const th = cauTrucCua(ng, muc, 'thuc-hanh')
-    const tieuChi = Object.fromEntries(
-      (th?.kieu === 'thuc-hanh' ? th.tieuChi : []).map((t) => [t.khoa, true]),
-    )
+    const tieuChiTrongBai = trongBaiCua(ng, muc).tieuChi
     ghiThucHanh(ng.db, {
       id: muc.id,
-      mau: muc.mau,
-      yeuCau: { trangThai: 'xong', duAnId: idDuAnMau, ketQua: CHU_MAU.ketQua, tieuChi },
+      yeuCau: {
+        trangThai: 'xong',
+        duAnId: idDuAnMau,
+        ketQua: CHU_MAU.ketQua,
+        tieuChi: Object.fromEntries(tieuChiTrongBai.map((t) => [t.khoa, true])),
+      },
+      tieuChiTrongBai,
       luc: luc(moc) - 15 * PHUT,
     })
   }
   const sc = mucCua(ng.cay, THUC_HANH_DANG_LAM.slug)
   ghiThucHanh(ng.db, {
     id: sc.id,
-    mau: sc.mau,
     yeuCau: { trangThai: 'dang-lam', duAnId: idDuAnMau },
+    tieuChiTrongBai: trongBaiCua(ng, sc).tieuChi,
     luc: luc(THUC_HANH_DANG_LAM.luc),
   })
 }
@@ -260,21 +262,21 @@ function seedTuKiemTra(ng: NguCanhSeed): void {
   let i = 0
   for (const x of DA_XONG) {
     const muc = mucCua(ng.cay, x.slug)
-    const tk = cauTrucCua(ng, muc, 'tu-kiem-tra')
-    if (tk?.kieu !== 'tu-kiem-tra') continue
-    for (const cau of tk.cauHoi) {
+    for (const cau of trongBaiCua(ng, muc).cauHoi) {
       const id = muc.id
       const khoa = cau.khoa
       ghiTuKiemTra(ng.db, {
         id,
         khoa,
         yeuCau: { traLoi: CHU_MAU.traLoi, daXem: true },
+        cauHoi: cau.chu,
         luc: luc(x.xong) - 8 * PHUT,
       })
       ghiTuKiemTra(ng.db, {
         id,
         khoa,
         yeuCau: { cham: ++i % 4 === 0 ? 'mot-phan' : 'dung' },
+        cauHoi: cau.chu,
         luc: luc(x.xong) - 7 * PHUT,
       })
     }
@@ -330,24 +332,6 @@ function seedThe({ db, cay }: NguCanhSeed): void {
   }
 }
 
-/** Phiên giờ (PHIEN_GIO) + đồng hồ Risk Register đang chạy từ GIO_MAU − 24 phút 17 giây. */
-function seedGioHoc({ db, cay }: NguCanhSeed): void {
-  for (const [ngay, slug, gio, phut] of PHIEN_GIO) {
-    const batDauMs = luc(`${ngay} ${gio}`)
-    const ketThucMs = batDauMs + phut * PHUT
-    const phien = themPhien(db, {
-      itemId: mucCua(cay, slug).id,
-      batDauMs,
-      giay: phut * 60,
-      luc: ketThucMs,
-    })
-    if (!phien || phien.ngay !== ngay) throw new Error(`Phiên giờ mẫu sai: ${ngay} ${slug} ${gio}`)
-  }
-  tangRevision(db)
-  const muc = mucCua(cay, DONG_HO_MAU.slug)
-  batDau(db, { itemId: muc.id, tenMuc: () => muc.label, luc: luc(DONG_HO_MAU.batDau) })
-}
-
 /** Các phần seed theo thứ tự chạy (phase 2a, 2b, 3). Phase sau thêm phần của mình vào cuối. */
 export const PHAN_SEED: readonly PhanSeed[] = [
   { ten: 'cai-dat', bang: ['settings'], chay: seedCaiDat },
@@ -361,7 +345,6 @@ export const PHAN_SEED: readonly PhanSeed[] = [
   { ten: 'tu-kiem-tra', bang: ['self_check'], chay: seedTuKiemTra },
   { ten: 'ghi-chu', bang: ['notes'], chay: seedGhiChu },
   { ten: 'the', bang: ['flashcards', 'flashcard_reviews'], chay: seedThe },
-  { ten: 'gio-hoc', bang: ['time_entries', 'active_timer'], chay: seedGioHoc },
 ]
 
 /** Số liệu §7 chưa seed vì bảng chưa có (phase = phase tạo bảng theo đề xuất mục 9). */
@@ -399,7 +382,6 @@ export interface TomTatSeed {
   /** Phase 3 */
   soThe: number
   soLanOn: number
-  soPhienGio: number
   soGhiChu: number
 }
 
@@ -424,7 +406,6 @@ export function seedMau(ng: NguCanhSeed): TomTatSeed {
     soFile: dem('SELECT count(*) AS n FROM content_files'),
     soThe: dem('SELECT count(*) AS n FROM flashcards'),
     soLanOn: dem('SELECT count(*) AS n FROM flashcard_reviews'),
-    soPhienGio: dem('SELECT count(*) AS n FROM time_entries'),
     soGhiChu: dem('SELECT count(*) AS n FROM notes'),
   }
 }

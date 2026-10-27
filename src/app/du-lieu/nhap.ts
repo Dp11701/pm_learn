@@ -56,8 +56,6 @@ export interface KetQuaFile {
   /** Mục đang có Bản nháp: bản cũ vào thùng rác */
   thayBanNhap: boolean
   ghiChu: string | null
-  /** Khoá editor_buffers nhap:<token>:<i> của file lỗi, cho "Mở trong trình soạn" */
-  khoaBoDem: string | null
   /**
    * Server khớp file với `muc` theo gì (cột "Khớp theo"): id trong frontmatter, tên file, đường dẫn (Quét lại: file
    * đã nhận / nằm ở chỗ chuẩn của mục), gán sẵn theo ?muc=, gợi ý tên gần đúng; null khi không có mục. Thiếu
@@ -130,7 +128,6 @@ const LuocDoKetQuaFile: z.ZodType<KetQuaFile> = z.object({
   chuyenVeBanNhap: z.boolean(),
   thayBanNhap: z.boolean(),
   ghiChu: z.string().nullable(),
-  khoaBoDem: z.string().nullable(),
   // Giá trị lạ (server mới hơn) → coi như không có, web tự suy
   khopTheo: z.enum(CAC_KHOP_THEO).nullable().optional().catch(undefined),
   duongDan: z.string().optional(),

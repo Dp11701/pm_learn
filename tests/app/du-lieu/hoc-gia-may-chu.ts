@@ -22,6 +22,8 @@ export interface CauGia {
   daXem: boolean
   cham: 'dung' | 'mot-phan' | 'sai' | null
   chamLuc: string | null
+  /** Chữ câu hỏi lúc lưu (server ghi; đề xuất 1.5) — thiếu = chưa biết */
+  cauHoi?: string | null
 }
 
 export interface TheGia {
@@ -165,8 +167,6 @@ export function taoGiaMayChuHoc(): GiaMayChuHoc {
             revision: sv.revision,
             ...structuredClone(m),
             the: structuredClone(sv.the.filter((t) => t.itemId === id)),
-            banCuaToi: { coHoanThanh: false },
-            keHoachThi: { coNgayThi: false },
             daHocGiay: sv.lichSu.filter((p) => p.itemId === id).reduce((t, p) => t + p.giay, 0),
           })
         }

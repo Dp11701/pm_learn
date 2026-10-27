@@ -31,6 +31,11 @@ export interface GiaMayChu {
   loiGet: number
   /** Giờ ghi cho lượt mở tới (ISO) */
   gioMo: string
+  /**
+   * Mục có thẻ đến hạn (phase 3). Có thì GET /api/state gửi `canOnLai` như server: mục Đã xong trong tập này, xếp
+   * theo id; không có (mặc định) thì không gửi trường này (dữ liệu kiểu phase 2a).
+   */
+  theDenHan?: Set<string>
   /** Giữ mọi PUT lại; gọi moCua() để cho chạy tiếp */
   dongCua(): void
   moCua(): void
@@ -92,6 +97,13 @@ export function taoGiaMayChu(): GiaMayChu {
           revision: sv.revision,
           trangThai: structuredClone(sv.trangThai),
           luotMo: { ...sv.luotMo },
+          ...(sv.theDenHan
+            ? {
+                canOnLai: [...sv.theDenHan]
+                  .filter((id) => sv.trangThai[id]?.status === 'done')
+                  .sort(),
+              }
+            : {}),
         })
       }
       const dat = /^\/api\/trang-thai\/(.+)$/.exec(url)

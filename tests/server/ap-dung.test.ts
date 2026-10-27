@@ -357,7 +357,7 @@ describe('hàm ghi — giữ dữ liệu bài thực hành của phase 3', () =>
     ).run()
     db.prepare(
       `INSERT INTO practice (item_id, project_id, result_md, criteria, state, done_at, created_at, updated_at)
-       VALUES (?, 1, 'Kết quả', '{"k1":true}', 'xong', '2026-10-20T00:00:00.000Z', 'a', 'a')`,
+       VALUES (?, 1, 'Kết quả', '{"k1":"Tiêu chí một"}', 'xong', '2026-10-20T00:00:00.000Z', 'a', 'a')`,
     ).run(chuDe.id)
     const ghi = danhDauKhongApDung(db, { id: chuDe.id, lyDo: 'Dự án không có phần này' })
     expect(ghi.truoc).toEqual({ trangThai: 'xong' })
@@ -366,7 +366,7 @@ describe('hàm ghi — giữ dữ liệu bài thực hành của phase 3', () =>
       na_reason: 'Dự án không có phần này',
       project_id: 1,
       result_md: 'Kết quả',
-      criteria: '{"k1":true}',
+      criteria: '{"k1":"Tiêu chí một"}',
       done_at: null,
     })
     const bo = boDanhDauKhongApDung(db, chuDe.id)
@@ -375,8 +375,19 @@ describe('hàm ghi — giữ dữ liệu bài thực hành của phase 3', () =>
       state: 'dang-lam',
       na_reason: null,
       result_md: 'Kết quả',
+      criteria: '{"k1":"Tiêu chí một"}',
     })
     expect(layRevision(db)).toBe(2)
+  })
+
+  it('tick dạng cũ { khoá: true } (trước migration 6) vẫn là đã tick; ghi lại thành { khoá: null } (chưa biết chữ)', () => {
+    db.prepare(
+      `INSERT INTO practice (item_id, criteria, state, created_at, updated_at)
+       VALUES (?, '{"k1":true}', 'dang-lam', 'a', 'a')`,
+    ).run(chuDe.id)
+    const ghi = danhDauKhongApDung(db, { id: chuDe.id, lyDo: 'Không cần' })
+    expect(ghi.truoc).toEqual({ trangThai: 'dang-lam' })
+    expect(dong(chuDe.id)).toMatchObject({ state: 'khong-ap-dung', criteria: '{"k1":null}' })
   })
 
   it('lyDoKhongApDung / buocApDung (thanh 4 bước)', () => {

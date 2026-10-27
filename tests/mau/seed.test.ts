@@ -203,7 +203,7 @@ describe.skipIf(!laGioMau)('lượt mở → Học tiếp và sidebar "Đang h�
     )
   })
 
-  it('lượt mở Risk Register trước GIO_MAU 24 phút 40 giây (trước lúc bấm đồng hồ)', () => {
+  it('lượt mở Risk Register trước GIO_MAU 24 phút 40 giây', () => {
     expect(anhChup.luotMo[mucSlug('risk-register').id]).toBe('2026-10-22T14:17:20.000Z')
     expect(Object.keys(anhChup.luotMo)).toHaveLength(37 + 6)
   })

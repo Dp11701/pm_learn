@@ -1,5 +1,6 @@
 // Rail 72px cho 1024–1279 (§5.2, đề xuất 4.4; không có frame, dựng từ C34): logo, tìm, menu chỉ icon
-// (tooltip + aria-label, badge thu nhỏ), chân ghim đáy: đồng hồ (phase 3, có chấm khi chạy), Giao diện, "?".
+// (tooltip + aria-label, badge thu nhỏ), chân ghim đáy: Giao diện, "?" (không có đồng hồ — phạm vi rút gọn
+// 27/10/2026, đề xuất mục 10).
 import type { ReactElement } from 'react'
 import { Link } from 'react-router'
 import { Tooltip } from 'radix-ui'
@@ -121,7 +122,6 @@ export default function Rail() {
         </nav>
 
         <div className="mt-auto flex w-full shrink-0 flex-col items-center gap-2 border-t border-border pt-4">
-          {duLieu.dongHo?.rail}
           <GoiYRail nhan={nhanGiaoDien(giaoDien)}>
             <NutGiaoDien chiIcon className={`shrink-0 ${O}`} />
           </GoiYRail>

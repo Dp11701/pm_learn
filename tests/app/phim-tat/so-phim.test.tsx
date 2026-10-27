@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
-// Sổ phím tắt (§11, đề xuất 5) ↔ bảng F27: F27 dựng toàn bộ từ sổ, sổ khớp đúng bảng của frame.
+// Sổ phím tắt (§11, đề xuất 5) ↔ bảng F27: F27 dựng toàn bộ từ sổ, sổ khớp bảng của frame trừ phím của phần đã bỏ
+// khỏi phạm vi (đề xuất mục 10, 27/10/2026): không còn T Đồng hồ, E Soạn, M Bản đồ ↔ Danh sách, Enter Mở panel;
+// nhóm "Bài học · panel bản đồ" thành "Bài học".
 import { useState } from 'react'
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -18,7 +20,8 @@ afterEach(cleanup)
 // Radix trả focus khi đóng sau một nhịp setTimeout(0).
 const choMotNhip = () => act(() => new Promise((r) => setTimeout(r, 0)))
 
-// renderVals() của docs/design-handoff/design/F27-phim-tat-toi.dc.html (chép tay, không chạy file frame).
+// renderVals() của docs/design-handoff/design/F27-phim-tat-toi.dc.html (chép tay, không chạy file frame), bỏ các dòng
+// của phần đã bỏ khỏi phạm vi.
 const F27 = [
   {
     title: 'Toàn app',
@@ -29,21 +32,15 @@ const F27 = [
     ],
   },
   {
-    title: 'Bài học · panel bản đồ',
+    title: 'Bài học',
     rows: [
       { label: 'Mục trước / sau', keys: ['[', ']'] },
       { label: 'Chưa học · Đang học · Đã xong · Bỏ qua', keys: ['1', '2', '3', '4'] },
-      { label: 'Đồng hồ', keys: ['T'] },
-      { label: 'Soạn', keys: ['E'] },
     ],
   },
   {
     title: 'Lộ trình',
-    rows: [
-      { label: 'Bản đồ ↔ Danh sách', keys: ['M'] },
-      { label: 'Di chuyển giữa mục', keys: ['←', '↑', '↓', '→'] },
-      { label: 'Mở panel', keys: ['Enter'] },
-    ],
+    rows: [{ label: 'Di chuyển giữa mục', keys: ['←', '↑', '↓', '→'] }],
   },
   {
     title: 'Chỉ trong phiên ôn',
@@ -55,7 +52,7 @@ const F27 = [
   },
 ]
 
-// Mã e.code của §11 / đề xuất 5 (không thêm phím ngoài bảng).
+// Mã e.code của §11 / đề xuất 5 (không thêm phím ngoài bảng), trừ KeyT, KeyE, KeyM, Enter của phần đã bỏ.
 const MA_DE_XUAT = [
   'Shift+Slash',
   'Slash',
@@ -66,17 +63,13 @@ const MA_DE_XUAT = [
   'Digit2',
   'Digit3',
   'Digit4',
-  'KeyT',
-  'KeyE',
-  'KeyM',
   'Space',
   'ArrowLeft',
   'ArrowUp',
   'ArrowDown',
   'ArrowRight',
-  'Enter',
 ]
-const MA_CUC_BO = new Set(['ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight', 'Enter'])
+const MA_CUC_BO = new Set(['ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight'])
 
 function ThuBang() {
   const [mo, datMo] = useState(false)
@@ -132,6 +125,17 @@ describe('sổ phím tắt', () => {
     }
     const maDung = new Set(SO_PHIM_TAT.flatMap((d) => d.phim.map((k) => k.ma)))
     expect([...maDung].sort()).toEqual([...MA_DE_XUAT].sort())
+  })
+
+  it('phạm vi rút gọn: không còn dòng / phím của đồng hồ, trình soạn, bản đồ (T, E, M, Enter "Mở panel")', () => {
+    const moTa = SO_PHIM_TAT.map((d) => d.moTa).join(' | ')
+    expect(moTa).not.toMatch(/Đồng hồ|Soạn|Bản đồ|panel/)
+    for (const code of ['KeyT', 'KeyE', 'KeyM']) {
+      const e = new KeyboardEvent('keydown', { code, bubbles: true })
+      document.body.dispatchEvent(e)
+      expect(maPhimTuSuKien(e)).toBeNull()
+    }
+    expect(nhomBangPhimTat().map((n) => n.ten)).not.toContain('Bài học · panel bản đồ')
   })
 
   it('phase 1 có tác dụng đúng 3 phím Toàn app: ?, /, Esc', () => {

@@ -1,21 +1,11 @@
-// Dữ liệu học mà khung app hiện (badge, khối Đang học, đồng hồ).
+// Dữ liệu học mà khung app hiện (badge, khối Đang học). Không có đồng hồ học (phạm vi rút gọn 27/10/2026).
 // - Không có <DuLieuKhungProvider> (app thật): lấy từ dữ liệu học thật (src/app/du-lieu) — từ phase 2a là
-//   khối "Đang học" (mục Đang học mở gần nhất trước + tổng); badge, đồng hồ cắm ở phase 3, 7a, 8.
+//   khối "Đang học" (mục Đang học mở gần nhất trước + tổng); badge cắm ở bước sau.
 // - Có provider (gallery F02b, test khung): dùng đúng giá trị được đưa.
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { layCay } from '../../../shared/roadmap'
 import { cacMucDangHoc } from '../du-lieu/hoc-tiep'
 import { useTrangThai } from '../du-lieu/trang-thai'
-
-/** Chỗ cắm đồng hồ của phase 3 (C23 rút gọn). Khung chỉ đặt chỗ, không có logic đồng hồ. */
-export interface ODongHo {
-  /** Thay khối "Chưa bấm giờ" ở chân sidebar (đang bấm giờ: tên mục, 00:00:00, Dừng / Bắt đầu). */
-  sidebar?: ReactNode
-  /** Nút đồng hồ ở chân rail 1024–1279 (có chấm khi đang chạy). */
-  rail?: ReactNode
-  /** Chip đồng hồ ở top bar mobile (F04). */
-  chip?: ReactNode
-}
 
 export interface DuLieuKhung {
   /** Badge đặc ở "Ôn tập": số thẻ đến hạn (0 = không hiện). */
@@ -26,7 +16,6 @@ export interface DuLieuKhung {
   dangHoc: readonly string[]
   /** Tổng số mục Đang học cho "Xem tất cả (n)"; không có thì = dangHoc.length. */
   tongDangHoc?: number
-  dongHo?: ODongHo
 }
 
 export const DU_LIEU_KHUNG_TRONG: DuLieuKhung = { soTheDenHan: 0, soBanNhap: 0, dangHoc: [] }

@@ -2,7 +2,7 @@ import { ngayCua, now } from '../../shared/clock.ts'
 import type { Db } from '../db/index.ts'
 import { docSetting, ghiSetting, layRevision, tangRevision } from '../db/settings.ts'
 import { LoiApi } from '../loi.ts'
-import { catBanXoa, layBanXoa } from './ban-ghi-da-xoa.ts'
+import { catBanXoa, layBanXoa, xemBanXoa, type MucKhongCon } from './ban-ghi-da-xoa.ts'
 import {
   SO_PHIEN_LICH_SU,
   canHoiQuenTat,
@@ -330,14 +330,23 @@ export function xoaPhien(db: Db, id: number, luc: number = now()): KetQuaGhiPhie
   })()
 }
 
-/** POST /api/phien-gio/:id/khoi-phuc — cùng id. Phiên còn → daDoi false; không có bản vừa xoá → undefined. */
-export function khoiPhucPhien(db: Db, id: number): KetQuaGhiPhien | undefined {
-  return db.transaction((): KetQuaGhiPhien | undefined => {
+/**
+ * POST /api/phien-gio/:id/khoi-phuc — cùng id. Phiên còn → daDoi false; không có bản vừa xoá → undefined. Mục
+ * của phiên không còn trong cây (`laMuc`, bất biến 8) → { mucKhongCon }, không ghi, giữ bản xoá.
+ */
+export function khoiPhucPhien(
+  db: Db,
+  id: number,
+  laMuc: (itemId: string) => boolean,
+): KetQuaGhiPhien | MucKhongCon | undefined {
+  return db.transaction((): KetQuaGhiPhien | MucKhongCon | undefined => {
     const con = db.prepare('SELECT * FROM time_entries WHERE id = ?').get(id) as
       DongPhien | undefined
     if (con) return { revision: layRevision(db), daDoi: false, phien: sangPhien(con) }
-    const d = layBanXoa<DongPhien>(db, 'time_entries', id)
+    const d = xemBanXoa<DongPhien>(db, 'time_entries', id)
     if (!d) return undefined
+    if (!laMuc(d.item_id)) return { mucKhongCon: d.item_id }
+    layBanXoa(db, 'time_entries', id) // gỡ bản xoá: phiên sắp có lại
     db.prepare(
       `INSERT INTO time_entries (id, item_id, date, seconds, started_at, ended_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,

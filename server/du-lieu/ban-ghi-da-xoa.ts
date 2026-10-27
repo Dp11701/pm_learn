@@ -26,6 +26,22 @@ export function catBanXoa(
   ).run(bang, rowId, JSON.stringify(duLieu), at)
 }
 
+/**
+ * Bản vừa xoá thuộc mục không còn trong cây (thay file cây sau lần xoá): khôi phục là ghi bản ghi mới nên bị từ
+ * chối (bất biến 8); bản xoá vẫn giữ tới hạn dọn.
+ */
+export interface MucKhongCon {
+  mucKhongCon: string
+}
+
+/** Đọc bản vừa xoá mà KHÔNG gỡ (để kiểm trước khi khôi phục); undefined khi không có. */
+export function xemBanXoa<T>(db: Db, bang: BangCoHoanTac, rowId: number): T | undefined {
+  const dong = db
+    .prepare('SELECT data FROM deleted_rows WHERE tbl = ? AND row_id = ?')
+    .get(bang, rowId) as { data: string } | undefined
+  return dong && (JSON.parse(dong.data) as T)
+}
+
 /** Lấy (và gỡ) bản vừa xoá; undefined khi không có. */
 export function layBanXoa<T>(db: Db, bang: BangCoHoanTac, rowId: number): T | undefined {
   const dong = db

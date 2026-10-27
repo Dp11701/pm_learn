@@ -13,6 +13,7 @@ import TuLuu from '../../components/TuLuu'
 import Badge from '../../components/trang-thai/Badge'
 import ChipLoai, { type LoaiChip } from '../../components/trang-thai/ChipLoai'
 import ChipNoiDung from '../../components/trang-thai/ChipNoiDung'
+import { duongDanNhap } from '../../components/bai-hoc/dinh-vi'
 import PillTrangThai, {
   CoCanOnLai,
   NutPillTrangThai,
@@ -54,7 +55,7 @@ export type MauF02 = {
   soTheCanOn: number
   badge: { onTap: number; noiDung: number; vuotMuc: number }
   streak: { ngay: number; kyLuc: number }
-  /** C8: tên mục cho chip "Chưa có nội dung" (link tới trang Soạn bài của mục). */
+  /** C8: tên mục cho chip "Chưa có nội dung" (link tới tab Nhập gán sẵn mục — trình soạn trong app đã bỏ). */
   mucSoan: string
   /** C8: ngày duyệt 'YYYY-MM-DD'. */
   ngayDuyet: string
@@ -354,16 +355,17 @@ function MucSegmented({ lyDoBoQua }: { lyDoBoQua: string }) {
 
 function MucChipNoiDung({ mau }: { mau: MauF02 }) {
   const muc = timMuc(mau.mucSoan)
-  const soan = muc ? `/hoc/${muc.slug}/soan` : undefined
+  // F02 vẽ chip mở "Soạn bài"; trình soạn trong app đã bỏ (đề xuất mục 10) nên chip mở tab Nhập gán sẵn mục
+  const nhap = muc ? duongDanNhap(muc) : undefined
   const bai = muc ? `/hoc/${muc.slug}` : undefined
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
       <O nhan="Mặc định">
-        <ChipNoiDung trangThai={{ loai: 'chua-co' }} den={soan} />
+        <ChipNoiDung trangThai={{ loai: 'chua-co' }} den={nhap} />
       </O>
-      <O nhan="Hover · mở Soạn bài">
+      <O nhan="Hover · mở Nhập file .md">
         <Gia kieu="hover">
-          <ChipNoiDung trangThai={{ loai: 'chua-co' }} den={soan} />
+          <ChipNoiDung trangThai={{ loai: 'chua-co' }} den={nhap} />
         </Gia>
       </O>
       <O nhan="Focus">

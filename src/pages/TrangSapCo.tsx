@@ -15,9 +15,9 @@ export interface NutDiTiep {
 }
 
 /**
- * Nút đi tiếp mặc định theo đường dẫn: trang con của một mục menu → về mục đó (bài học → Lộ trình, bài
- * Chứng chỉ → Chứng chỉ, phiên ôn → Ôn tập); trang của mục menu và trang ngoài menu → Tổng quan; Tổng quan
- * → Lộ trình ("Xem lộ trình" như F05, D20).
+ * Nút đi tiếp mặc định theo đường dẫn: trang con của một mục menu → về mục đó (bài học, lĩnh vực → Lộ trình, phiên
+ * ôn → Ôn tập); trang của mục menu và trang ngoài menu → Tổng quan; Tổng quan → Lộ trình ("Xem lộ trình" như F05,
+ * D20).
  */
 export function nutDiTiepMacDinh(pathname: string): NutDiTiep {
   const dangMo = menuDangMo(pathname)

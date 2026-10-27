@@ -1,9 +1,13 @@
-// Trang bài học /hoc/:slug — phần vẽ (F11 trừ cột phải, F17, F18; §8.5, §8.6, §8.6b, §8.7; đề xuất 3.6, 3.9,
-// 4.4). Dữ liệu (bài, trạng thái học, đặt trạng thái) truyền vào từ TrangMucHoc; bước Áp dụng của thanh 4 bước
-// đọc thẳng useApDung (chung cache với khối Kế hoạch thi, chạy được cả ngoài QueryClientProvider).
-// Bố cục F11: lề 24 40 48 (mobile 16), breadcrumb (≥ 1024; dưới đó top bar "‹ cấp cha") · đầu bài · banner ·
-// cột đọc ≤ 720 (cột phải 320 — đồng hồ, mục lục, ghi chú, flashcard — có ở phase 3), chữ thân bài 17/28
-// (mobile 16/26), các khối cách 40 · chân bài "Đã xong, sang bài tiếp" + pager.
+// Trang bài học /hoc/:slug — phần vẽ (F11, F15, F17, F18, F19; §1, §8.5, §8.6, §8.6b, §8.7; đề xuất 3.1, 3.2, 3.6,
+// 3.9, 4.4). Dữ liệu (bài, trạng thái học, đặt trạng thái) truyền vào từ TrangMucHoc; vòng 4 bước (thanh ở DauBai,
+// F19) tính từ dữ liệu học của mục + khoá các câu Tự kiểm tra của bài (cacKhoaCauHoi).
+// Bố cục F11 (chỉ máy tính ≥ 1024, phạm vi rút gọn 27/10/2026; bề rộng ở cot-phai/be-rong-bai.ts): lề 24 40 48 ·
+// breadcrumb · đầu bài · banner · hàng [cột đọc | cột phải]:
+// - ≥ 1280: cột đọc ≤ 720 (1280–1439: ≤ 640), cột phải 320 / 280 dính khi cuộn — Mục lục / Trong lĩnh vực, Ghi chú,
+//   Flashcard (không có đồng hồ);
+// - 1024–1279: chỉ cột đọc ≤ 720; "Mục lục" / "Ghi chú" ở hàng breadcrumb mở panel trượt 360px; card Flashcard ở
+//   cuối bài (trước chân bài), giữ neo #flashcard.
+// Chữ thân bài 17/28, các khối cách 40 · chân bài "Đã xong, sang bài tiếp" + pager.
 // Phím (§11, sổ src/app/phim-tat): 1–4 đặt trạng thái, [ ] mục trước / sau (bỏ qua mục Bỏ qua).
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
@@ -11,7 +15,6 @@ import { ChevronRight } from 'lucide-react'
 import { giaiLienQuan } from '../../../shared/noi-dung'
 import { CAC_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import { chuoiCha, layCay, type MucHoc } from '../../../shared/roadmap'
-import { coDuLieuApDung, useApDung } from '../../app/du-lieu/ap-dung'
 import { useSlugCu } from '../../app/du-lieu/thay-cay'
 import { usePhimTat } from '../../app/phim-tat'
 import { LE_NGANG_TRANG } from '../../app/khung/le-trang'
@@ -22,12 +25,17 @@ import Breadcrumb from '../../components/bai-hoc/Breadcrumb'
 import Pager from '../../components/bai-hoc/Pager'
 import { duongDanNut, truocTiep } from '../../components/bai-hoc/dinh-vi'
 import BannerBai from './BannerBai'
-import { cacOAppKhungBai, cacOHien, neoBonBuoc, soCauHoi } from './bo-cuc'
+import { cacOAppKhungBai, cacOHien, mucLuc, neoBonBuoc } from './bo-cuc'
 import ChuaCoNoiDung from './ChuaCoNoiDung'
 import DauBai from './DauBai'
 import type { TaiBai } from './du-lieu-bai'
 import type { DatTrangThaiTrang, TrangThaiTrang } from './kieu-trang'
-import ThanBai from './ThanBai'
+import ThanBai, { cacKhoaCauHoi } from './ThanBai'
+import { LOP_HANG_BAI, LOP_RONG_COT_DOC, useCoCotPhai } from './cot-phai/be-rong-bai'
+import CongCuGon from './cot-phai/CongCuGon'
+import CotPhai from './cot-phai/CotPhai'
+import TheFlashcard, { ID_FLASHCARD } from '../../components/the/TheFlashcard'
+import { useXacNhanDaXong } from '../../components/bai-hoc/HopThoaiDaXong'
 import { KHONG_TAI_DUOC_BAI } from '../../copy/cho-duyet'
 
 export interface PropsTrangBaiHoc {
@@ -54,54 +62,21 @@ function ThanBaiDangTai() {
   )
 }
 
-const LOP_COT_DOC =
-  'flex w-full max-w-[720px] min-w-0 flex-col text-[length:var(--fs-body)] leading-[var(--lh-body)] max-md:text-[length:var(--fs-body-m)] max-md:leading-[var(--lh-body-m)]'
+const LOP_COT_DOC = `flex w-full min-w-0 flex-1 flex-col ${LOP_RONG_COT_DOC}`
+const LOP_CHU_THAN_BAI =
+  'text-[length:var(--fs-body)] leading-[var(--lh-body)] max-md:text-[length:var(--fs-body-m)] max-md:leading-[var(--lh-body-m)]'
 
 export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc) {
   const cay = layCay()
   const navigate = useNavigate()
   const { trangThaiCua } = hoc
-  // Bước Áp dụng trên thanh 4 bước: cùng cache với khối Kế hoạch thi nên đổi ngay khi lưu / hoàn tác.
-  const apDung = useApDung({ tai: coDuLieuApDung(muc.mau) })
   const { truoc, tiep } = truocTiep(cay, muc, trangThaiCua)
+  const coCotPhai = useCoCotPhai()
 
   // Top bar mobile: "‹ cấp cha" (§6.2, D6).
   const cha = chuoiCha(cay, muc.id).at(-1)
   useThanhTrenMobile({
     capCha: cha ? { ten: cha.label, den: duongDanNut(cay, cha), tiengAnh: true } : undefined,
-  })
-
-  const coTheDat = Boolean(datHoc) && !hoc.dangTai && !hoc.loi
-
-  /**
-   * Nơi DUY NHẤT trang bài đặt trạng thái học của mục đang mở: segmented C6 (qua DauBai), phím 1–4 và
-   * "Đã xong, sang bài tiếp" đều đi qua đây; `sau` chạy khi đã đặt (vd. sang bài tiếp).
-   * PHASE 3 (F19 phải "Đã xong khi còn thiếu bước"): khi trangThai === 'da-xong' mà 4 bước còn thiếu thì mở
-   * dialog xác nhận tại đây — chỉ gọi datHoc.dat và `sau` khi người dùng đồng ý. Phase 2a chưa có dữ liệu bước
-   * nên đặt ngay.
-   */
-  function datTrangThaiBai(trangThai: TrangThaiHoc, sau?: () => void) {
-    if (!coTheDat || !datHoc) return
-    datHoc.dat(muc.id, trangThai)
-    sau?.()
-  }
-  // DauBai chỉ thấy bản đi qua datTrangThaiBai (loiLuu / thuLai giữ nguyên: Thử lại gửi lại lần đã qua đây).
-  const datHocDauBai: DatTrangThaiTrang | undefined = datHoc && {
-    ...datHoc,
-    dat: (_id, trangThai) => datTrangThaiBai(trangThai),
-  }
-
-  // Phím 1–4: Chưa học / Đang học / Đã xong / Bỏ qua; [ ]: mục trước / sau.
-  const datTheoPhim = (i: number) => () => datTrangThaiBai(CAC_TRANG_THAI_HOC[i])
-  usePhimTat('Digit1', datTheoPhim(0))
-  usePhimTat('Digit2', datTheoPhim(1))
-  usePhimTat('Digit3', datTheoPhim(2))
-  usePhimTat('Digit4', datTheoPhim(3))
-  usePhimTat('BracketLeft', () => {
-    if (truoc) void navigate(`/hoc/${truoc.slug}`)
-  })
-  usePhimTat('BracketRight', () => {
-    if (tiep) void navigate(`/hoc/${tiep.slug}`)
   })
 
   const duLieu = bai.tinhTrang === 'xong' ? bai.duLieu : null
@@ -122,13 +97,68 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
     () => (ketQua ? cacOHien(ketQua, { coLienQuan: lienQuan.length > 0 }) : []),
     [ketQua, lienQuan.length],
   )
-  // Chưa có nội dung → 0 câu (D8); lỗi đọc file → chưa biết (không ghi "Không áp dụng").
-  const coCauHoi = duLieu && !duLieu.loiDoc ? soCauHoi(cacO) > 0 : null
-  // Neo thanh 4 bước: ô của bài; chưa có file thì khối do app tạo trên khung bài (vd. Kế hoạch thi).
-  const neoBuoc = useMemo(
-    () => neoBonBuoc(duLieu && !duLieu.loiDoc && !ketQua ? cacOAppKhungBai(muc.mau) : cacO),
+  // Câu Tự kiểm tra của bài — nguồn của bước Kiểm tra (thanh 4 bước, F19). Chưa có nội dung → [] (D8: "Không áp
+  // dụng · chưa có câu hỏi"); bài đang tải / lỗi đọc file → null (chưa biết, không ghi "Không áp dụng").
+  const cauHoiKhoa = useMemo(
+    () => (duLieu && !duLieu.loiDoc ? cacKhoaCauHoi(cacO) : null),
+    [duLieu, cacO],
+  )
+  // Ô đang hiện trên trang: của bài; chưa có file thì khối chứa việc của người học trên khung bài (Kế hoạch thi, Bản
+  // của tôi, phần làm bài Thực hành) — nguồn chung của neo thanh 4 bước và Mục lục (D15).
+  const oTrenTrang = useMemo(
+    () => (duLieu && !duLieu.loiDoc && !ketQua ? cacOAppKhungBai(muc.mau) : cacO),
     [duLieu, ketQua, muc.mau, cacO],
   )
+  // Ghi nhớ trỏ tới card Flashcard (cột phải hoặc cuối bài — luôn có đúng một card).
+  const neoBuoc = useMemo(
+    () => ({ ...neoBonBuoc(oTrenTrang), 'ghi-nho': `#${ID_FLASHCARD}` }),
+    [oTrenTrang],
+  )
+  // Mục lục (D15): đúng các khối đang hiện; null khi bài đang tải.
+  const dongMucLuc = useMemo(
+    () => (bai.tinhTrang === 'dang-tai' ? null : mucLuc(oTrenTrang)),
+    [bai.tinhTrang, oTrenTrang],
+  )
+
+  const coTheDat = Boolean(datHoc) && !hoc.dangTai && !hoc.loi
+
+  // F19 phải "Đã xong khi còn thiếu bước" (§1 không chặn cứng; quyết định 10).
+  const { xacNhan: xacNhanDaXong, hopThoai: hopThoaiDaXong } = useXacNhanDaXong(muc, cauHoiKhoa, {
+    baiDangTai: bai.tinhTrang === 'dang-tai',
+  })
+
+  /**
+   * Nơi DUY NHẤT trang bài đặt trạng thái học của mục đang mở: segmented C6 (qua DauBai), phím 1–4 và
+   * "Đã xong, sang bài tiếp" đều đi qua đây; `sau` chạy khi đã đặt (vd. sang bài tiếp). Đặt Đã xong khi 4 bước
+   * còn thiếu → F19: chỉ đặt (và chạy `sau`) khi người học chọn "Vẫn đánh dấu Đã xong".
+   */
+  function datTrangThaiBai(trangThai: TrangThaiHoc, sau?: () => void) {
+    if (!coTheDat || !datHoc) return
+    const lam = () => {
+      datHoc.dat(muc.id, trangThai)
+      sau?.()
+    }
+    if (trangThai === 'da-xong') xacNhanDaXong(lam)
+    else lam()
+  }
+  // DauBai chỉ thấy bản đi qua datTrangThaiBai (loiLuu / thuLai giữ nguyên: Thử lại gửi lại lần đã qua đây).
+  const datHocDauBai: DatTrangThaiTrang | undefined = datHoc && {
+    ...datHoc,
+    dat: (_id, trangThai) => datTrangThaiBai(trangThai),
+  }
+
+  // Phím 1–4: Chưa học / Đang học / Đã xong / Bỏ qua; [ ]: mục trước / sau.
+  const datTheoPhim = (i: number) => () => datTrangThaiBai(CAC_TRANG_THAI_HOC[i])
+  usePhimTat('Digit1', datTheoPhim(0))
+  usePhimTat('Digit2', datTheoPhim(1))
+  usePhimTat('Digit3', datTheoPhim(2))
+  usePhimTat('Digit4', datTheoPhim(3))
+  usePhimTat('BracketLeft', () => {
+    if (truoc) void navigate(`/hoc/${truoc.slug}`)
+  })
+  usePhimTat('BracketRight', () => {
+    if (tiep) void navigate(`/hoc/${tiep.slug}`)
+  })
 
   function xongVaTiep() {
     if (!tiep) return
@@ -167,11 +197,26 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
   }
 
   const coNoiDung = ketQua !== null
+  // < 1280: card Flashcard ở cuối bài, trước chân bài.
+  const flashcardCuoiBai = coCotPhai ? null : <TheFlashcard muc={muc} />
   return (
     <div
       className={`flex min-w-0 flex-col gap-8 pt-6 pb-12 max-md:gap-4 max-md:pt-4 max-md:pb-6 ${LE_NGANG_TRANG}`}
     >
-      <Breadcrumb muc={muc} cay={cay} trangThaiCua={trangThaiCua} className="max-lg:hidden" />
+      {coCotPhai ? (
+        <Breadcrumb muc={muc} cay={cay} trangThaiCua={trangThaiCua} className="max-lg:hidden" />
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <Breadcrumb muc={muc} cay={cay} trangThaiCua={trangThaiCua} className="max-lg:hidden" />
+          <CongCuGon
+            muc={muc}
+            cay={cay}
+            mucLuc={dongMucLuc}
+            trangThaiCua={trangThaiCua}
+            className="ml-auto"
+          />
+        </div>
+      )}
       <DauBai
         muc={muc}
         cay={cay}
@@ -180,38 +225,45 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
         giaiNghia={ketQua?.frontmatter?.giaiNghia}
         hoc={hoc}
         datHoc={datHocDauBai}
-        coCauHoi={coCauHoi}
-        buocApDung={apDung.buocCua(muc.id)}
+        cauHoiKhoa={cauHoiKhoa}
         neoBuoc={neoBuoc}
       />
       {duLieu && <BannerBai muc={muc} duLieu={duLieu} />}
-      {coNoiDung ? (
-        <article
-          aria-label={`Bài học ${muc.label}`}
-          className={`${LOP_COT_DOC} gap-10 max-md:gap-6`}
-        >
-          {than}
-          <footer className="flex flex-col gap-5 border-t border-border pt-8 max-md:pt-6">
-            {tiep && (
-              <Nut
-                bien="chinh"
-                onClick={xongVaTiep}
-                disabled={!coTheDat}
-                className="self-start md:h-11 md:px-5"
-              >
-                Đã xong, sang bài tiếp
-                <ChevronRight size={16} strokeWidth={2} aria-hidden="true" className="shrink-0" />
-              </Nut>
-            )}
-            {pager}
-          </footer>
-        </article>
-      ) : (
-        <div className="flex w-full max-w-[720px] min-w-0 flex-col gap-8 max-md:gap-4">
-          {than}
-          <div className="border-t border-border pt-6">{pager}</div>
-        </div>
-      )}
+      <div className={LOP_HANG_BAI}>
+        {coNoiDung ? (
+          <article
+            aria-label={`Bài học ${muc.label}`}
+            className={`${LOP_COT_DOC} ${LOP_CHU_THAN_BAI} gap-10 max-md:gap-6`}
+          >
+            {than}
+            {flashcardCuoiBai}
+            <footer className="flex flex-col gap-5 border-t border-border pt-8 max-md:pt-6">
+              {tiep && (
+                <Nut
+                  bien="chinh"
+                  onClick={xongVaTiep}
+                  disabled={!coTheDat}
+                  className="self-start md:h-11 md:px-5"
+                >
+                  Đã xong, sang bài tiếp
+                  <ChevronRight size={16} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+                </Nut>
+              )}
+              {pager}
+            </footer>
+          </article>
+        ) : (
+          <div className={`${LOP_COT_DOC} gap-8 max-md:gap-4`}>
+            {than}
+            {flashcardCuoiBai}
+            <div className="border-t border-border pt-6">{pager}</div>
+          </div>
+        )}
+        {coCotPhai && (
+          <CotPhai muc={muc} cay={cay} mucLuc={dongMucLuc} trangThaiCua={trangThaiCua} />
+        )}
+      </div>
+      {hopThoaiDaXong}
     </div>
   )
 }

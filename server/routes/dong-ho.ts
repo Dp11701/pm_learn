@@ -5,7 +5,8 @@
 // - POST   /api/dong-ho/dung               { ghiGiay? } (409 canHoi);
 // - POST   /api/dong-ho/hoan-tac           Hoàn tác lần dừng / chuyển gần nhất;
 // - DELETE /api/phien-gio/:id, POST /api/phien-gio/:id/khoi-phuc.
-// itemId phải là mục học của cây (bất biến 8), không thì 404. Mỗi lần ghi: một transaction + tăng revision.
+// itemId phải là mục học của cây (bất biến 8), không thì 404; khôi phục phiên của mục đã bỏ khỏi cây → 409 (giữ bản
+// xoá). Mỗi lần ghi: một transaction + tăng revision.
 import { Router, type Request, type Response } from 'express'
 import { z } from 'zod'
 import type { Cay } from '../../shared/roadmap/index.ts'
@@ -107,8 +108,12 @@ export function routeDongHo(db: Db, cay: Pick<Cay, 'mucTheoId'>): Router {
   })
 
   r.post('/phien-gio/:id/khoi-phuc', (req: Request<{ id: string }>, res) => {
-    const phanHoi: KetQuaGhiPhien | undefined = khoiPhucPhien(db, idPhien(req))
-    if (!phanHoi) throw new LoiApi(404, TB_HOC.phienKhongKhoiPhuc(req.params.id))
+    const kq = khoiPhucPhien(db, idPhien(req), laMuc)
+    if (!kq) throw new LoiApi(404, TB_HOC.phienKhongKhoiPhuc(req.params.id))
+    if ('mucKhongCon' in kq) {
+      throw new LoiApi(409, TB_HOC.phienMucKhongCon(req.params.id, kq.mucKhongCon))
+    }
+    const phanHoi: KetQuaGhiPhien = kq
     res.json(phanHoi)
   })
 

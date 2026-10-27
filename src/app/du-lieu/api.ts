@@ -25,16 +25,19 @@ interface TuyChonGoi {
   method?: 'GET' | 'PUT' | 'POST' | 'DELETE'
   body?: unknown
   signal?: AbortSignal
+  /** Yêu cầu sống tiếp sau khi trang đóng (gửi chữ đang gõ lúc rời trang; thân ≤ 64 KiB) */
+  keepalive?: boolean
 }
 
 export async function goiApi<T>(
   duongDan: string,
   luocDo: z.ZodType<T>,
-  { method = 'GET', body, signal }: TuyChonGoi = {},
+  { method = 'GET', body, signal, keepalive }: TuyChonGoi = {},
 ): Promise<T> {
   const phanHoi = await fetch(duongDan, {
     method,
     signal,
+    ...(keepalive ? { keepalive: true } : {}),
     cache: 'no-store',
     headers: {
       Accept: 'application/json',
@@ -63,10 +66,13 @@ const LuocDoGiaTri = z.object({
   lyDo: z.string().optional(),
 })
 
+// z.object bỏ khoá lạ: trường nào web dùng phải khai ở đây (canOnLai thiếu thì cờ "Cần ôn lại" không bao giờ hiện).
 export const LuocDoAnhChup: z.ZodType<AnhChupHoc> = z.object({
   revision: z.number(),
   trangThai: z.record(z.string(), LuocDoMucTrangThai),
   luotMo: z.record(z.string(), z.string()),
+  /** Phase 3: id các mục Cần ôn lại (server tính; bất biến 3) */
+  canOnLai: z.array(z.string()).optional(),
 })
 
 export const LuocDoKetQuaDat: z.ZodType<KetQuaDatTrangThai> = z.object({

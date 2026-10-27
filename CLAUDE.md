@@ -98,9 +98,12 @@ nội dung đầu, sau bước 6.
 ## Trạng thái
 
 - Phase 0, 1, 2a, 2b: xong (báo cáo trong `docs/bao-cao/`; mục chờ duyệt của 2b gom vào lần dừng sau bước 1).
-- Bước 1 (phase 3 rút gọn): đang làm trên nhánh `wip/phase-3` (bước A server + hook đã commit).
-- Bước 5 (nội dung): đợt đầu Scope Management + PMP, ghi vào `noi-dung/` (thư mục nội dung thật, ngoài git của app).
+- Bước 1 (phase 3 rút gọn): xong 27/10/2026, báo cáo `docs/bao-cao/phase-3.md`. **Đang chờ duyệt** (gồm cả mục chờ
+  duyệt của 2b và nội dung đợt 1).
+- Bước 5 (nội dung): đợt 1 xong — 17 bài (Scope Management + PMP) trong `noi-dung/`, ghi chú soát
+  `docs/bao-cao/noi-dung-dot-1.md`. Soạn bài: `scripts/in-prompt.ts <slug>` → viết → `scripts/kiem-bai.ts <file> <slug>`;
+  mỗi bài một agent soạn + một agent soát độc lập (nguồn thật, không bịa).
 - Câu chữ tự đặt: `src/copy/cho-duyet.ts` (web), `shared/noi-dung/thong-bao.ts`, `server/noi-dung/thong-bao.ts`,
-  `server/nhap/thong-bao.ts`.
+  `server/nhap/thong-bao.ts`, `server/du-lieu/thong-bao.ts`.
 - Mọi thao tác chạm file nội dung đi qua `layKhoNoiDung(...)` / `file_ops` (server/noi-dung); không ghi file trực tiếp.
 - Chạy bộ dữ liệu mẫu: `npm run dev:mau -- --kich-ban=mac-dinh` (web 5322, API 5323, dữ liệu trong `.mau/`).

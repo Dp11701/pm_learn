@@ -1,5 +1,6 @@
 // Gợi ý "Có phải bạn muốn mở …?" của trang 404 (§8.10, đề xuất 5): so từng đoạn của đường dẫn sai với
-// tên, tên gốc, slug của các nút có trang riêng (mục học, lĩnh vực, phần) bằng hệ số Dice trên bigram
+// tên, tên gốc, slug của các nút có trang (mục học, lĩnh vực; phần → Lộ trình dạng danh sách lọc theo phần vì trang
+// Phần đã bỏ — đề xuất mục 10) bằng hệ số Dice trên bigram
 // của chữ đã gấp (foldVi). Vd. "risk-registr" → 0,87 (đề xuất 0.1).
 import type { Cay, Nut } from '../../../shared/roadmap'
 import { foldVi } from '../../../shared/tim-kiem'
@@ -16,7 +17,7 @@ export interface GoiY {
   diem: number
 }
 
-/** Trang của một nút; nhóm chưa có trang riêng. */
+/** Trang của một nút (phần: danh sách lọc theo phần, như duongDanNut ở trang bài); nhóm chưa có trang riêng. */
 export function duongDanCua(nut: Nut): string | undefined {
   switch (nut.kind) {
     case 'topic':
@@ -25,7 +26,7 @@ export function duongDanCua(nut: Nut): string | undefined {
     case 'area':
       return `/linh-vuc/${nut.slug}`
     case 'part':
-      return `/phan/${nut.slug}`
+      return `/lo-trinh?xem=danh-sach&phan=${nut.slug}`
     default:
       return undefined
   }

@@ -17,9 +17,9 @@ export const TB_HOC = {
   canLyDo: 'Cần ghi lý do Không áp dụng (không để trống).',
   lyDoChiKhiKhongApDung: 'lyDo chỉ dùng khi bước Áp dụng là Không áp dụng.',
   canKetQua: 'Ghi “Kết quả của bạn” trước khi đánh dấu bài thực hành Xong.',
-  /** Tài liệu / Chứng chỉ: bước Áp dụng tính theo khối khác, ở đây chỉ đánh dấu Không áp dụng */
-  chiKhongApDung: (loai: string, khoi: string) =>
-    `Mục ${loai}: bước Áp dụng tính theo khối ${khoi}; ở đây chỉ đánh dấu Không áp dụng (kèm lý do) được.`,
+  /** Tick một tiêu chí không còn trong bài (trang đang mở bản bài cũ) — đề xuất 1.5 */
+  tieuChiKhongCo: (khoa: string) =>
+    `Tiêu chí "${khoa}" không có trong bài hiện tại (bài vừa được sửa?). Tải lại trang rồi tick lại.`,
   duAnId: 'duAnId phải là số nguyên dương hoặc null.',
   khongCoDuAn: (id: number) => `Không có dự án id ${id}.`,
   tieuChi: 'tieuChi phải là object { "<khoá tiêu chí>": true | false }.',
@@ -42,6 +42,9 @@ export const TB_HOC = {
   matSau: 'Cần mặt sau của thẻ (không để trống).',
   theKhongKhoiPhuc: (id: string) =>
     `Không khôi phục được thẻ id ${id}: thẻ không nằm trong danh sách vừa xoá (đã quá 1 ngày hoặc chưa từng xoá).`,
+  /** Bất biến 8: bản vừa xoá thuộc mục đã bỏ khỏi cây (thay file cây sau khi xoá) */
+  theMucKhongCon: (id: string, itemId: string) =>
+    `Không khôi phục được thẻ id ${id}: mục học id "${itemId}" của thẻ không còn trong cây roadmap.`,
 
   // ---------- Đồng hồ ----------
   dangChayMucKhac: (ten: string) =>
@@ -59,4 +62,7 @@ export const TB_HOC = {
   khongCoPhien: (id: string) => `Không có phiên giờ id ${id}.`,
   phienKhongKhoiPhuc: (id: string) =>
     `Không khôi phục được phiên giờ id ${id}: phiên không nằm trong danh sách vừa xoá (đã quá 1 ngày hoặc chưa từng xoá).`,
+  /** Bất biến 8: bản vừa xoá thuộc mục đã bỏ khỏi cây */
+  phienMucKhongCon: (id: string, itemId: string) =>
+    `Không khôi phục được phiên giờ id ${id}: mục học id "${itemId}" của phiên không còn trong cây roadmap.`,
 } as const

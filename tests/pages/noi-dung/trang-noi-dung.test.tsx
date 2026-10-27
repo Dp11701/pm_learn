@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // Trang Nội dung /noi-dung, tab Nhập (phase 2b; F21/F22; đề xuất 1.6, 1.7, 3.8; D21) trên máy chủ giả theo hợp đồng
-// nhập: tab + URL, lô F22 (đủ 5 loại + ✕, "Nhập 13 file"), Gán cho mục…, file trùng, ◎, link trình soạn, nhập +
+// nhập: tab + URL, lô F22 (đủ 5 loại + ✕, "Nhập 13 file"), Gán cho mục…, file trùng, ◎, "Sao chép dòng lỗi" của dòng
+// ✕ (thay link trình soạn — trình soạn trong app đã bỏ, đề xuất mục 10), nhập +
 // Hoàn tác, Quét lại (nhập thẳng / có bảng / không có gì), "Có n file chưa nhận", ?muc= gán sẵn, giới hạn
 // phía trình duyệt, lô hết hạn (410), lỗi kiểm tra, axe.
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react'
@@ -218,9 +219,13 @@ describe('lô F22: bảng kết quả', () => {
     expect(nhanLoi.className).toContain('text-danger')
     expect(within(vuca).getByText('Dòng 3: thiếu dấu ":" sau loai')).toBeTruthy()
     expect(chuO(within(vuca).getAllByRole('cell')[1])).toBe('tên file')
+    // Trình soạn đã bỏ: không có link nào, không "Gán cho mục…"; có "Sao chép dòng lỗi" mô tả bằng tên file
+    expect(within(vuca).queryByRole('link')).toBeNull()
+    expect(within(vuca).queryByRole('button', { name: 'Gán cho mục…' })).toBeNull()
+    const saoChep = within(vuca).getByRole('button', { name: 'Sao chép dòng lỗi' })
     expect(
-      within(vuca).getByRole('link', { name: 'Mở trong trình soạn' }).getAttribute('href'),
-    ).toBe(`/hoc/vuca/soan?bo-dem=${encodeURIComponent('nhap:tok-f22:14')}`)
+      document.getElementById(saoChep.getAttribute('aria-describedby')!)?.textContent,
+    ).toContain('vuca.md')
 
     expect(screen.getByText('11 hợp lệ').tagName).toBe('STRONG')
     expect(screen.getByText('11 hợp lệ').parentElement!.textContent).toBe(
@@ -319,6 +324,67 @@ describe('lô F22: bảng kết quả', () => {
       'Không nhập được: File đã đổi.',
     )
     expect(screen.getByRole('table')).toBeTruthy()
+  })
+})
+
+describe('dòng ✕ Lỗi frontmatter: "Sao chép dòng lỗi" (trình soạn trong app đã bỏ — đề xuất mục 10)', () => {
+  it('sao chép "<tên file> · Dòng N: <lỗi>" + toast; không có link trình soạn', async () => {
+    const ghi = vi.fn().mockResolvedValue(undefined)
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText: ghi } })
+    await thaF22()
+    const vuca = hangCua('vuca.md')
+    fireEvent.click(within(vuca).getByRole('button', { name: 'Sao chép dòng lỗi' }))
+    await waitFor(() =>
+      expect(ghi).toHaveBeenCalledWith('vuca.md · Dòng 3: thiếu dấu ":" sau loai'),
+    )
+    expect(await screen.findByText('Đã sao chép dòng lỗi.')).toBeTruthy()
+    expect(document.querySelector('a[href*="/soan"]')).toBeNull()
+  })
+
+  it('trình duyệt không cho ghi clipboard → toast lỗi', async () => {
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockRejectedValue(new Error('không cho')) },
+    })
+    await thaF22()
+    fireEvent.click(within(hangCua('vuca.md')).getByRole('button', { name: 'Sao chép dòng lỗi' }))
+    const loi = await screen.findByRole('alert')
+    expect(loi.textContent).toContain('Không sao chép tự động được')
+  })
+
+  it('Quét lại: dòng lỗi chưa khớp mục không có "Gán cho mục…" (gán chỉ để mở trình soạn); sao chép đường dẫn file', async () => {
+    const ghi = vi.fn().mockResolvedValue(undefined)
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText: ghi } })
+    sv.traLoi.set('POST /api/nhap/quet-lai', () => ({
+      data: {
+        daNhap: 0,
+        fileOp: null,
+        chuaNhan: 0,
+        kiemTra: {
+          token: 'q-loi',
+          ketQua: [
+            dong({
+              chiSo: 0,
+              ten: 'hong.md',
+              loai: 'loi',
+              loi: { dong: 2, thongBao: 'thiếu id' },
+              duongDan: 'project-management/hong.md',
+            }),
+          ],
+          tomTat: { hopLe: 0, canhBao: 0, trung: 0, loi: 1 },
+          soNhapDuoc: 0,
+        },
+      },
+    }))
+    moTrang('/noi-dung?tab=nhap')
+    fireEvent.click(screen.getByRole('button', { name: 'Quét lại thư mục' }))
+    await screen.findByRole('table')
+    const hang = hangCua('hong.md')
+    expect(within(hang).queryByRole('button', { name: 'Gán cho mục…' })).toBeNull()
+    fireEvent.click(within(hang).getByRole('button', { name: 'Sao chép dòng lỗi' }))
+    await waitFor(() =>
+      expect(ghi).toHaveBeenCalledWith('project-management/hong.md · Dòng 2: thiếu id'),
+    )
   })
 })
 

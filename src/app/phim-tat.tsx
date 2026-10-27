@@ -3,7 +3,9 @@
 // (ô nhập, contenteditable, CodeMirror), IME đang ghép chữ, giữ Alt/Ctrl/⌘ (Shift chỉ cho "?"),
 // đang mở dialog modal (Radix tự xử lý Esc) hoặc focus ở menu/listbox/combobox (chúng tự xử lý phím).
 // Trang đăng ký phím của mình bằng usePhimTat; cùng một phím thì lớp trên cùng nhận (xem usePhimTat).
-// F27 hiện đủ bảng §11 như frame, kể cả phím của màn hình phase sau (cột phase trong sổ ghi lúc có tác dụng).
+// F27 hiện bảng §11 như frame, kể cả phím của màn hình phase sau (cột phase trong sổ ghi lúc có tác dụng) — trừ phím
+// của phần đã bỏ khỏi phạm vi (đề xuất mục 10, 27/10/2026): T Đồng hồ, E Soạn (trình soạn trong app), M Bản đồ ↔ Danh
+// sách và Enter "Mở panel" (panel của bản đồ).
 import {
   createContext,
   useCallback,
@@ -27,13 +29,10 @@ export type MaPhimToanCuc =
   | 'Digit2'
   | 'Digit3'
   | 'Digit4'
-  | 'KeyT'
-  | 'KeyE'
-  | 'KeyM'
   | 'Space'
 
-/** Phím do component đang focus tự xử lý (cây, bản đồ: roving tabindex); bộ xử lý toàn cục không nhận. */
-export type MaPhimCucBo = 'ArrowLeft' | 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'Enter'
+/** Phím do component đang focus tự xử lý (cây danh sách: roving tabindex); bộ xử lý toàn cục không nhận. */
+export type MaPhimCucBo = 'ArrowLeft' | 'ArrowUp' | 'ArrowDown' | 'ArrowRight'
 
 export type MaPhim = MaPhimToanCuc | MaPhimCucBo
 
@@ -47,12 +46,13 @@ export interface Phim {
 export type PhamViPhimTat =
   'toan-app' | 'bai-hoc-ban-do' | 'bai-hoc' | 'lo-trinh' | 'ban-do-danh-sach' | 'phien-on'
 
+// Bản đồ đã bỏ (đề xuất mục 10): phạm vi "…, panel bản đồ" / "Bản đồ, danh sách" chỉ còn Bài học / Danh sách.
 export const TEN_PHAM_VI: Record<PhamViPhimTat, string> = {
   'toan-app': 'Toàn app',
-  'bai-hoc-ban-do': 'Bài học, panel bản đồ',
+  'bai-hoc-ban-do': 'Bài học',
   'bai-hoc': 'Bài học',
   'lo-trinh': 'Lộ trình',
-  'ban-do-danh-sach': 'Bản đồ, danh sách',
+  'ban-do-danh-sach': 'Danh sách',
   'phien-on': 'Chỉ trong phiên ôn',
 }
 
@@ -87,16 +87,12 @@ export const SO_PHIM_TAT: readonly DongPhimTat[] = [
     phamVi: 'bai-hoc-ban-do',
     phase: '2a',
   },
-  { moTa: 'Đồng hồ', phim: [p('KeyT', 'T')], phamVi: 'bai-hoc', phase: '3' },
-  { moTa: 'Soạn', phim: [p('KeyE', 'E')], phamVi: 'bai-hoc', phase: '7b' },
-  { moTa: 'Bản đồ ↔ Danh sách', phim: [p('KeyM', 'M')], phamVi: 'lo-trinh', phase: '4' },
   {
     moTa: 'Di chuyển giữa mục',
     phim: [p('ArrowLeft', '←'), p('ArrowUp', '↑'), p('ArrowDown', '↓'), p('ArrowRight', '→')],
     phamVi: 'ban-do-danh-sach',
     phase: '4',
   },
-  { moTa: 'Mở panel', phim: [p('Enter', 'Enter')], phamVi: 'ban-do-danh-sach', phase: '4' },
   { moTa: 'Lật thẻ', phim: [p('Space', 'Space')], phamVi: 'phien-on', phase: '8' },
   { moTa: 'Quên', phim: [p('Digit1', '1')], phamVi: 'phien-on', phase: '8' },
   { moTa: 'Nhớ', phim: [p('Digit2', '2')], phamVi: 'phien-on', phase: '8' },
@@ -107,10 +103,10 @@ export interface NhomBangPhimTat {
   dong: readonly DongPhimTat[]
 }
 
-// F27 gom 6 phạm vi thành 4 nhóm (T, E vào "Bài học · panel bản đồ"; M, mũi tên, Enter vào "Lộ trình").
+// F27 gom 6 phạm vi thành 4 nhóm; nhóm "Bài học · panel bản đồ" của frame bỏ "panel bản đồ" (bản đồ đã bỏ).
 const NHOM_F27: readonly { ten: string; phamVi: readonly PhamViPhimTat[] }[] = [
   { ten: 'Toàn app', phamVi: ['toan-app'] },
-  { ten: 'Bài học · panel bản đồ', phamVi: ['bai-hoc-ban-do', 'bai-hoc'] },
+  { ten: 'Bài học', phamVi: ['bai-hoc-ban-do', 'bai-hoc'] },
   { ten: 'Lộ trình', phamVi: ['lo-trinh', 'ban-do-danh-sach'] },
   { ten: 'Chỉ trong phiên ôn', phamVi: ['phien-on'] },
 ]
@@ -132,9 +128,6 @@ const MA_TOAN_CUC: ReadonlySet<string> = new Set<MaPhimToanCuc>([
   'Digit2',
   'Digit3',
   'Digit4',
-  'KeyT',
-  'KeyE',
-  'KeyM',
   'Space',
 ])
 

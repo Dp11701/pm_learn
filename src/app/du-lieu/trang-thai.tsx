@@ -7,6 +7,9 @@
 //   đã xác nhận gần nhất + toast lỗi "Thử lại"; lưu xong thì toast "Đã chuyển … sang …" + "Hoàn tác" 5 giây
 //   (Hoàn tác gửi lại giá trị cũ với via 'hoan-tac'). Các lần ghi chạy nối tiếp theo thứ tự bấm.
 // - useGhiLuotMo(id): ghi một lượt mở bài cho mỗi lần vào trang bài.
+// - Cờ "Cần ôn lại" (đề xuất 3.3, bất biến 3): danh sách `canOnLai` của GET /api/state (server tính); chỉ tính khi
+//   mục đang Đã xong (canOnLaiCua). Đổi khỏi Đã xong → bỏ cờ ngay (lạc quan); đặt Đã xong → tải lại ảnh chụp khi hết
+//   lần ghi (lần ghi của chính tab không làm tải lại theo revision); sang ngày mới (homNay của /api/meta) → tải lại.
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import {
   QueryClient,
@@ -17,6 +20,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { canOnLaiTrong } from '../../../shared/domain/can-on-lai'
 import { TEN_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import { layCay, type MucHoc } from '../../../shared/roadmap'
 import {
@@ -29,6 +33,7 @@ import {
 } from '../../../server/du-lieu/hop-dong-trang-thai'
 import TenMuc from '../../components/TenMuc'
 import { useToast } from '../../components/Toast'
+import { DA_LUU_LY_DO_BO_QUA } from '../../copy/cho-duyet'
 import { useKetNoi } from '../ket-noi'
 import { guiDatTrangThai, guiLuotMo, taiAnhChup } from './api'
 import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
@@ -63,12 +68,39 @@ export function layClientRong(): QueryClient {
   return clientRong
 }
 
-/** Gắn (hoặc gỡ, khi null) một mục vào ảnh chụp, không đổi đối tượng cũ. */
+/**
+ * Gắn (hoặc gỡ, khi null) một mục vào ảnh chụp, không đổi đối tượng cũ. Mục không còn Đã xong thì bỏ khỏi
+ * `canOnLai` (cờ chỉ có ở mục Đã xong); về lại Đã xong thì cờ chờ lần tải lại ảnh chụp (server tính).
+ */
 export function ganMuc(anhChup: AnhChupHoc, id: string, muc: MucTrangThai | null): AnhChupHoc {
   const trangThai = { ...anhChup.trangThai }
   if (muc) trangThai[id] = muc
   else delete trangThai[id]
-  return { ...anhChup, trangThai }
+  const moi: AnhChupHoc = { ...anhChup, trangThai }
+  if (muc?.status !== 'done' && anhChup.canOnLai?.includes(id)) {
+    moi.canOnLai = anhChup.canOnLai.filter((x) => x !== id)
+  }
+  return moi
+}
+
+/** Cờ "Cần ôn lại" của mục: có trong `canOnLai` của server VÀ đang Đã xong. */
+export function canOnLaiCuaAnhChup(anhChup: AnhChupHoc | undefined, id: string): boolean {
+  return trangThaiTrong(anhChup, id) === 'da-xong' && canOnLaiTrong(anhChup, id)
+}
+
+/**
+ * Client cần tải lại ảnh chụp để biết cờ "Cần ôn lại" (vừa đặt Đã xong: cờ do server tính). Chờ tới khi không còn
+ * lần ghi nào (tải chen vào lúc đang ghi có thể đè giá trị lạc quan).
+ */
+const canTaiCanOnLai = new WeakSet<QueryClient>()
+/** homNay (của /api/meta) lúc ảnh chụp được dùng gần nhất, theo QueryClient: sang ngày mới thì tải lại. */
+const ngayCuaAnhChup = new WeakMap<QueryClient, string>()
+
+/** Tải lại ảnh chụp nếu đang chờ cờ "Cần ôn lại" và không còn lần ghi nào khác (`dangGhi` gồm cả lần đang gọi). */
+function taiCanOnLaiNeuRanh(client: QueryClient, dangGhi: number): void {
+  if (!canTaiCanOnLai.has(client) || dangGhi > 0) return
+  canTaiCanOnLai.delete(client)
+  void client.invalidateQueries({ queryKey: KHOA_TRANG_THAI }, { cancelRefetch: false })
 }
 
 export interface DuLieuTrangThai {
@@ -81,6 +113,8 @@ export interface DuLieuTrangThai {
   taiLai: () => void
   trangThaiCua: (id: string) => TrangThaiHoc
   lyDoBoQuaCua: (id: string) => string | undefined
+  /** Cờ "Cần ôn lại" (suy ra: Đã xong + có thẻ đến hạn theo server) */
+  canOnLaiCua: (id: string) => boolean
 }
 
 export function useTrangThai(): DuLieuTrangThai {
@@ -99,7 +133,9 @@ export function useTrangThai(): DuLieuTrangThai {
     client,
   )
   const anhChup = q.data
-  const revisionMeta = useKetNoi().meta?.revision
+  const meta = useKetNoi().meta
+  const revisionMeta = meta?.revision
+  const homNayMeta = meta?.homNay
   const soDangGhi = useIsMutating({ mutationKey: KHOA_GHI }, client)
 
   // Server có dữ liệu mới hơn ảnh chụp → tải lại (không chen vào lúc đang ghi; cancelRefetch false để nhiều
@@ -109,6 +145,19 @@ export function useTrangThai(): DuLieuTrangThai {
     if (!canTaiLaiTheoMeta(ctx, 'trang-thai', revisionMeta, anhChup.revision)) return
     void ctx.invalidateQueries({ queryKey: KHOA_TRANG_THAI }, { cancelRefetch: false })
   }, [ctx, revisionMeta, anhChup, soDangGhi])
+
+  // Cờ "Cần ôn lại": vừa đặt Đã xong (chờ hết lần ghi), hoặc sang ngày mới (thẻ tới hạn) → tải lại ảnh chụp.
+  useEffect(() => {
+    if (!ctx || anhChup === undefined) return
+    taiCanOnLaiNeuRanh(ctx, soDangGhi)
+    if (homNayMeta === undefined) return
+    const truoc = ngayCuaAnhChup.get(ctx)
+    if (truoc === homNayMeta || soDangGhi > 0) return
+    ngayCuaAnhChup.set(ctx, homNayMeta)
+    if (truoc !== undefined) {
+      void ctx.invalidateQueries({ queryKey: KHOA_TRANG_THAI }, { cancelRefetch: false })
+    }
+  }, [ctx, anhChup, soDangGhi, homNayMeta])
 
   const { refetch } = q
   const taiLai = useCallback(() => void refetch(), [refetch])
@@ -120,6 +169,7 @@ export function useTrangThai(): DuLieuTrangThai {
       taiLai,
       trangThaiCua: (id: string) => trangThaiTrong(anhChup, id),
       lyDoBoQuaCua: (id: string) => lyDoBoQuaTrong(anhChup, id),
+      canOnLaiCua: (id: string) => canOnLaiCuaAnhChup(anhChup, id),
     }),
     [anhChup, ctx, q.isError, taiLai],
   )
@@ -249,8 +299,16 @@ export function useDatTrangThai(): ApiDatTrangThai {
           },
       )
       if (!kq.daDoi) return
+      // Vừa thành Đã xong: cờ "Cần ôn lại" do server tính → tải lại ảnh chụp khi hết lần ghi (onSettled / useTrangThai)
+      if (kq.sau.trangThai === 'da-xong') canTaiCanOnLai.add(client)
+      // Mục đang Bỏ qua chỉ đổi lý do: không phải "chuyển sang Bỏ qua"
+      const chiDoiLyDo = kq.truoc.trangThai === 'bo-qua' && kq.sau.trangThai === 'bo-qua'
       toast({
-        noiDung: (
+        noiDung: chiDoiLyDo ? (
+          <>
+            {DA_LUU_LY_DO_BO_QUA} {tenMuc(kq.id)}
+          </>
+        ) : (
           <>
             Đã chuyển {tenMuc(kq.id)} sang {TEN_TRANG_THAI_HOC[kq.sau.trangThai]}
           </>
@@ -268,6 +326,7 @@ export function useDatTrangThai(): ApiDatTrangThai {
     // Lần ghi cuối của mục xong (thành công hay lỗi) → bỏ giá trị đã xác nhận đang giữ.
     onSettled: (_kq, _loi, bien) => {
       if (soLanDangGhi(client, bien.id) <= 1) bangXacNhan(client).delete(bien.id)
+      taiCanOnLaiNeuRanh(client, client.isMutating({ mutationKey: KHOA_GHI }) - 1)
     },
   })
   const { mutate } = mutation

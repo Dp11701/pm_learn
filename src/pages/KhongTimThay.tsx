@@ -1,6 +1,7 @@
 // 404 (F26, F26b, §8.10): H1 trong khung app, gợi ý mục gần nhất, ô tìm, nút phụ "Về Tổng quan" (D24).
 // Cách trên 64, các dòng cách 16; mobile lề 16 (D35), chữ 16/26 như F26b; ô và nút cao 36 / 44 (D17).
-// Dùng cho route '*', slug không có trong cây (/hoc, /linh-vuc, /phan) và /hoc/:slug/soan có slug sai.
+// Dùng cho route '*' (kể cả đường dẫn của phần đã bỏ: trang P1, /phan, …/soan) và slug không có trong cây (/hoc,
+// /linh-vuc).
 import { Fragment, useMemo } from 'react'
 import { Link, useLocation } from 'react-router'
 import { layCay, type Cay } from '../../shared/roadmap'

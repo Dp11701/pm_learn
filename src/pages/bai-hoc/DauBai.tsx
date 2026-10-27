@@ -1,56 +1,48 @@
-// Đầu bài (F11, F17, F18; §8.5, §8.7, D1, D2, D8): chip loại C4 + chip nội dung C8 · H1 tên mục (lang=en)
+// Đầu bài (F11, F17, F18; §8.5, §8.7, D1, D2, D8, D34): chip loại C4 + chip nội dung C8 · H1 tên mục (lang=en)
 // + " — giải nghĩa" (muted 500) · dòng "Tên gốc trên roadmap: …" (đề xuất 1.3) · segmented C6 (đổi trạng thái
-// có hiệu lực ngay, toast Hoàn tác) + "Xem trên bản đồ", "Soạn" · thanh 4 bước C10 (phase 2a: Áp dụng theo dữ
-// liệu đã lưu — chứng chỉ "Không áp dụng" ở khối Kế hoạch thi, đề xuất 3.2; bước khác chưa làm; Kiểm tra "Không
-// áp dụng · chưa có câu hỏi" khi bài không có câu hỏi, D8) · dải vị trí C13.
-// Mục chưa có nội dung giữ đủ đầu bài (D8). "Đã học n phút" / đồng hồ (T) có ở phase 3; phím E ở phase 7b.
+// có hiệu lực ngay, toast Hoàn tác; đang Bỏ qua thì dòng lý do tuỳ chọn — đề xuất 3.1) + "Xem trong danh sách" (thay
+// "Xem trên bản đồ"; không có "Soạn" — bản đồ, trình soạn đã bỏ, đề xuất mục 10) · thanh 4 bước C10 tính từ dữ liệu
+// học của mục (shared/domain/bon-buoc.ts qua useBonBuoc, đổi ngay khi gõ / bấm; Kiểm tra "Không áp dụng · chưa có
+// câu hỏi" khi bài không có câu hỏi, D8; lỗi đọc → "Lỗi: không đọc được tiến độ bước — Thử lại") · dải vị trí C13.
+// Mục chưa có nội dung giữ đủ đầu bài (D8). Không có đồng hồ / "Đã học n phút" (phạm vi rút gọn 27/10/2026).
 // Khoảng cách theo F11: các dòng cách 16, đáy 24 + đường kẻ.
-import type { MouseEvent } from 'react'
-import { CircleAlert, Map as IconBanDo, Pencil } from 'lucide-react'
+import { useRef, type MouseEvent } from 'react'
+import { CircleAlert, List as IconDanhSach } from 'lucide-react'
 import type { LoiDong } from '../../../shared/noi-dung'
 import type { Cay, MucHoc } from '../../../shared/roadmap'
-import {
-  CAC_BUOC,
-  type Buoc,
-  type TinhTrangBuoc,
-  type TrangThaiNoiDung,
-} from '../../../shared/domain/trang-thai'
+import { DU_LIEU_BON_BUOC_TRONG, tinhBonBuoc } from '../../../shared/domain/bon-buoc'
+import type { Buoc, TrangThaiNoiDung } from '../../../shared/domain/trang-thai'
+import { useBonBuoc, useHoc } from '../../app/du-lieu/hoc'
 import { NutLink } from '../../components/Nut'
 import TenMuc from '../../components/TenMuc'
 import TieuDeTrang from '../../components/TieuDeTrang'
 import { DongCho } from '../../components/TrangThaiTrong'
 import DaiViTri from '../../components/bai-hoc/DaiViTri'
-import { duongDanBanDo, duongDanSoan } from '../../components/bai-hoc/dinh-vi'
+import { duongDanDanhSach } from '../../components/bai-hoc/dinh-vi'
 import ChipLoai from '../../components/trang-thai/ChipLoai'
 import ChipNoiDung from '../../components/trang-thai/ChipNoiDung'
 import SegmentedTrangThai from '../../components/trang-thai/SegmentedTrangThai'
-import ThanhBonBuoc, { type TinhTrangBonBuoc } from '../../components/trang-thai/ThanhBonBuoc'
+import { LyDoBoQua } from '../../components/bai-hoc/HopThoaiBoQua'
+import ThanhBonBuoc, { propsTuKetQua } from '../../components/trang-thai/ThanhBonBuoc'
 import { LOP_H1 } from '../chung'
 import type { DatTrangThaiTrang, TrangThaiTrang } from './kieu-trang'
-import { LOI_DOC_TRANG_THAI } from '../../copy/cho-duyet'
+import { LOI_DOC_TRANG_THAI, XEM_TRONG_DANH_SACH } from '../../copy/cho-duyet'
 
 /**
- * Thanh 4 bước khi mới có dữ liệu bước Áp dụng (Hiểu, Kiểm tra, Ghi nhớ có ở phase 3): Áp dụng theo dữ liệu đã
- * lưu, bước khác chưa làm; không có câu hỏi → Kiểm tra Không áp dụng.
+ * Bấm một bước: cuộn tới khối và đưa focus vào đó (không đổi URL). Khối ở cột phải (card Flashcard, bước Ghi nhớ):
+ * cột dính và tự cuộn nên chỉ cuộn vừa đủ thấy card (block 'nearest') — 'start' kéo cả trang xuống ~800px.
  */
-export function bonBuocBanDau(
-  coCauHoi: boolean,
-  apDung: TinhTrangBuoc = 'chua-lam',
-): TinhTrangBonBuoc {
-  const tt = Object.fromEntries(CAC_BUOC.map((b) => [b, 'chua-lam'])) as TinhTrangBonBuoc
-  tt['ap-dung'] = apDung
-  if (!coCauHoi) tt['kiem-tra'] = 'khong-ap-dung'
-  return tt
-}
-
-/** Bấm một bước: cuộn tới khối và đưa focus vào đó (không đổi URL). */
 function denKhoi(_b: Buoc, e: MouseEvent<HTMLAnchorElement>) {
   const id = e.currentTarget.getAttribute('href')?.slice(1)
   const khoi = id ? document.getElementById(id) : null
   if (!khoi) return
   e.preventDefault()
   const giam = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  khoi.scrollIntoView?.({ behavior: giam ? 'auto' : 'smooth', block: 'start' })
+  const trongCotPhai = khoi.closest('aside') !== null
+  khoi.scrollIntoView?.({
+    behavior: giam ? 'auto' : 'smooth',
+    block: trongCotPhai ? 'nearest' : 'start',
+  })
   khoi.focus({ preventScroll: true })
 }
 
@@ -63,11 +55,45 @@ export interface PropsDauBai {
   giaiNghia?: string
   hoc: TrangThaiTrang
   datHoc?: DatTrangThaiTrang
-  /** null khi chưa biết (bài đang tải, lỗi) */
-  coCauHoi: boolean | null
-  /** Bước Áp dụng theo dữ liệu đã lưu (useApDung().buocCua); đổi ngay khi lưu / hoàn tác */
-  buocApDung: TinhTrangBuoc
+  /**
+   * Khoá các câu Tự kiểm tra hiện thành C21 (cacKhoaCauHoi của ThanBai): [] = bài không có câu hỏi (D8); null =
+   * chưa biết (bài đang tải, lỗi đọc file) → bước Kiểm tra "chưa làm", không ghi Không áp dụng.
+   */
+  cauHoiKhoa: readonly string[] | null
   neoBuoc: Partial<Record<Buoc, string>>
+}
+
+/** Thanh 4 bước của mục: dữ liệu học + câu hỏi của bài; chưa có dữ liệu thì mọi bước "chưa làm". */
+function BonBuocDauBai({
+  muc,
+  cauHoiKhoa,
+  neoBuoc,
+}: {
+  muc: MucHoc
+  cauHoiKhoa: readonly string[] | null
+  neoBuoc: Partial<Record<Buoc, string>>
+}) {
+  const { loi, taiLai } = useHoc(muc.id)
+  const daTai = useBonBuoc(muc.id, muc.mau, cauHoiKhoa ?? [])
+  const kq =
+    daTai ??
+    tinhBonBuoc({ mau: muc.mau, cauHoiKhoa: cauHoiKhoa ?? [], hoc: DU_LIEU_BON_BUOC_TRONG })
+  const props = propsTuKetQua(kq)
+  if (cauHoiKhoa === null) {
+    // Chưa biết câu hỏi của bài: Kiểm tra theo câu trả lời đã có thì không tính được — để "chưa làm"
+    props.tinhTrang = { ...props.tinhTrang, 'kiem-tra': 'chua-lam' }
+    props.ghiChu = { ...props.ghiChu, 'kiem-tra': undefined }
+    props.voHieu = []
+  }
+  return (
+    <ThanhBonBuoc
+      {...props}
+      lienKet={neoBuoc}
+      khiChon={denKhoi}
+      loi={loi && daTai === undefined}
+      thuLai={taiLai}
+    />
+  )
 }
 
 export default function DauBai({
@@ -78,13 +104,18 @@ export default function DauBai({
   giaiNghia,
   hoc,
   datHoc,
-  coCauHoi,
-  buocApDung,
+  cauHoiKhoa,
   neoBuoc,
 }: PropsDauBai) {
-  const khongCau = coCauHoi === false
+  const boQua = !hoc.dangTai && !hoc.loi && hoc.trangThaiCua(muc.id) === 'bo-qua'
+  const refDau = useRef<HTMLElement>(null)
+  /** Dòng lý do Bỏ qua mất lúc đang giữ focus (vd. phím 2): focus về đoạn đang chọn của segmented. */
+  function focusSegmented() {
+    if (document.activeElement && document.activeElement !== document.body) return
+    refDau.current?.querySelector<HTMLElement>('[role="radio"][aria-checked="true"]')?.focus()
+  }
   return (
-    <header className="flex flex-col gap-4 border-b border-border pb-6 max-md:pb-4">
+    <header ref={refDau} className="flex flex-col gap-4 border-b border-border pb-6 max-md:pb-4">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <ChipLoai loai={muc.mau} />
         {noiDung === null ? (
@@ -118,6 +149,7 @@ export default function DauBai({
             loi={datHoc?.loiLuu(muc.id) ?? false}
             thuLai={datHoc ? () => datHoc.thuLai(muc.id) : undefined}
           />
+          {boQua && datHoc && <LyDoBoQua muc={muc} traFocus={focusSegmented} />}
           {hoc.loi && (
             <p className="m-0 flex flex-wrap items-center gap-1.5 text-[length:var(--fs-meta)] leading-[var(--lh-meta)] text-danger">
               <CircleAlert size={14} strokeWidth={2} aria-hidden="true" className="shrink-0" />
@@ -132,23 +164,12 @@ export default function DauBai({
             </p>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <NutLink to={duongDanBanDo(muc)} bien="phu" icon={IconBanDo}>
-            Xem trên bản đồ
-          </NutLink>
-          <NutLink to={duongDanSoan(muc)} bien="phu" icon={Pencil}>
-            Soạn
-          </NutLink>
-        </div>
+        <NutLink to={duongDanDanhSach(muc)} bien="phu" icon={IconDanhSach}>
+          {XEM_TRONG_DANH_SACH}
+        </NutLink>
       </div>
 
-      <ThanhBonBuoc
-        tinhTrang={bonBuocBanDau(!khongCau, buocApDung)}
-        lienKet={neoBuoc}
-        khiChon={denKhoi}
-        ghiChu={khongCau ? { 'kiem-tra': 'Không áp dụng · chưa có câu hỏi' } : {}}
-        voHieu={khongCau ? ['kiem-tra'] : []}
-      />
+      <BonBuocDauBai muc={muc} cauHoiKhoa={cauHoiKhoa} neoBuoc={neoBuoc} />
 
       <DaiViTri muc={muc} cay={cay} trangThaiCua={hoc.trangThaiCua} />
     </header>

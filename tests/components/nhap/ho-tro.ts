@@ -78,7 +78,6 @@ export function dong(
     chuyenVeBanNhap: false,
     thayBanNhap: false,
     ghiChu: null,
-    khoaBoDem: null,
     ...kq,
   }
 }
@@ -124,7 +123,6 @@ export function loF22(token = 'tok-f22'): PhanHoiKiemTra {
       loai: 'loi',
       muc: mucNgan('vuca'),
       loi: { dong: 3, thongBao: 'thiếu dấu ":" sau loai' },
-      khoaBoDem: `nhap:${token}:14`,
     }),
   )
   return { token, ketQua, tomTat: { hopLe: 11, canhBao: 2, trung: 1, loi: 1 }, soNhapDuoc: 13 }

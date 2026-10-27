@@ -1,18 +1,6 @@
-// Menu của khung app (§6.1, C34): thứ tự, route, icon như frame; mục đang mở suy từ đường dẫn.
-import {
-  Award,
-  BookA,
-  ChartColumn,
-  Copy,
-  Files,
-  LayoutDashboard,
-  Library,
-  Route,
-  SlidersHorizontal,
-  StickyNote,
-  type LucideIcon,
-} from 'lucide-react'
-import { layCay } from '../../../shared/roadmap'
+// Menu của khung app (§6.1, C34): thứ tự, route, icon như frame; mục đang mở suy từ đường dẫn. Chỉ còn 4 mục:
+// Thống kê, Bộ hồ sơ dự án, Chứng chỉ, Thuật ngữ, Ghi chú, Cài đặt (nhóm P1) đã bỏ khỏi phạm vi (đề xuất mục 10).
+import { Copy, LayoutDashboard, Library, Route, type LucideIcon } from 'lucide-react'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import { chuBadge, type KieuBadge } from '../../components/trang-thai/Badge'
 import type { DuLieuKhung } from './du-lieu-khung'
@@ -20,17 +8,7 @@ import type { DuLieuKhung } from './du-lieu-khung'
 /** Tên app (logo C34, tooltip rail, top bar khi không có tên trang). */
 export const TEN_APP = 'Học PM A–Z'
 
-export type KhoaMenu =
-  | 'tong-quan'
-  | 'lo-trinh'
-  | 'on-tap'
-  | 'noi-dung'
-  | 'thong-ke'
-  | 'ho-so'
-  | 'chung-chi'
-  | 'thuat-ngu'
-  | 'ghi-chu'
-  | 'cai-dat'
+export type KhoaMenu = 'tong-quan' | 'lo-trinh' | 'on-tap' | 'noi-dung'
 
 export interface MucMenu {
   khoa: KhoaMenu
@@ -44,12 +22,6 @@ export const MENU: readonly MucMenu[] = [
   { khoa: 'lo-trinh', nhan: 'Lộ trình', den: '/lo-trinh', icon: Route },
   { khoa: 'on-tap', nhan: 'Ôn tập', den: '/on-tap', icon: Copy },
   { khoa: 'noi-dung', nhan: 'Nội dung', den: '/noi-dung', icon: Library },
-  { khoa: 'thong-ke', nhan: 'Thống kê', den: '/thong-ke', icon: ChartColumn },
-  { khoa: 'ho-so', nhan: 'Bộ hồ sơ dự án', den: '/ho-so', icon: Files },
-  { khoa: 'chung-chi', nhan: 'Chứng chỉ', den: '/chung-chi', icon: Award },
-  { khoa: 'thuat-ngu', nhan: 'Thuật ngữ', den: '/thuat-ngu', icon: BookA },
-  { khoa: 'ghi-chu', nhan: 'Ghi chú', den: '/ghi-chu', icon: StickyNote },
-  { khoa: 'cai-dat', nhan: 'Cài đặt', den: '/cai-dat', icon: SlidersHorizontal },
 ]
 
 /** "Xem tất cả (n)" của khối Đang học: Danh sách lọc Đang học (§6.3, F08). */
@@ -61,19 +33,11 @@ export interface MenuDangMo {
   chinhXac: boolean
 }
 
-// Trang thuộc roadmap nhưng không có mục menu riêng → tô Lộ trình (F10, F11, F29, F30).
-const CON_CUA_LO_TRINH = ['/linh-vuc/', '/phan/', '/lo-trinh-goi-y']
+// Trang thuộc roadmap nhưng không có mục menu riêng → tô Lộ trình (F10, F11): trang bài (mọi mẫu — trang Chứng chỉ
+// của F34b đã bỏ) và trang lĩnh vực.
+const CON_CUA_LO_TRINH = ['/hoc/', '/linh-vuc/']
 
-function laMucChungChi(slug: string): boolean {
-  try {
-    return layCay().mucTheoSlug.get(decodeURIComponent(slug))?.mau === 'chung-chi'
-  } catch {
-    // Cây lỗi: trang lỗi cây tự báo; menu vẫn tô Lộ trình.
-    return false
-  }
-}
-
-/** Mục menu đang mở theo đường dẫn; bài Chứng chỉ tô "Chứng chỉ" (F34b), bài khác tô "Lộ trình". */
+/** Mục menu đang mở theo đường dẫn; trang bài, trang lĩnh vực tô "Lộ trình". */
 export function menuDangMo(pathname: string): MenuDangMo | null {
   const duong = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
   for (const m of MENU) {
@@ -82,8 +46,6 @@ export function menuDangMo(pathname: string): MenuDangMo | null {
   for (const m of MENU) {
     if (m.den !== '/' && duong.startsWith(`${m.den}/`)) return { khoa: m.khoa, chinhXac: false }
   }
-  const bai = /^\/hoc\/([^/]+)/.exec(duong)
-  if (bai) return { khoa: laMucChungChi(bai[1]) ? 'chung-chi' : 'lo-trinh', chinhXac: false }
   if (CON_CUA_LO_TRINH.some((dau) => duong.startsWith(dau))) {
     return { khoa: 'lo-trinh', chinhXac: false }
   }

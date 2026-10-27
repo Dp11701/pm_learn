@@ -2,9 +2,9 @@
 // hiện, theo thứ tự mẫu. Mục lục (D15), neo của thanh 4 bước và Đủ khối đều đọc cùng danh sách này nên không
 // trỏ tới khối không hiện.
 // - khối có chữ: hiện (khối trùng hiện cả hai, neo thứ hai là "<id>-2");
-// - khối ★ chưa có chữ: ô nét đứt "Chưa có …" ở đúng vị trí (neo = id khối);
+// - khối ★ chưa có chữ: ô nét đứt "Chưa có …" ở đúng vị trí (neo = id khối); riêng Thực hành vẫn có phần làm bài;
 // - khối tuỳ chọn trống: ẩn;
-// - khối do app tạo: Nói lại, Bản của tôi, Kế hoạch thi luôn hiện; Mục liên quan chỉ khi lien_quan tra được
+// - khối do app tạo: Nói lại, Bản của tôi, Kế hoạch thi của tôi luôn hiện; Mục liên quan chỉ khi lien_quan tra được
 //   mục; Nhật ký thi thử (P2) ẩn;
 // - khối không có trong mẫu: hiện sau các khối mẫu, theo thứ tự file.
 import {
@@ -33,7 +33,7 @@ export function tenKhoi(khoi: Khoi): string {
   return cacTen(khoi.mau).find((t) => chuanHoaTieuDe(t) === chuan) ?? khoi.mau.tieuDe
 }
 
-/** Kiểu khối do app tạo luôn hiện (ô "Có ở phase n" tới khi có dữ liệu). */
+/** Kiểu khối do app tạo luôn hiện: Nói lại (bước Hiểu), Bản của tôi / Kế hoạch thi của tôi (thẻ Thực hành, bước Áp dụng). */
 const APP_LUON_HIEN = new Set(['noi-lai', 'ban-cua-toi', 'ke-hoach-thi'])
 
 export function cacOHien(bai: KetQuaBai, { coLienQuan }: { coLienQuan: boolean }): OHien[] {
@@ -82,11 +82,14 @@ export function soCauHoi(cac: readonly OHien[]): number {
 
 const KIEU_AP_DUNG = new Set(['thuc-hanh', 'ban-cua-toi', 'ke-hoach-thi'])
 
-/** Neo của từng bước trên thanh 4 bước: chỉ trỏ tới ô đang hiện. Ghi nhớ (card Flashcard) có ở phase 3. */
+/**
+ * Neo của từng bước trên thanh 4 bước: chỉ trỏ tới ô đang hiện có việc của bước đó. Ô "Chưa có" không phải neo, trừ
+ * Thực hành (luôn có phần làm bài — ThanBai). Ghi nhớ (card Flashcard) do trang thêm.
+ */
 export function neoBonBuoc(cac: readonly OHien[]): Partial<Record<Buoc, string>> {
   const neo: Partial<Record<Buoc, string>> = {}
   for (const o of cac) {
-    if (o.loai === 'thieu' || !o.mau) continue
+    if (!o.mau || (o.loai === 'thieu' && o.mau.kieu !== 'thuc-hanh')) continue
     const kieu = o.mau.kieu
     if (kieu === 'noi-lai') neo.hieu ??= `#${o.id}`
     else if (KIEU_AP_DUNG.has(kieu)) neo['ap-dung'] ??= `#${o.id}`
@@ -96,8 +99,9 @@ export function neoBonBuoc(cac: readonly OHien[]): Partial<Record<Buoc, string>>
 }
 
 /**
- * Ô do app tạo trên khung bài của mục chưa có nội dung (KhungBaiTrong vẽ chính các khối này, vd. Kế hoạch thi):
- * neo của thanh 4 bước trỏ tới đó như ở trang bài.
+ * Ô chứa việc của người học trên khung bài của mục chưa có nội dung (KhungBaiTrong vẽ chính các khối này: thẻ Thực
+ * hành ở Thực hành trên dự án thật / Bản của tôi / Kế hoạch thi của tôi): neo của thanh 4 bước và Mục lục trỏ tới đó
+ * như ở trang bài.
  */
 export function cacOAppKhungBai(mau: MauBai): OHien[] {
   return khoiKhungBai(mau)

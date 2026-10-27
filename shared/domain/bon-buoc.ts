@@ -3,6 +3,8 @@
 // F19 "Đã xong khi còn thiếu bước" (quyết định 10) và "x/4 · Tiếp: <bước>" (x/4 đếm bước xong và Không áp
 // dụng; Tiếp là bước chưa qua đầu tiên).
 // Câu F19 lấy nguyên văn bảng 3.2 (đề xuất), chữ "Đã xong" của dòng bước xong lấy nguyên văn frame F19.
+// Phạm vi rút gọn 27/10/2026 (đề xuất mục 10: bỏ "Bản của tôi", bỏ P1 nên không có kế hoạch thi): bước Áp dụng của
+// MỌI mẫu bài tính theo bài thực hành như Chủ đề, nên Tài liệu / Chứng chỉ dùng chung câu F19 của Chủ đề.
 import type { MauBai } from '../roadmap/types'
 import { CAC_BUOC, type Buoc, type TinhTrangBuoc } from './trang-thai'
 
@@ -28,10 +30,6 @@ export interface DuLieuBonBuoc {
   }
   tuKiemTra: Readonly<Record<string, { traLoi: string; daXem: boolean; cham: MucCham | null }>>
   the: readonly unknown[]
-  /** Tài liệu: có ≥ 1 Bản của tôi "Hoàn thành" (phase 7c; trước đó luôn false) */
-  banCuaToi: { coHoanThanh: boolean }
-  /** Chứng chỉ: kế hoạch thi có ngày thi (P1; trước đó luôn false) */
-  keHoachThi: { coNgayThi: boolean }
 }
 
 /** Dữ liệu học trống (mục chưa có gì): dùng khi chưa tải xong. */
@@ -40,8 +38,6 @@ export const DU_LIEU_BON_BUOC_TRONG: DuLieuBonBuoc = {
   thucHanh: { trangThai: null, duAnId: null, ketQua: '', tieuChi: {} },
   tuKiemTra: {},
   the: [],
-  banCuaToi: { coHoanThanh: false },
-  keHoachThi: { coNgayThi: false },
 }
 
 // Câu ở F19 khi bước còn thiếu (đề xuất 3.2, nguyên văn).
@@ -49,8 +45,6 @@ export const CAU_THIEU = {
   hieu: 'Thiếu · chưa nói lại bằng lời',
   apDungDangLam: 'Thiếu · đang làm bài thực hành',
   apDungChuaLam: 'Thiếu · chưa làm bài thực hành',
-  apDungTaiLieu: 'Thiếu · chưa có bản Hoàn thành',
-  apDungChungChi: 'Thiếu · chưa có kế hoạch thi',
   kiemTraChuaCham: 'Thiếu · chưa tự chấm câu nào',
   kiemTraDaCham: (daCham: number, tong: number) => `Thiếu · đã chấm ${daCham}/${tong} câu`,
   ghiNho: 'Thiếu · chưa có flashcard',
@@ -88,6 +82,7 @@ export interface KetQuaBonBuoc {
 }
 
 export interface DauVaoBonBuoc {
+  /** Mẫu bài của mục — từ phạm vi rút gọn 27/10/2026 không còn đổi cách tính bước nào (giữ cho nơi gọi) */
   mau: MauBai
   /** Khoá các câu Tự kiểm tra đang có trong bài (CauHoi.khoa); bài không có câu hỏi → [] */
   cauHoiKhoa: readonly string[]
@@ -108,30 +103,25 @@ function buocHieu(hoc: DuLieuBonBuoc): KetQuaBuoc {
   return coChu(hoc.noiLai?.text) ? xong() : thieu('chua-lam', CAU_THIEU.hieu)
 }
 
-function buocApDung(mau: MauBai, hoc: DuLieuBonBuoc): KetQuaBuoc {
+/**
+ * Áp dụng (mọi mẫu bài, phạm vi rút gọn 27/10/2026): bài thực hành "Xong" (ô Kết quả có chữ; dự án, tiêu chí không
+ * bắt buộc) hoặc "Không áp dụng" kèm lý do (§1). Tiêu chí chỉ tính những khoá server trả về — server đã bỏ tick của
+ * tiêu chí không còn trong bài (đề xuất 1.5).
+ */
+function buocApDung(hoc: DuLieuBonBuoc): KetQuaBuoc {
   const th = hoc.thucHanh
-  // Mọi mẫu: "Không áp dụng" kèm lý do (§1)
   if (th.trangThai === 'khong-ap-dung') {
     return { tinhTrang: 'khong-ap-dung', thieu: null, nhan: CAU_KHONG_AP_DUNG, ghiChu: null }
   }
-  switch (mau) {
-    case 'tai-lieu':
-      return hoc.banCuaToi.coHoanThanh ? xong() : thieu('chua-lam', CAU_THIEU.apDungTaiLieu)
-    case 'chung-chi':
-      return hoc.keHoachThi.coNgayThi ? xong() : thieu('chua-lam', CAU_THIEU.apDungChungChi)
-    default: {
-      // Chủ đề: "Xong" và ô Kết quả có chữ; dự án, tiêu chí không bắt buộc
-      if (th.trangThai === 'xong' && coChu(th.ketQua)) return xong()
-      const dangLam =
-        th.trangThai !== null ||
-        coChu(th.ketQua) ||
-        th.duAnId !== null ||
-        Object.values(th.tieuChi).some(Boolean)
-      return dangLam
-        ? thieu('dang-lam', CAU_THIEU.apDungDangLam)
-        : thieu('chua-lam', CAU_THIEU.apDungChuaLam)
-    }
-  }
+  if (th.trangThai === 'xong' && coChu(th.ketQua)) return xong()
+  const dangLam =
+    th.trangThai !== null ||
+    coChu(th.ketQua) ||
+    th.duAnId !== null ||
+    Object.values(th.tieuChi).some(Boolean)
+  return dangLam
+    ? thieu('dang-lam', CAU_THIEU.apDungDangLam)
+    : thieu('chua-lam', CAU_THIEU.apDungChuaLam)
 }
 
 function buocKiemTra(cauHoiKhoa: readonly string[], hoc: DuLieuBonBuoc): KetQuaBuoc {
@@ -165,10 +155,10 @@ export function daQua(tinhTrang: TinhTrangBuoc): boolean {
 }
 
 /** Tình trạng 4 bước của một mục (đề xuất 3.2). */
-export function tinhBonBuoc({ mau, cauHoiKhoa, hoc }: DauVaoBonBuoc): KetQuaBonBuoc {
+export function tinhBonBuoc({ cauHoiKhoa, hoc }: DauVaoBonBuoc): KetQuaBonBuoc {
   const buoc: Record<Buoc, KetQuaBuoc> = {
     hieu: buocHieu(hoc),
-    'ap-dung': buocApDung(mau, hoc),
+    'ap-dung': buocApDung(hoc),
     'kiem-tra': buocKiemTra(cauHoiKhoa, hoc),
     'ghi-nho': buocGhiNho(hoc),
   }

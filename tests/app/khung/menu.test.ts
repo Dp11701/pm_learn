@@ -17,39 +17,38 @@ const cay = layCay()
 const chuDe = cay.mucHoc.find((m) => m.mau === 'chu-de')!
 const chungChi = cay.mucHoc.find((m) => m.mau === 'chung-chi')!
 
-describe('menu khung (§6.1)', () => {
-  it('đúng thứ tự và route của §6.1', () => {
+describe('menu khung (§6.1; phạm vi rút gọn — đề xuất mục 10)', () => {
+  it('chỉ còn 4 mục theo thứ tự §6.1: Tổng quan · Lộ trình · Ôn tập · Nội dung', () => {
     expect(MENU.map((m) => [m.nhan, m.den])).toEqual([
       ['Tổng quan', '/'],
       ['Lộ trình', '/lo-trinh'],
       ['Ôn tập', '/on-tap'],
       ['Nội dung', '/noi-dung'],
-      ['Thống kê', '/thong-ke'],
-      ['Bộ hồ sơ dự án', '/ho-so'],
-      ['Chứng chỉ', '/chung-chi'],
-      ['Thuật ngữ', '/thuat-ngu'],
-      ['Ghi chú', '/ghi-chu'],
-      ['Cài đặt', '/cai-dat'],
     ])
   })
 
   it('trang của mục menu → chinhXac; trang con → không', () => {
     expect(menuDangMo('/')).toEqual({ khoa: 'tong-quan', chinhXac: true })
     expect(menuDangMo('/lo-trinh')).toEqual({ khoa: 'lo-trinh', chinhXac: true })
-    expect(menuDangMo('/cai-dat/')).toEqual({ khoa: 'cai-dat', chinhXac: true })
+    expect(menuDangMo('/noi-dung/')).toEqual({ khoa: 'noi-dung', chinhXac: true })
     expect(menuDangMo('/on-tap/phien')).toEqual({ khoa: 'on-tap', chinhXac: false })
     expect(menuDangMo('/noi-dung')).toEqual({ khoa: 'noi-dung', chinhXac: true })
   })
 
-  it('bài học tô Lộ trình, bài Chứng chỉ tô Chứng chỉ (F11, F34b); lĩnh vực, phần, lộ trình gợi ý tô Lộ trình', () => {
+  it('bài học mọi mẫu (cả Chứng chỉ — trang Chứng chỉ đã bỏ) và lĩnh vực tô Lộ trình (F11)', () => {
     expect(menuDangMo(`/hoc/${chuDe.slug}`)).toEqual({ khoa: 'lo-trinh', chinhXac: false })
-    expect(menuDangMo(`/hoc/${chuDe.slug}/soan`)).toEqual({ khoa: 'lo-trinh', chinhXac: false })
-    expect(menuDangMo(`/hoc/${chungChi.slug}`)).toEqual({ khoa: 'chung-chi', chinhXac: false })
+    expect(menuDangMo(`/hoc/${chungChi.slug}`)).toEqual({ khoa: 'lo-trinh', chinhXac: false })
     expect(menuDangMo('/linh-vuc/x')?.khoa).toBe('lo-trinh')
-    expect(menuDangMo('/phan/x')?.khoa).toBe('lo-trinh')
-    expect(menuDangMo('/lo-trinh-goi-y')?.khoa).toBe('lo-trinh')
     expect(menuDangMo('/khong-co')).toBeNull()
+  })
+
+  it('đường dẫn của trang đã bỏ không tô mục nào (chúng là 404)', () => {
+    for (const d of ['/thong-ke', '/ho-so', '/chung-chi', '/thuat-ngu', '/ghi-chu', '/cai-dat']) {
+      expect(menuDangMo(d)).toBeNull()
+    }
     expect(menuDangMo('/chao-mung')).toBeNull()
+    expect(menuDangMo('/lo-trinh-goi-y')).toBeNull()
+    expect(menuDangMo('/phan/x')).toBeNull()
   })
 
   it('aria-current: page / true / không có', () => {
@@ -66,7 +65,8 @@ describe('menu khung (§6.1)', () => {
     const duLieu = { ...DU_LIEU_KHUNG_TRONG, soTheDenHan: 12, soBanNhap: 1234 }
     expect(badgeCua('on-tap', duLieu)).toEqual({ so: 12, moTa: '12 thẻ đến hạn', kieu: 'dac' })
     expect(badgeCua('noi-dung', duLieu)).toEqual({ so: 1234, moTa: '1.234 bản nháp', kieu: 'vien' })
-    expect(badgeCua('thong-ke', duLieu)).toBeNull()
+    expect(badgeCua('lo-trinh', duLieu)).toBeNull()
+    expect(badgeCua('tong-quan', duLieu)).toBeNull()
   })
 
   it('badge > 99: C7 hiện "99+" (đề xuất 3.3)', () => {

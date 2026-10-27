@@ -1,23 +1,29 @@
 // @vitest-environment jsdom
-// Trang bài /hoc/:slug (phase 2a; F11 trừ cột phải, F17, F18, F19 trái, F26 lỗi đọc file; đề xuất 3.1, 3.6,
-// 3.9; D1, D2, D8, D10, D12, D14, D15, D30) trên máy chủ giả: đầu bài + aria, segmented đổi trạng thái + toast
-// Hoàn tác, phím 1–4 và [ ] theo e.code (bỏ qua khi đang gõ / ghép chữ), ô khối ★ thiếu, khối tuỳ chọn trống
-// ẩn, Mục liên quan, trang chưa có nội dung + dialog Sao chép prompt, banner, lỗi tải, axe.
+// Trang bài /hoc/:slug (phase 2a + vòng 4 bước phase 3; F11, F17, F18, F19 trái, F26 lỗi đọc file; đề xuất 3.1,
+// 3.2, 3.6, 3.9; D1, D2, D8, D10, D12, D14, D15, D30) trên máy chủ giả đầy đủ (trang bài + dữ liệu học GET
+// /api/hoc/:id, moi-truong-hoc): đầu bài + aria, thanh 4 bước (<nav>, Ghi nhớ trỏ #flashcard), segmented đổi trạng
+// thái + toast Hoàn tác, phím 1–4 và [ ] theo e.code (bỏ qua khi đang gõ / ghép chữ), ô khối ★ thiếu, khối tuỳ
+// chọn trống ẩn, khối học (Nói lại, Thực hành, Tự kiểm tra) không còn ô "Có ở phase", Mục liên quan, trang chưa có
+// nội dung + dialog Sao chép prompt, banner, lỗi tải, axe.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildPrompt } from '../../../shared/noi-dung'
+import { XEM_TRONG_DANH_SACH } from '../../../src/copy/cho-duyet'
 import { viTriTrongVung } from '../../../shared/roadmap'
 import TrangMucHoc from '../../../src/pages/TrangMucHoc'
 import { expectNoAxeViolations } from '../../ho-tro/axe'
 import { cay, fileChuDe, giuCho, muc, phanHoi } from './ho-tro'
-import { giaResizeObserver, moBai, taoMayChuBai, type MayChuBai } from './moi-truong'
+import { taoMayChuDayDu } from '../../components/bai-hoc/moi-truong-hoc'
+import { giaResizeObserver, moBai, type MayChuBai } from './moi-truong'
 
 let sv: MayChuBai
 
 beforeEach(() => {
-  sv = taoMayChuBai()
+  // Trang bài + dữ liệu học (GET /api/hoc/:id…): thanh 4 bước và các khối học tải được như app thật
+  sv = taoMayChuDayDu().bai
   giaResizeObserver()
+  window.sessionStorage.clear()
 })
 
 afterEach(() => {
@@ -72,12 +78,13 @@ describe('đầu bài (F11, D1, D2, D8, D10)', () => {
         .getAllByRole('radio')
         .map((r) => r.textContent),
     ).toEqual(['Chưa học', 'Đang học', 'Đã xong', 'Bỏ qua'])
-    expect(screen.getByRole('link', { name: 'Xem trên bản đồ' }).getAttribute('href')).toBe(
-      `/lo-trinh?xem=ban-do&muc=${sc.slug}`,
+    // Bản đồ, trình soạn đã bỏ (đề xuất mục 10): "Xem trong danh sách" thay "Xem trên bản đồ", không có "Soạn"
+    expect(screen.getByRole('link', { name: XEM_TRONG_DANH_SACH }).getAttribute('href')).toBe(
+      `/lo-trinh?xem=danh-sach&muc=${sc.slug}`,
     )
-    expect(screen.getByRole('link', { name: 'Soạn' }).getAttribute('href')).toBe(
-      `/hoc/${sc.slug}/soan`,
-    )
+    expect(screen.queryByRole('link', { name: 'Xem trên bản đồ' })).toBeNull()
+    expect(screen.queryByRole('link', { name: /^Soạn/ })).toBeNull()
+    expect(document.querySelector('a[href*="/soan"], a[href*="ban-do"]')).toBeNull()
 
     const bonBuoc = screen.getByRole('navigation', { name: 'Bốn bước học' })
     expect(within(bonBuoc).getByRole('link', { name: /Hiểu/ }).getAttribute('href')).toBe(
@@ -88,7 +95,13 @@ describe('đầu bài (F11, D1, D2, D8, D10)', () => {
         .getByRole('link', { name: /Kiểm tra/ })
         .getAttribute('href'),
     ).toBe('#tu-kiem-tra')
-    expect(within(bonBuoc).queryByRole('link', { name: /Ghi nhớ/ })).toBeNull()
+    // Ghi nhớ (phase 3) trỏ tới card Flashcard — luôn có đúng một card trên trang
+    expect(
+      within(bonBuoc)
+        .getByRole('link', { name: /Ghi nhớ/ })
+        .getAttribute('href'),
+    ).toBe('#flashcard')
+    expect(document.querySelectorAll('#flashcard')).toHaveLength(1)
 
     const vt = viTriTrongVung(cay, sc.id)
     expect(container.textContent).toContain(`Mục ${vt.thuTu}/${vt.tong} · ${sc.linhVuc!.label}`)
@@ -113,6 +126,10 @@ describe('đầu bài (F11, D1, D2, D8, D10)', () => {
     await moVaCho()
     sv.dongCua()
     fireEvent.click(screen.getByRole('radio', { name: /Đã xong/ }))
+    // Còn bước thiếu → F19 phải (quyết định 10) hỏi trước; "Vẫn đánh dấu Đã xong" mới đặt
+    const f19 = await screen.findByRole('alertdialog')
+    fireEvent.click(within(f19).getByRole('button', { name: 'Vẫn đánh dấu Đã xong' }))
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
     // Cập nhật lạc quan: đổi trước khi máy chủ trả lời
     await waitFor(() =>
       expect(screen.getByRole('radio', { name: /Đã xong/ }).getAttribute('aria-checked')).toBe(
@@ -189,18 +206,14 @@ describe('phím tắt (§11, đề xuất 5)', () => {
 })
 
 describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
-  it('khối ★ thiếu → ô nét đứt "Chưa có … — khối bắt buộc, bài vẫn đọc được." + "Thêm"; khối tuỳ chọn trống ẩn', async () => {
+  it('khối ★ thiếu → ô nét đứt "Chưa có … — khối bắt buộc, bài vẫn đọc được." (không có "Thêm" — trình soạn đã bỏ); khối tuỳ chọn trống ẩn', async () => {
     datScopeCreep({ bo: ['Tự kiểm tra'] })
     const { container } = await moVaCho()
     await screen.findByRole('article')
     const o = container.querySelector('[data-khoi-thieu="tu-kiem-tra"]')!
-    expect(o.textContent).toBe('Chưa có Tự kiểm tra — khối bắt buộc, bài vẫn đọc được.Thêm')
+    expect(o.textContent).toBe('Chưa có Tự kiểm tra — khối bắt buộc, bài vẫn đọc được.')
     expect(o.className).toContain('border-dashed')
-    expect(
-      within(o as HTMLElement)
-        .getByRole('link', { name: 'Thêm Tự kiểm tra' })
-        .getAttribute('href'),
-    ).toBe(`/hoc/${sc.slug}/soan`)
+    expect(o.querySelector('a, button')).toBeNull()
     expect(container.querySelector('#so-sanh')).toBeNull()
     expect(screen.queryByRole('heading', { name: 'So sánh' })).toBeNull()
     // D8: không có câu hỏi → Kiểm tra "Không áp dụng · chưa có câu hỏi", không bấm được
@@ -209,7 +222,7 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
     expect(kiemTra.querySelector('a')).toBeNull()
   })
 
-  it('khối theo quy ước: định nghĩa, callout 2 cột, thực hành C20 + câu hỏi C21 chỉ đọc (đáp án không có trong trang)', async () => {
+  it('khối theo quy ước: định nghĩa, callout 2 cột, thực hành C20 + câu hỏi C21 (đáp án không có trong trang trước khi xem), Nói lại', async () => {
     datScopeCreep()
     const { container } = await moVaCho()
     await screen.findByRole('article')
@@ -219,24 +232,35 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
       'Bạn đã quen',
       'Điều cần đổi',
     ])
-    const thucHanh = container.querySelector('#thuc-hanh-tren-du-an-that')!
+    const thucHanh = container.querySelector('#thuc-hanh-tren-du-an-that') as HTMLElement
     expect(thucHanh.textContent).toContain('Bước Áp dụng · chưa làm')
-    expect(thucHanh.textContent).toContain('Có ở phase 3')
+    // Phase 3: thẻ thực hành làm được (ô Kết quả, Xong tắt khi chưa có kết quả), không còn ô "Có ở phase"
+    expect(thucHanh.textContent).not.toContain('Có ở phase')
+    await waitFor(() =>
+      expect(
+        (within(thucHanh).getByRole('textbox', { name: 'Kết quả của bạn' }) as HTMLTextAreaElement)
+          .disabled,
+      ).toBe(false),
+    )
+    expect(
+      (within(thucHanh).getByRole('button', { name: 'Xong' }) as HTMLButtonElement).disabled,
+    ).toBe(true)
     const tuKiemTra = container.querySelector('#tu-kiem-tra')!
     expect(within(tuKiemTra as HTMLElement).getAllByRole('listitem')).toHaveLength(2)
     expect(tuKiemTra.textContent).toContain('Câu 1/2')
-    expect(tuKiemTra.textContent).not.toContain('Đáp án')
+    // Đáp án chưa vào trang trước khi trả lời + Xem đáp án
+    expect(container.textContent).not.toContain('[Nội dung mẫu — Đáp án 1]')
     expect(
       within(tuKiemTra as HTMLElement)
         .getAllByRole('button', { name: 'Xem đáp án' })
         .every((b) => (b as HTMLButtonElement).disabled),
     ).toBe(true)
-    // Nói lại (phase 3) đúng chỗ: sau Góc dev lead → PM, trước Thực hành
+    // Nói lại đúng chỗ: sau Góc dev lead → PM, trước Thực hành; là ô tự lưu, không còn "Có ở phase"
     const thuTu = [...container.querySelectorAll('article section[id]')].map((s) => s.id)
     expect(thuTu.indexOf('noi-lai-bang-loi-cua-ban')).toBe(thuTu.indexOf('goc-dev-lead-pm') + 1)
-    expect(container.querySelector('#noi-lai-bang-loi-cua-ban')?.textContent).toContain(
-      'Có ở phase 3',
-    )
+    const noiLai = container.querySelector('#noi-lai-bang-loi-cua-ban') as HTMLElement
+    expect(noiLai.textContent).not.toContain('Có ở phase')
+    expect(within(noiLai).getByRole('textbox', { name: 'Nói lại bằng lời của bạn' })).toBeTruthy()
   })
 
   it('Khái niệm cốt lõi dạng F11: đoạn mở → danh sách định nghĩa → đoạn kết, không mất chữ nào', async () => {
@@ -393,6 +417,10 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
         .map((a) => a.getAttribute('href')),
     ).toEqual([`/hoc/${cay.mucHoc[sc.index - 1].slug}`, `/hoc/${sau.slug}`])
     fireEvent.click(screen.getByRole('button', { name: 'Đã xong, sang bài tiếp' }))
+    // Còn bước thiếu → F19 phải; "Vẫn đánh dấu Đã xong" đặt rồi mới sang mục sau
+    const f19 = await screen.findByRole('alertdialog')
+    expect(duongDan()).toBe(`/hoc/${sc.slug}`)
+    fireEvent.click(within(f19).getByRole('button', { name: 'Vẫn đánh dấu Đã xong' }))
     await waitFor(() => expect(duongDan()).toBe(`/hoc/${sau.slug}`))
     await waitFor(() => expect(sv.trangThai[sc.id]).toEqual({ status: 'done' }))
   })
@@ -406,7 +434,7 @@ describe('thân bài (đề xuất 3.6 "Hiện ở bài", 1.5)', () => {
 })
 
 describe('chưa có nội dung (F17, F18, D8, D14)', () => {
-  it('giữ đủ đầu bài; card + 3 nút; khung các khối nét đứt; không có giải thích về mục', async () => {
+  it('giữ đủ đầu bài; card + 2 nút (Sao chép prompt chính, Nhập file .md — không có "Soạn bài"); khung các khối nét đứt; không có giải thích về mục', async () => {
     const sm = muc('salience-model')
     const { container } = await moVaCho(sm.slug)
     await screen.findByRole('heading', { name: 'Mục này chưa có nội dung.' })
@@ -416,13 +444,21 @@ describe('chưa có nội dung (F17, F18, D8, D14)', () => {
     expect(container.querySelector('[data-buoc="kiem-tra"]')?.textContent).toBe(
       'Kiểm tra · Không áp dụng · chưa có câu hỏi',
     )
-    expect(screen.getByRole('link', { name: 'Soạn bài' }).getAttribute('href')).toBe(
-      `/hoc/${sm.slug}/soan`,
-    )
+    expect(screen.queryByRole('link', { name: 'Soạn bài' })).toBeNull()
+    const the = screen
+      .getByRole('heading', { name: 'Mục này chưa có nội dung.' })
+      .closest('section')!
+    expect([...the.querySelectorAll('a, button')].map((n) => n.textContent)).toEqual([
+      'Sao chép prompt soạn bài',
+      'Nhập file .md',
+    ])
     expect(screen.getByRole('link', { name: 'Nhập file .md' }).getAttribute('href')).toBe(
       `/noi-dung?tab=nhap&muc=${sm.slug}`,
     )
-    expect(screen.getByRole('button', { name: 'Sao chép prompt soạn bài' })).toBeTruthy()
+    // Nút chính là Sao chép prompt (đường soạn bài: prompt → file .md → Nhập)
+    expect(screen.getByRole('button', { name: 'Sao chép prompt soạn bài' }).className).toContain(
+      'bg-primary',
+    )
     expect(container.textContent).toContain('0/9 khối bắt buộc')
     expect(screen.queryByRole('article')).toBeNull()
     await expectNoAxeViolations(container)
@@ -465,16 +501,22 @@ describe('chưa có nội dung (F17, F18, D8, D14)', () => {
 })
 
 describe('banner bảo vệ bản Đã duyệt và lỗi đọc file (đề xuất 1.6, F26, D30)', () => {
-  it('frontmatter lỗi: banner lỗi "<file>.md: lỗi frontmatter dòng N" + "Mở trong trình soạn", chip lỗi, không hiện thân bài', async () => {
+  it('frontmatter lỗi: banner lỗi "<file>.md: lỗi frontmatter dòng N" + "Sao chép dòng lỗi" (thay "Mở trong trình soạn"), chip lỗi, không hiện thân bài', async () => {
     const hong = fileChuDe(sc).replace('loai: chu-de', 'loai: tai-lieu')
     sv.bai.set(sc.id, phanHoi(sc, hong))
+    const ghi = vi.fn().mockResolvedValue(undefined)
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText: ghi } })
     const { container } = await moVaCho()
     const banner = await screen.findByRole('alert')
     expect(banner.textContent).toContain('scope-creep.md: lỗi frontmatter dòng 3')
-    expect(banner.textContent).toContain('Bài vẫn hiện trạng thái học, đồng hồ và ghi chú.')
-    expect(
-      within(banner).getByRole('link', { name: 'Mở trong trình soạn' }).getAttribute('href'),
-    ).toBe(`/hoc/${sc.slug}/soan`)
+    // Câu F26 bỏ "đồng hồ" (phạm vi rút gọn: không có đồng hồ học)
+    expect(banner.textContent).toContain('Bài vẫn hiện trạng thái học và ghi chú.')
+    expect(banner.textContent).not.toMatch(/đồng hồ|bấm giờ/)
+    expect(within(banner).queryByRole('link')).toBeNull()
+    fireEvent.click(within(banner).getByRole('button', { name: 'Sao chép dòng lỗi' }))
+    await waitFor(() => expect(ghi).toHaveBeenCalledTimes(1))
+    expect(ghi.mock.calls[0][0]).toMatch(new RegExp(`^${sc.duongDanFile} · Dòng 3: `))
+    expect(await screen.findByText('Đã sao chép dòng lỗi.')).toBeTruthy()
     expect(screen.getByText('Lỗi frontmatter · dòng 3')).toBeTruthy()
     expect(screen.queryByRole('article')).toBeNull()
     expect(screen.queryByText('Mục này chưa có nội dung.')).toBeNull()

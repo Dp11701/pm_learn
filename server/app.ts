@@ -4,6 +4,7 @@ import { kiemHost, kiemOrigin, nosniff } from './an-toan.ts'
 import type { CauHinh } from './cau-hinh.ts'
 import type { Db } from './db/index.ts'
 import { khongCoApi, khongTimThay, xuLyLoi } from './loi.ts'
+import { layKhoNoiDung } from './noi-dung/kho-noi-dung.ts'
 import { routeApDung } from './routes/ap-dung.ts'
 import { routeBai } from './routes/bai.ts'
 import { routeDongHo } from './routes/dong-ho.ts'
@@ -49,7 +50,8 @@ export function taoApp({ cauHinh, db, soMucHoc, saoLuu, cay = layCay() }: TuyCho
   app.use('/api', routeBai(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeNoiDung(db, cay, cauHinh.noiDungDir))
   app.use('/api', routeApDung(db, cay))
-  app.use('/api', routeHoc(db, cay))
+  // Cùng kho với routeBai (layKhoNoiDung giữ một kho mỗi DB + thư mục): dữ liệu học khớp đúng bài đang hiện
+  app.use('/api', routeHoc(db, cay, layKhoNoiDung(db, cauHinh.noiDungDir, cay)))
   app.use('/api', routeThe(db, cay))
   app.use('/api', routeDongHo(db, cay))
   app.use('/api', routeNhap(db, cay, cauHinh.noiDungDir, boSaoLuu))

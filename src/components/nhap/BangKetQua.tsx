@@ -10,13 +10,16 @@
 //   trình duyệt bỏ ngữ nghĩa bảng): File · (Mục, Khớp theo) · Kết quả với mọi việc của dòng — không phải cuộn
 //   ngang mới thấy kết quả. Hàng tiêu đề chỉ còn cho trình đọc màn hình; "Mục:", "Khớp theo:" hiện trong thẻ.
 // - ⟳ của Quét lại mà file đã nhận không còn trên đĩa: "Nhập thành bản sửa" bị vô hiệu (chỉ Giữ bản cũ được).
+// - ✕ Lỗi frontmatter: "Sao chép dòng lỗi" (tên file / đường dẫn + dòng lỗi) để sửa file ở trình soạn bạn quen dùng —
+//   thay "Mở trong trình soạn" và "Gán cho mục…" của dòng lỗi (gán chỉ để mở trình soạn đúng bài; trình soạn trong
+//   app đã bỏ, đề xuất mục 10).
 import { useId, useState, type ReactNode, type Ref, type UIEvent } from 'react'
-import { Link } from 'react-router'
 import { dinhDangNgay, dinhDangSo } from '../../../shared/dinh-dang'
 import { voiDong } from '../../../shared/noi-dung'
 import type { KetQuaFile, LoaiKetQua, MucNgan, TepGui, XuLyTrung } from '../../app/du-lieu/nhap'
 import { useTrangThaiNoiDung } from '../../app/du-lieu/noi-dung'
 import Nut from '../Nut'
+import NutSaoChepDongLoi from '../NutSaoChepDongLoi'
 import TenMuc from '../TenMuc'
 import HopThoaiGanMuc from './HopThoaiGanMuc'
 import {
@@ -414,7 +417,7 @@ function OKetQua({
           {p.chu}
         </span>
       ))}
-      {(kq.loai === 'khong-khop' || (loi && !muc)) && (
+      {kq.loai === 'khong-khop' && (
         <Nut bien="phu" co="nho" onClick={moGan} aria-describedby={idTen}>
           Gán cho mục…
         </Nut>
@@ -440,14 +443,13 @@ function OKetQua({
           Nhận là Đã duyệt
         </label>
       )}
-      {loi && muc && (
-        <Link
-          to={`/hoc/${muc.slug}/soan${kq.khoaBoDem ? `?bo-dem=${encodeURIComponent(kq.khoaBoDem)}` : ''}`}
+      {loi && kq.loi && (
+        <NutSaoChepDongLoi
+          tenFile={kq.duongDan ?? kq.ten}
+          loi={kq.loi}
+          co="nho"
           aria-describedby={idTen}
-          className="text-text underline underline-offset-2"
-        >
-          Mở trong trình soạn
-        </Link>
+        />
       )}
     </span>
   )
