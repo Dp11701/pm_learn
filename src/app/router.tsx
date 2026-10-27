@@ -15,6 +15,8 @@ import TrangLinhVuc from '../pages/TrangLinhVuc'
 import TrangMucHoc from '../pages/TrangMucHoc'
 import TrangSapCo from '../pages/TrangSapCo'
 import TrangNoiDung from '../pages/noi-dung/TrangNoiDung'
+import TrangOnTap from '../pages/on-tap/TrangOnTap'
+import PhienOn from '../pages/on-tap/PhienOn'
 import { CAC_TRANG_TINH } from '../pages/cac-trang'
 import GocApp from './GocApp'
 import KhungApp from './khung/KhungApp'
@@ -73,6 +75,8 @@ export const cacRoute: RouteObject[] = [
               },
               { path: 'hoc/:slug', Component: TrangMucHoc },
               { path: 'linh-vuc/:slug', Component: TrangLinhVuc },
+              { path: 'on-tap', Component: TrangOnTap },
+              { path: 'on-tap/phien', Component: PhienOn },
               { path: '*', Component: KhongTimThay },
             ],
           },

@@ -8,10 +8,12 @@ import { layKhoNoiDung } from './noi-dung/kho-noi-dung.ts'
 import { routeApDung } from './routes/ap-dung.ts'
 import { routeBai } from './routes/bai.ts'
 import { routeDongHo } from './routes/dong-ho.ts'
+import { routeDuyet } from './routes/duyet.ts'
 import { routeHoc } from './routes/hoc.ts'
 import { routeMeta } from './routes/meta.ts'
 import { routeNhap } from './routes/nhap.ts'
 import { routeNoiDung } from './routes/noi-dung.ts'
+import { routeOnTap } from './routes/on-tap.ts'
 import { routeThe } from './routes/the.ts'
 import { routeTrangThai } from './routes/trang-thai.ts'
 import { taoSaoLuu, type SaoLuu } from './sao-luu.ts'
@@ -55,6 +57,8 @@ export function taoApp({ cauHinh, db, soMucHoc, saoLuu, cay = layCay() }: TuyCho
   app.use('/api', routeThe(db, cay))
   app.use('/api', routeDongHo(db, cay))
   app.use('/api', routeNhap(db, cay, cauHinh.noiDungDir, boSaoLuu))
+  app.use('/api', routeOnTap(db, cay))
+  app.use('/api', routeDuyet(db, cay, cauHinh.noiDungDir))
 
   app.use('/api', khongCoApi)
   app.use(khongTimThay)
