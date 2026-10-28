@@ -98,12 +98,15 @@ nội dung đầu, sau bước 6.
 ## Trạng thái
 
 - Phase 0, 1, 2a, 2b: xong (báo cáo trong `docs/bao-cao/`; mục chờ duyệt của 2b gom vào lần dừng sau bước 1).
-- Bước 1 (phase 3 rút gọn): xong 27/10/2026, báo cáo `docs/bao-cao/phase-3.md`. **Đang chờ duyệt** (gồm cả mục chờ
-  duyệt của 2b và nội dung đợt 1).
-- Bước 5 (nội dung): đợt 1 xong — 17 bài (Scope Management + PMP) trong `noi-dung/`, ghi chú soát
-  `docs/bao-cao/noi-dung-dot-1.md`. Soạn bài: `scripts/in-prompt.ts <slug>` → viết → `scripts/kiem-bai.ts <file> <slug>`;
-  mỗi bài một agent soạn + một agent soát độc lập (nguồn thật, không bịa).
-- Câu chữ tự đặt: `src/copy/cho-duyet.ts` (web), `shared/noi-dung/thong-bao.ts`, `server/noi-dung/thong-bao.ts`,
+- Bước 1 (phase 3 rút gọn): xong và đã duyệt 27/10/2026 (`docs/bao-cao/phase-3.md`, gồm mục chờ duyệt của 2b và nội dung đợt 1).
+- Bước 2–4: xong 28/10/2026, báo cáo `docs/bao-cao/buoc-2-4.md` (không phải điểm dừng; có mục "Chờ bạn duyệt"). Tên app
+  hiển thị là "PMP" (`src/app/ten-app.ts`, người dùng đổi).
+- Bước 5 (nội dung): đủ 199/199 bài nháp trong `noi-dung/` (đợt 1: 17 bài, `docs/bao-cao/noi-dung-dot-1.md`; đợt 2: 182
+  bài, `docs/bao-cao/noi-dung-dot-2.md` + ghi chú từng bài trong `docs/bao-cao/noi-dung-dot-2/`). Người dùng duyệt từng
+  bài trong app. Soạn bài: `scripts/in-prompt.ts <slug>` → viết → `scripts/kiem-bai.ts <file> <slug>`; mỗi bài một agent
+  soạn + một agent soát độc lập (nguồn thật, không bịa).
+- Còn lại: bước 6 nghiệm thu cuối (gỡ `@codemirror/*`, README) — điểm dừng chờ duyệt.
+- Câu chữ tự đặt: `src/copy/cho-duyet.ts`, `src/copy/cho-duyet-{lo-trinh,on-tap,duyet}.ts` (web), `shared/noi-dung/thong-bao.ts`, `server/noi-dung/thong-bao.ts`,
   `server/nhap/thong-bao.ts`, `server/du-lieu/thong-bao.ts`.
 - Mọi thao tác chạm file nội dung đi qua `layKhoNoiDung(...)` / `file_ops` (server/noi-dung); không ghi file trực tiếp.
 - Chạy bộ dữ liệu mẫu: `npm run dev:mau -- --kich-ban=mac-dinh` (web 5322, API 5323, dữ liệu trong `.mau/`).
