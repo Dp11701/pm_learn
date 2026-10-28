@@ -1,0 +1,13 @@
+## inspection
+
+- Kiểm parser: Inspection (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Quality Assurance vs Quality Control (bản lưu 14/01/2025) — ASQ](https://web.archive.org/web/20250114220824/https://asq.org/quality-resources/quality-assurance-vs-control); [Certified Tester Foundation Level Syllabus v4.0.1 — ISTQB](https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf); [NASA-STD-8739.9 Software Formal Inspections Standard (Change 1) — NASA](https://standards.nasa.gov/sites/default/files/standards/NASA/Baseline/1/nasa-std-87399_with_change_1.pdf); [Software inspection — Wikipedia](https://en.wikipedia.org/wiki/Software_inspection) (mở được, đã thay bằng chuẩn NASA); [Fagan inspection — Wikipedia](https://en.wikipedia.org/wiki/Fagan_inspection) (mở được, bài không dùng ý nào riêng của nguồn này, đã bỏ)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, "Entry và exit criteria": ý entry criteria trước chỉ có Wikipedia (ISTQB v4.0.1 chỉ nói exit criteria) → viết lại theo NASA-STD-8739.9 mục 6.2 và 6.3.3.1: work product chưa đạt entry criteria (ví dụ chưa đủ mục theo mẫu, code chưa biên dịch sạch lỗi) bị trả lại tác giả; exit criteria điển hình là mọi lỗi major đã được xác nhận đã sửa; giữ ý ISTQB 3.2.2 "Once the exit criteria are reached, the work product can be accepted".
+  - So sánh, hàng Technical review, cột "Mức chính thức": "Chính thức hơn walkthrough và informal review" → "Syllabus không so mức chính thức với walkthrough". ISTQB 3.2.4 chỉ nói các loại review trải từ informal tới formal và inspection là "the most formal"; không xếp technical review trên walkthrough.
+  - Tham khảo: thay hai dòng Wikipedia bằng NASA-STD-8739.9.
+  - Các ý ISTQB khác đã đối chiếu và khớp: sáu vai trò review (3.2.3); inspection "most formal", "maximum number of anomalies", thu metrics để cải tiến SDLC, tác giả không làm review leader hay scribe (3.2.4); "Evaluation of participants should never be an objective" (3.2.5); lỗi ở work product sớm dẫn tới lỗi về sau (1.2.3); static testing tìm defect trực tiếp, dynamic testing gây failure (3.1.3). Định nghĩa inspection khớp ASQ.
+- **Nên tự kiểm lại:**
+  - NASA-STD-8739.9 (2013) là chuẩn nội bộ NASA, viết cho phần mềm của NASA; trang standards.nasa.gov có thể ghi chuẩn đã ngưng hiệu lực (kết quả tìm kiếm báo "INACTIVE", chưa mở trang trạng thái để xác nhận). Ý entry/exit criteria vẫn dùng được làm ví dụ.
+  - NASA cho phép tác giả làm recorder trong một số trường hợp ("may be preferable for the author to serve as recorder"), khác ISTQB. Bài theo ISTQB.
+  - Bảng So sánh là tóm tắt của người viết từ ISTQB 3.2.4; cột "Ai dẫn dắt" của informal review ghi "Syllabus không quy định".

@@ -1,0 +1,14 @@
+## schedule-forecasting
+
+- Kiểm parser: Schedule forecasting (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Schedule Assessment Guide (GAO-16-89G) — U.S. Government Accountability Office](https://www.gao.gov/products/gao-16-89g) (gao.gov trả 403; đã đọc PDF qua bản lưu https://web.archive.org/web/2024id_/https://www.gao.gov/assets/gao-16-89g.pdf); [Earned Schedule Concept — Walt Lipke](https://www.earnedschedule.com/Docs/Earned%20Schedule%20Concept%20v2.pdf); [Earned Schedule Contributions to EVM — Walt Lipke](https://www.earnedschedule.com/Docs/ES%20Enhancements%20to%20EVM.pdf); [Velocity (Agile Glossary) — Agile Alliance](https://www.agilealliance.org/glossary/velocity/); [The Scrum Guide (11/2020) — Ken Schwaber, Jeff Sutherland](https://scrumguides.org/scrum-guide.html)
+- Agent soát đã sửa:
+  - Khái niệm Forecast và baseline: "GAO coi việc theo dõi … là một phần của cập nhật lịch" → "GAO khuyên theo dõi lịch liên tục để thấy khi nào ngày dự báo lệch khỏi ngày baseline…". Câu này nằm ở Best Practice 10 (Maintaining a baseline schedule), không phải BP 9; Tham khảo sửa "Best Practice 8 và 9" → "Best Practice 8, 9 và 10".
+  - Tham khảo: tên PDF "ES Enhancements to EVM" → "Earned Schedule Contributions to EVM" (tiêu đề thật trong file; URL giữ nguyên).
+  - Đã tự tính lại mọi số, đều đúng: ví dụ 28 + 32 + 36 = 96, còn 270 − 96 = 174, 174/32 ≈ 5,4 → xong ở sprint 9; 174/36 ≈ 4,8 và 174/28 ≈ 6,2 → thêm 5–7 sprint, về đích sprint 8–10; 3 × 32 = 96 point cho phương án giữ ngày. Câu hỏi velocity: 5, 6, 7,5 → 8 sprint. Câu hỏi earned schedule: ES = 3 + (230 − 200)/(280 − 200) = 3,375; SV(t) = −1,625; SPI(t) = 0,675; IEAC(t) = 8/0,675 ≈ 11,85 ≈ 11,9 tháng (trễ ≈ 3,9 tháng), đúng công thức ES = C + I của Lipke. Câu hỏi Monte Carlo: 30/6 → 10/8 = 41 ngày; P50 = 15/7 nên khả năng xong 30/6 < 50%.
+  - Đã khớp nguồn, không sửa: GAO khuyên nhập thời lượng còn lại, "recording progress by entering percentage complete is not recommended" (BP 9); ví dụ mức tin cậy 70%/80% (BP 8); Agile Alliance "generally an accurate prediction, even though rarely a precise one" và velocity là "measurement, made after the fact"; Scrum Guide "Only what has already happened may be used for forward-looking decision making"; ES không cần dữ liệu ngoài EVM (earnedschedule.com).
+- **Nên tự kiểm lại:**
+  - "Earned schedule do Walt Lipke đề xuất": các trang earnedschedule.com đứng tên Lipke nhưng hai PDF đã mở không ghi rõ ai khởi xướng; bài gốc "Schedule is Different" (Lipke, 2003) chưa mở.
+  - Câu hỏi Monte Carlo nói "ngày tính thẳng từ lịch thường lạc quan" là suy ra từ phần merge bias / optimistic bias của GAO BP 8, không phải câu nguyên văn.
+  - Bảng So sánh và bước "dùng velocity thấp nhất và cao nhất làm dải" là cách làm thực hành, không nguồn nào đặt thành quy tắc.
+  - Link GAO trỏ trang gao.gov (403 với công cụ tự động); nên tự mở bằng trình duyệt.

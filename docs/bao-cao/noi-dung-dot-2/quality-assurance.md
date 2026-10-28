@@ -1,0 +1,11 @@
+## quality-assurance
+
+- Kiểm parser: Quality assurance (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Quality Assurance vs Quality Control (bản lưu 14/01/2025) — ASQ](https://web.archive.org/web/20250114220824/https://asq.org/quality-resources/quality-assurance-vs-control); [Certified Tester Foundation Level Syllabus v4.0.1 — ISTQB](https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf); [Project Quality Management (PMP Exam Tutorial) — Bernie Roseke, ProjectEngineer](https://www.projectengineer.net/tutorials/pmp-exam-tutorial/project-quality-management/); [CDC UP Project Quality Management Plan Template (bản lưu 27/05/2021) — CDC](https://web.archive.org/web/20210527070643/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Quality_Management_Plan_Template.doc); [PMBOK Guide 6th Edition, Part 2, mục 5 (mục lục đầy đủ) — PMI (bản xem trước O'Reilly, Internet Archive 16/10/2025)](https://web.archive.org/web/20251016004132/https://www.oreilly.com/library/view/a-guide-to/9781628251845/part_2-5.xhtml) (chỉ dùng để kiểm, không thêm vào bài)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, "Manage Quality": "Theo bản tóm tắt process này" → "Theo bản tóm tắt PMBOK Guide bản 6 của ProjectEngineer", để rõ đây là nguồn thứ cấp. Danh sách công cụ (checklist, process analysis, root cause analysis, audit) khớp ProjectEngineer.
+  - Các ý còn lại khớp nguồn: định nghĩa QA và hai hướng tạo niềm tin (ASQ); "process-oriented, preventive", "responsibility of everyone on a project", vòng phản hồi từ kết quả test (ISTQB 1.2.2); "eliminate gaps between current and desired levels of performance" (CDC, mục Analyze Project Quality); ASQ ghi nhận QA và QC "are used interchangeably".
+- **Nên tự kiểm lại:**
+  - "Manage Quality là process gần nhất với QA" là cách nói của người viết, dựa vào ProjectEngineer. Mục lục PMBOK 6 (bản xem trước O'Reilly) xác nhận có ba process 8.1 Plan Quality Management, 8.2 Manage Quality, 8.3 Control Quality và Manage Quality thuộc Executing Process Group; nội dung chi tiết 8.2 không xem được.
+  - ISTQB v4.0.1 so QA với testing, không so với QC (syllabus ghi rõ đã đổi chữ "QC" thành "testing" ở 1.2.2). Bài dùng đúng như vậy.
+  - Hàng "Inspection" trong bảng So sánh và phần Góc dev lead → PM là diễn giải của người viết.

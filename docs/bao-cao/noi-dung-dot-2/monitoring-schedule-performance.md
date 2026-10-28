@@ -1,0 +1,16 @@
+## monitoring-schedule-performance
+
+- Kiểm parser: Monitoring schedule performance (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Schedule Assessment Guide (GAO-16-89G), Baseline Analysis — U.S. Government Accountability Office](https://gaoinnovations.gov/schedule-guide/baseline-analysis.html) (link gốc trả 403 với truy cập tự động; đọc bản https://web.archive.org/web/20250201205050/https://gaoinnovations.gov/schedule-guide/baseline-analysis.html); [Trend Analysis — GAO](https://gaoinnovations.gov/schedule-guide/trend-analysis.html) (bản https://web.archive.org/web/20250202164509/https://gaoinnovations.gov/schedule-guide/trend-analysis.html); [Schedule Narrative — GAO](https://gaoinnovations.gov/schedule-guide/schedule-narrative.html) (bản https://web.archive.org/web/20250201212143/https://gaoinnovations.gov/schedule-guide/schedule-narrative.html); [NASA Schedule Management Handbook (NASA/SP-2010-3403, Rev. 1, 2020) — NASA OCFO](https://www.nasa.gov/wp-content/uploads/2020/11/nasa_schedule_management_hand_book.pdf); [The Scrum Guide (11/2020) — Ken Schwaber, Jeff Sutherland](https://scrumguides.org/scrum-guide.html)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, Variance: "chênh lệch không có nghĩa là dự án trễ" → "không nhất thiết có nghĩa là dự án trễ" (GAO: "does not necessarily mean program delay").
+  - Khái niệm cốt lõi, Float erosion: tách vế "near-critical path có float giảm là đường sắp thành găng" thành câu riêng, ghi đúng là ý của GAO ở trang Schedule Narrative ("may soon be critical"), không phải trang Trend Analysis; đổi "sắp thành găng" → "có thể sắp thành găng".
+  - Tham khảo, NASA: "mục 7.3.3.1 về BEI và CPLI" → "mục 7.3.3.1.3 (BEI) và 7.3.3.1.5 (CPLI)" cho đúng tiểu mục.
+  - Đã đối chiếu: BEI = số hoạt động chi tiết đã xong / số lẽ ra phải xong tới ngày cập nhật, 1 là đúng kế hoạch, là thước đo tổng, tính việc găng ngang việc có float (GAO Trend Analysis; NASA 7.3.3.1.3 loại LOE và milestone, ví dụ 60/80 = 0,75). CPLI = (độ dài critical path còn lại + total float) / độ dài critical path còn lại, 1,0 là phải làm hoàn hảo, < 1 là đang tích float âm (NASA 7.3.3.1.5). Total float theo kỳ là thước đo sức khoẻ, tiêu nhanh từ sớm báo trước trễ lớn, đỉnh việc dồn về sau là lịch không thực tế (GAO Trend Analysis). Ngưỡng do các bên thống nhất, vượt thì báo kèm nguyên nhân và đề xuất (GAO Baseline Analysis). Nội dung narrative (GAO Schedule Narrative). Câu Scrum Guide về burn-down/burn-up/cumulative flow và empiricism đúng nguyên văn.
+  - Đã tự tính lại: 18/24 = 0,75; 34/40 = 0,85; CPLI (20 + (−2)) / 20 = 0,9; việc có 5 ngày float trễ 3 còn 2.
+  - Nhất quán: SV trong EVM đo bằng tiền (khớp earned-value-management: "SV đo bằng tiền chứ không bằng ngày"); forecast cạnh baseline khớp schedule-forecasting; burndown chỉ đo việc trong sprint khớp burndown-burnup-charts.
+- **Nên tự kiểm lại:**
+  - Link gaoinnovations.gov trả 403 khi gọi tự động; mở thử trong trình duyệt, không được thì dùng link Internet Archive ở trên.
+  - Bảng So sánh (cột "Điểm cần nhớ" của CPLI: "không thấy đường khác sắp thành găng") là nhận định của người viết.
+  - Ví dụ dự án đặt lịch khám là giả định; ngưỡng "lệch trên 2 ngày" ở Đề bài là con số gợi ý, không có nguồn.
+  - Công thức CPLI chỉ kiểm theo NASA; chưa mở tài liệu DCMA 14-Point Assessment để đối chiếu.

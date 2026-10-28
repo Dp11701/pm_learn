@@ -1,0 +1,14 @@
+## strategic
+
+- Kiểm parser: Strategic (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Pulse of the Profession: PMO Frameworks (11/2013) — PMI](https://www.pmi.org/-/media/pmi/documents/public/pdf/learning/thought-leadership/pulse/pmo-frameworks.pdf); [Which PMO Is Right for Your Organization? (2023) — PMI](https://www.pmi.org/learning/thought-leadership/which-pmo-is-right-for-your-organization) (pmi.org chặn curl, đọc bản Internet Archive 16/07/2026); [Project management office — Wikipedia](https://en.wikipedia.org/wiki/Project_management_office); [What is a PMO? — APM](https://www.apm.org.uk/resources/what-is-project-management/what-is-a-pmo/); [What is a project management office (PMO)? — CIO](https://www.cio.com/article/2441862/what-is-a-project-management-office-pmo-and-do-you-need-one.html)
+- Agent soát đã sửa:
+  - Tóm tắt: "Khác với supportive, controlling và directive vốn nói về mức kiểm soát, 'strategic' nói về…" → nói rõ Strategic đứng cạnh ba loại kia trên roadmap nhưng thuộc trục khác. Mục đích là để người học thấy đây là cách bài hiểu vị trí của mục trên roadmap.
+  - Khái niệm "Enterprise / Strategic PMO": thêm ý của PMI 2023: EPMO thường là nơi có quyền phân bổ nguồn lực giữa các dự án và báo cáo lên cấp cao nhất, như COO. Ý này đỡ cho phần Ví dụ thực tế, chỗ PMO rút developer sang dự án khác.
+  - Tham khảo: thêm bài PMI 2023, mục Enterprise Project Management Office. Đây là nguồn controlling.md đã dùng.
+  - So sánh, hàng "Thời gian tồn tại": "Lâu dài" → "Thường lâu dài" cho Enterprise và Organizational Unit PMO. PMI 2013 chỉ nói rõ Project-Specific PMO là tạm thời, không khẳng định hai loại kia lâu dài.
+- **Nên tự kiểm lại:**
+  - Cách hiểu "Strategic = Enterprise/Strategic PMO" là hợp lý nhưng là suy luận. Roadmap gốc chỉ có tên mục. PMI 2013 xếp "Strategic PMO" là tên khác của Enterprise PMO, ở trục cấp/phạm vi, không phải mức kiểm soát thứ tư. CIO (dẫn chuyên gia Sargeant) xác nhận Enterprise PMO có thể vận hành theo kiểu supportive, controlling hay directive. Nếu người lập roadmap có ý khác (ví dụ "strategic PMO" là PMO tham gia hoạch định chiến lược), bài vẫn phủ được phần lớn, vì PMI 2013 cũng ghi Enterprise PMO "may incorporate strategy development and strategic planning support".
+  - Đã khớp PMI 2013: nhóm tên Enterprise/Organization-wide/Strategic/Corporate/Portfolio/Global; PMO cấp cao nhất; gắn với chiến lược, governance toàn tổ chức, portfolio management để bảo đảm gắn chiến lược và hiện thực hoá lợi ích; có thể chịu trách nhiệm trực tiếp hoặc ảnh hưởng tới PMO cấp dưới; mô tả Organizational Unit PMO và Project-Specific PMO trong bảng. Đã khớp APM: hub-and-spoke với PMO trung tâm cấp enterprise hoặc portfolio.
+  - Câu hỏi 1 ("báo cáo trực tiếp CEO") khớp Wikipedia ("typically reporting direct to the CEO"), còn PMI 2023 lấy ví dụ COO. Cả hai đều chỉ là ví dụ về cấp cao nhất.
+  - Phần Cách áp dụng, Góc dev lead và lời khuyên dịch lý do kỹ thuật ra kết quả kinh doanh là nhận định của người viết.

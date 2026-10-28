@@ -1,0 +1,15 @@
+## quality-control
+
+- Kiểm parser: Quality control (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Quality Assurance vs Quality Control (bản lưu 14/01/2025) — ASQ](https://web.archive.org/web/20250114220824/https://asq.org/quality-resources/quality-assurance-vs-control); [Certified Tester Foundation Level Syllabus v4.0.1 — ISTQB](https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf); [Project Quality Management (PMP Exam Tutorial) — Bernie Roseke, ProjectEngineer](https://www.projectengineer.net/tutorials/pmp-exam-tutorial/project-quality-management/); [PMBOK Guide 6th Edition Errata (Fourth Printing) — PMI](https://www.pmi.org/-/media/pmi/documents/public/pdf/pmbok-standards/pmbok-guide-6th-edition-errata-4th-printing.pdf); [PMBOK Guide 6th Edition, Part 2, mục 5 "Monitoring and Controlling Process Group" — PMI (bản xem trước O'Reilly, Internet Archive 16/10/2025)](https://web.archive.org/web/20251016004132/https://www.oreilly.com/library/view/a-guide-to/9781628251845/part_2-5.xhtml); [CDC UP Project Quality Management Plan Template (bản lưu 27/05/2021) — CDC](https://web.archive.org/web/20210527070643/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Quality_Management_Plan_Template.doc) (đã bỏ khỏi Tham khảo, bài không dựa vào mục Quality Control của mẫu này)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, "Control Quality": "thuộc nhóm monitoring and controlling" → "thuộc Monitoring and Controlling Process Group". Đã xác nhận: mục lục PMBOK 6 (bản xem trước O'Reilly) xếp "5.7 Control Quality" trong Part 2, mục 5 "Monitoring and Controlling Process Group".
+  - Khái niệm cốt lõi, "Verified deliverables": "Sau bước này mới tới lượt khách hàng hoặc sponsor xem xét" → verified deliverables được xem xét với khách hàng hoặc sponsor ở Validate Scope để chấp nhận chính thức; Control Quality thường làm trước Validate Scope nhưng có thể chạy song song. Theo errata PMBOK 6 (trang 5.5 Validate Scope: "Control Quality is generally performed before Validate Scope, although the two processes may be performed in parallel"). Nhất quán với acceptance-of-deliverables.md.
+  - Vì sao PM cần biết: "mất uy tín ở đúng lúc quan trọng nhất của dự án" → "mất uy tín ngay lúc bàn giao" (bỏ phóng đại).
+  - Góc dev lead → PM, "Điều cần đổi": gộp hai câu đầu để còn 3 câu đúng prompt (2–3 câu).
+  - Thực hành công cụ, bước 4: filter đếm "lỗi mức cao nhất còn mở" chỉ có `statusCategory != Done`, thiếu điều kiện mức → thêm `priority = Highest AND statusCategory != Done`.
+  - Tham khảo: bỏ mẫu CDC; thêm errata PMBOK 6 và bản xem trước PMBOK 6 (O'Reilly, Internet Archive).
+- **Nên tự kiểm lại:**
+  - Danh sách đầu vào, công cụ, đầu ra của Control Quality (checklist, check sheet, statistical sampling, inspection, testing/product evaluations, control charts; quality control measurements, verified deliverables) chỉ có qua ProjectEngineer; errata chỉ xác nhận "Verified deliverables" là đầu ra của 8.3 Control Quality (sơ đồ Validate Scope).
+  - Tên priority `Highest` là giá trị mặc định của Jira; dự án đặt tên khác thì phải sửa JQL.
+  - Bài dài khoảng 1.670 từ, dài hơn các bài chủ đề khác nhưng không lệch prompt; chưa cắt.

@@ -1,0 +1,14 @@
+## staffing-process
+
+- Kiểm parser: Staffing process (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Staffing — Wikipedia](https://en.wikipedia.org/wiki/Staffing) (nguồn yếu, không mở lại; đã bỏ, thay bằng Hapke); [Project Management, 2nd Edition, chương 11 Resource Planning — Adrienne Watt, BCcampus (Internet Archive)](https://web.archive.org/web/20250126141622/https://opentextbc.ca/projectmanagement/chapter/chapter-11-resource-planning-project-management/); [Structured Interviews: A Practical Guide (2008) — U.S. OPM](https://www.opm.gov/policy-data-oversight/assessment-and-selection/structured-interviews/guide.pdf) (opm.gov chặn curl 403; đọc bản Internet Archive 10/2026, cùng file); [Hiring Process Analysis Tool — U.S. OPM](https://www.opm.gov/policy-data-oversight/human-capital-management/hiring-reform/hiring-process-analysis-tool/); [Recruitment and Selection, mục 4.6 — Melanie Hapke, eCampusOntario (Internet Archive)](https://web.archive.org/web/20260611002234/https://ecampusontario.pressbooks.pub/recruitmentselection/chapter/4-6-internal-vs-external-recruiting/)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, Job analysis: "Cả hướng dẫn phỏng vấn của U.S. OPM và bài Staffing trên Wikipedia đều coi đây là bước nền…" → OPM đặt job analysis là bước đầu tiên và câu hỏi phỏng vấn phải bám năng lực rút ra từ đó (đúng chữ của OPM guide, mục 1 và mục 3). Bỏ dẫn Wikipedia.
+  - Khái niệm cốt lõi, Internal vs external sourcing: "người bên trong thường hiểu tổ chức hơn; người bên ngoài… cần thời gian hoà nhập" → viết lại theo Hapke 4.6: người bên trong đã biết năng lực, dễ đoán thành công nhưng để lại chỗ trống; người bên ngoài mở rộng nguồn ứng viên, mang ý tưởng mới, tốn chi phí và cần thêm thời gian đào tạo, hoà nhập.
+  - Tham khảo: thay Wikipedia Staffing bằng giáo trình mở Recruitment and Selection (Hapke) mục 4.6, bản Internet Archive (trang gốc trả 403 với công cụ).
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: BCcampus ("The schedule cannot be finalized until you receive approval and commitment for the resource assignments"); OPM HPAT (tuyển quá nhanh có thể bỏ sót ứng viên phù hợp, quá chậm thì ứng viên tốt nhất có thể mất hứng hoặc nhận việc khác).
+  - Bảng So sánh (mượn nội bộ / tuyển mới / nhà thầu, staff augmentation): hai hàng đầu khớp ý với Hapke 4.6; hàng nhà thầu ("có người nhanh hơn", "kiến thức dễ đi theo người khi hết hợp đồng") là nhận định của người viết, chưa có nguồn.
+  - Khái niệm Staffing plan, Resource availability (ví dụ 30% thời gian) và Lead time tuyển dụng là cách diễn đạt của người viết; chỉ ý "nhanh quá / chậm quá" có nguồn OPM.
+  - Hướng dẫn OPM là tài liệu cho cơ quan liên bang Mỹ (2008); bài không khẳng định luật lao động Việt Nam.
+  - Đoạn tóm tắt chương Job Analysis trong sách Hapke do ChatGPT viết (sách ghi rõ), nên chỉ dẫn mục 4.6 do tác giả viết/biên soạn lại.

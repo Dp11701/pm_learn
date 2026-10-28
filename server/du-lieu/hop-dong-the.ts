@@ -6,7 +6,8 @@ import { congNgay } from '../../shared/lich.ts'
 // - PUT    /api/the/:id             { truoc?, sau? }                 → KetQuaSuaThe
 // - DELETE /api/the/:id                                              → KetQuaGhiThe (the = thẻ vừa xoá)
 // - POST   /api/the/:id/khoi-phuc   Hoàn tác xoá: cùng id, giữ hộp, hạn, lịch sử ôn → KetQuaGhiThe
-// Phiên ôn (ghi Nhớ / Quên) là phase 8; quy tắc chuyển hộp đã có ở đây (sauKhiOn) và ở du-lieu/the.ts (ghiLanOn).
+// Phiên ôn (ghi Nhớ / Quên): hợp đồng ở mục "Phiên ôn" cuối file; quy tắc chuyển hộp là sauKhiOn (ghi: ghiLanOn
+// ở du-lieu/the.ts).
 
 /** Một flashcard. */
 export interface TheHoc {
@@ -80,4 +81,78 @@ export function sauKhiOn(
 /** Thẻ đến hạn hôm nay: hạn ≤ homNay. */
 export function denHan(the: Pick<TheHoc, 'hanOn'>, homNay: string): boolean {
   return the.hanOn <= homNay
+}
+
+// ---------- Phiên ôn (bước 3; đề xuất 3.3, 3.5) ----------
+// - GET  /api/on-tap          → AnhChupOnTap (server quyết "hôm nay")
+// - POST /api/on-tap/:theId   { ket, luyenThem? } → KetQuaOnThe
+//   · luyenThem false/thiếu: lần ôn thật — Leitner (sauKhiOn) theo ngày ôn = hôm nay của server, ghi lịch sử ôn
+//     (tính tỉ lệ nhớ), tăng revision; thẻ chưa đến hạn → 409 (bấm hai lần không đẩy hộp hai lần).
+//   · luyenThem true: vòng "Ôn lại n thẻ đã quên" — không đổi hộp, hạn, không ghi lịch sử, không tăng revision.
+//   Thẻ không có, hoặc mục của thẻ không còn trong cây (bất biến 8) → 404.
+// Thẻ của mục không còn trong cây không vào danh sách, số hộp, tổng thẻ, tỉ lệ nhớ.
+
+/** Số ngày tính tỉ lệ nhớ (gồm cả hôm nay). */
+export const SO_NGAY_TI_LE_NHO = 30
+
+/** Thẻ trong phiên ôn: TheHoc (trừ khoaCau) + lúc tạo (ISO UTC, để xếp). */
+export interface TheOn {
+  id: number
+  itemId: string
+  truoc: string
+  sau: string
+  hop: number
+  hanOn: string
+  taoLuc: string
+}
+
+/** Số thẻ theo hộp Leitner 1–5. */
+export type SoTheTheoHop = Record<1 | 2 | 3 | 4 | 5, number>
+
+export interface AnhChupOnTap {
+  revision: number
+  /** Hôm nay của server (YYYY-MM-DD) */
+  homNay: string
+  /** Mọi thẻ hạn ≤ homNay, xếp hạn → hộp → lúc tạo (→ id) */
+  denHan: TheOn[]
+  /** Số thẻ (mọi thẻ) theo hộp */
+  hop: SoTheTheoHop
+  tongThe: number
+  /** Số lần Nhớ / tổng lần ôn thật trong SO_NGAY_TI_LE_NHO ngày gần nhất (0–1); null khi chưa ôn lần nào */
+  tiLeNho30: number | null
+  /** Tử số và mẫu số của tiLeNho30 */
+  lanOn30: { nho: number; tong: number }
+  /** Hạn sớm nhất sau hôm nay; null khi không có thẻ nào hạn sau hôm nay */
+  hanKeTiep: string | null
+}
+
+export interface YeuCauOnThe {
+  ket: KetQuaOn
+  /** Vòng luyện thêm: không đổi hộp, không tính tỉ lệ nhớ */
+  luyenThem?: boolean
+}
+
+export interface KetQuaOnThe {
+  revision: number
+  /** false với vòng luyện thêm */
+  daDoi: boolean
+  luyenThem: boolean
+  ket: KetQuaOn
+  /** Thẻ sau lần ôn */
+  the: TheOn
+  /** Thẻ trước lần ôn */
+  truoc: TheOn
+}
+
+/** Ngày đầu của cửa sổ tỉ lệ nhớ kết thúc ở `homNay` (gồm cả hai đầu). */
+export function ngayDauTiLeNho(homNay: string): string {
+  return congNgay(homNay, 1 - SO_NGAY_TI_LE_NHO)
+}
+
+/** Thứ tự phiên ôn: hạn → hộp → lúc tạo → id. */
+export function soThuTuOn(a: TheOn, b: TheOn): number {
+  if (a.hanOn !== b.hanOn) return a.hanOn < b.hanOn ? -1 : 1
+  if (a.hop !== b.hop) return a.hop - b.hop
+  if (a.taoLuc !== b.taoLuc) return a.taoLuc < b.taoLuc ? -1 : 1
+  return a.id - b.id
 }

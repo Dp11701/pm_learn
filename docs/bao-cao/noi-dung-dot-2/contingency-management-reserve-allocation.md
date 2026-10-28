@@ -1,0 +1,14 @@
+## contingency-management-reserve-allocation
+
+- Kiểm parser: Contingency / Management Reserve Allocation (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [A model to develop and use risk contingency reserve (2014, bản Internet Archive) — Narendra K. Shrivastava, PMI](https://web.archive.org/web/20240911125633/https://www.pmi.org/learning/library/model-risk-contingency-reserve-9310); [Cost Estimating and Assessment Guide, GAO-20-195G (2020, bản Internet Archive) — U.S. GAO](https://web.archive.org/web/20250105172704/https://www.gao.gov/assets/gao-20-195g.pdf)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, Cách ước lượng reserve: thêm "theo GAO" trước câu "chênh lệch giữa ước lượng điểm và ước lượng ở mức tin cậy đó chính là contingency". Câu này là của GAO (chương 12: "The difference between the point estimate and the cost estimate at the desired percentile determines the required contingency"); Shrivastava chỉ nhắc Monte Carlo.
+  - Tự kiểm tra câu 1: "mất 10 ngày công vì dev chủ chốt bị điều sang dự án khác" → "mất 10 ngày làm việc vì hai lập trình viên chủ chốt bị điều sang dự án khác trong hai tuần" — đúng ví dụ Shrivastava ("losing two key programmers for two weeks… total loss of workdays would be 10"). Số 0,75 × 10 = 7,5; 0,5 × 9 = 4,5; tổng 12 ngày: đúng.
+  - Thực hành (Đề bài, Đầu ra, Tiêu chí 1): tác động "ngày công" → "số ngày trễ tiến độ". Đầu ra cần ngày "no later than", là ngày trên lịch; cộng ngày công (người-ngày) không ra được mốc lịch.
+- **Nên tự kiểm lại:**
+  - Tự tính lại ví dụ: 0,4 × 50 = 20; 0,2 × 80 = 16; 0,5 × 30 = 15; tổng 51 triệu; baseline 600 + 51 = 651; + MR 30 = 681; dùng 50 còn 1; 50/51 ≈ 98%. Đúng.
+  - Đã khớp Shrivastava: contingency cho "known unknowns" có trong register và có phương án; MR do cấp trên đặt cho "unknown unknowns"; ước lượng + contingency = cost baseline, baseline + MR = cost budget; PM thường được quyền dùng contingency; khi dùng thì ước lượng tăng, contingency giảm, baseline giữ nguyên; giới hạn khi ít rủi ro hoặc toàn rủi ro xác suất cao; "no later than" / "not to exceed". Nhất quán với cost-baseline.md và how-to-develop-project-budget.md (contingency trong baseline, baseline + MR = ngân sách).
+  - Bảng So sánh theo PMI nhưng qua bài Shrivastava (dẫn PMBOK bản 5); cost-baseline.md dẫn PMBOK bản 6 qua giáo trình. Chưa đối chiếu bản gốc PMBOK.
+  - GAO đã khớp: contingency là quỹ ở cấp văn phòng chương trình cho "unknown unknowns", MR cho "known unknowns" ở cấp nhà thầu, kèm câu "other organizations may use the terms differently"; lưu ý mức tin cậy cao cho nhiều dự án làm ngân sách danh mục không kham nổi và giảm số chương trình được cấp vốn.
+  - Chỉ số "% reserve đã dùng so với % công việc đã xong" là gợi ý của người viết; Shrivastava chỉ nói theo dõi reserve theo thời gian, GAO nói theo dõi "burn rate" của management reserve.

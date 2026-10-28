@@ -1,0 +1,12 @@
+## project-sponsor
+
+- Kiểm parser: Project Sponsor (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Sponsor Role Guidance, APM Competence Framework 3rd edition (2022) — APM](https://www.apm.org.uk/media/uqwlve4h/cf-role-profile-sponsorfinal.pdf); [Fundamentals of project sponsorship (2010) — Dale Christenson, Janice Christenson](https://www.pmi.org/learning/library/project-sponsors-critical-success-factors-6572) (pmi.org chặn curl, đọc bản Internet Archive 22/03/2023); [Duties of the effective project sponsor (2002) — Neal Whitten](https://www.pmi.org/learning/library/duties-effective-project-sponsor-responsibilities-4469) (đọc bản Internet Archive 27/10/2025); [Looking for your sponsor? (2006) — J. M. Siegelaub](https://www.pmi.org/learning/library/prince2-approach-help-project-sponsors-8058) (đọc bản Internet Archive 12/12/2019); [The Scrum Guide (11/2020) — Ken Schwaber, Jeff Sutherland](https://scrumguides.org/scrum-guide.html)
+- Agent soát đã sửa:
+  - Vì sao PM cần biết, câu về Christenson: "cái giá thường là làm lại vì nhóm đã phải tự quyết sai" → "dự án bị chậm chủ yếu vì phải làm lại những gì nhóm đã tự quyết sai khi thiếu ý kiến của sponsor, chứ không phải vì ngồi chờ". Bài gốc nói chậm trễ đến từ làm lại, không phải từ chờ quyết định.
+  - So sánh, câu về PRINCE2: "tách vai trò sponsor truyền thống thành Project Board" → "giao trách nhiệm của sponsor cho một Project Board". Siegelaub trình bày Project Board là cách PRINCE2 xử lý vai trò sponsor, không gọi đó là "tách vai trò truyền thống".
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: sponsor bổ nhiệm PM, vai trò bắt đầu trước và kéo dài sau PM, tham gia nhiều nhất lúc đầu và lúc cuối, sở hữu business case và chịu trách nhiệm dừng dự án khi nó hết hợp lệ, là điểm leo thang đầu tiên cho vấn đề chiến lược và change request, executive sponsor và delegated sponsor (APM). Quyết định động tới cam kết bên ngoài phải có sponsor, sponsor giải quyết xung đột cần cấp trên, PM nên tự soạn danh sách việc của sponsor rồi thương lượng (Whitten). Scrum Guide không nhắc tới sponsor.
+  - Cặp "accountable / responsible" giữa sponsor và PM là cách diễn giải theo RACI. APM chỉ nói sponsor accountable cho lợi ích; vế "PM responsible" không có nguồn trực tiếp.
+  - Bảng So sánh, cột Project manager và hàng "Câu hỏi chính" là tóm tắt của người viết, không lấy từ một nguồn cụ thể.
+  - Christenson và Siegelaub chỉ đọc được qua bản lưu cũ (2023, 2019); nội dung trên pmi.org hiện tại có thể đã khác.

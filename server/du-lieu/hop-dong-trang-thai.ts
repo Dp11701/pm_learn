@@ -112,3 +112,41 @@ export function mucCua(giaTri: GiaTriTrangThai): MucTrangThai | null {
   const lyDo = giaTri.lyDo?.trim()
   return status === 'skip' && lyDo ? { status, lyDoBoQua: lyDo } : { status }
 }
+
+// ---------- Đặt hàng loạt (Danh sách, trang Lĩnh vực — đề xuất 3.9, bất biến 2) ----------
+
+/** Trạng thái được đặt hàng loạt: không có Đã xong (bất biến 2 — Đã xong đặt từng mục ở trang bài). */
+export const CAC_TRANG_THAI_HANG_LOAT = ['chua-hoc', 'dang-hoc', 'bo-qua'] as const
+export type TrangThaiHangLoat = (typeof CAC_TRANG_THAI_HANG_LOAT)[number]
+
+/** Body của POST /api/trang-thai/hang-loat */
+export interface YeuCauDatHangLoat {
+  /** id mục học, 1..soMucHoc, không trùng */
+  ids: string[]
+  trangThai: TrangThaiHangLoat
+}
+
+/** Phản hồi POST /api/trang-thai/hang-loat */
+export interface KetQuaDatHangLoat {
+  revision: number
+  trangThai: TrangThaiHangLoat
+  /** id các mục đã đổi, theo thứ tự gửi; mục đang ở đúng trạng thái đó thì giữ nguyên (kể cả lý do Bỏ qua) */
+  daDoi: string[]
+  /** Giá trị trước khi đổi của từng mục trong daDoi — Hoàn tác gửi lại nguyên văn */
+  truoc: Record<string, GiaTriTrangThai>
+}
+
+/** Body của POST /api/trang-thai/hang-loat/hoan-tac: đúng `trangThai` và `truoc` của lần đặt hàng loạt. */
+export interface YeuCauHoanTacHangLoat {
+  trangThai: TrangThaiHangLoat
+  truoc: Record<string, GiaTriTrangThai>
+}
+
+/** Phản hồi POST /api/trang-thai/hang-loat/hoan-tac */
+export interface KetQuaHoanTacHangLoat {
+  revision: number
+  /** id các mục đã trả về giá trị cũ */
+  daKhoiPhuc: string[]
+  /** id các mục đã đổi sau lần đặt hàng loạt (không còn trạng thái đó) nên giữ nguyên */
+  giuNguyen: string[]
+}

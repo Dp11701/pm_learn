@@ -12,8 +12,15 @@ import { useMoBangPhimTat } from '../phim-tat'
 import { layCay, type MauBai, type MucHoc } from '../../../shared/roadmap'
 import { TEN_LOAI } from '../../../shared/domain/trang-thai'
 import { dinhDangSo } from '../../../shared/dinh-dang'
-import { useDuLieuKhung } from './du-lieu-khung'
-import { DEN_TAT_CA_DANG_HOC, MENU, TEN_APP, ariaCurrent, badgeCua, laClickRaNgoai } from './menu'
+import {
+  DEN_TAT_CA_DANG_HOC,
+  MENU,
+  TEN_APP,
+  ariaCurrent,
+  badgeCua,
+  laClickRaNgoai,
+  useDuLieuMenu,
+} from './menu'
 import { useMenuDangMo } from './thanh-tren'
 import NutGiaoDien from './NutGiaoDien'
 import Logo from './Logo'
@@ -56,7 +63,7 @@ const NUT_VIEN =
 
 export default function Sidebar({ mobile = false, khiDong, khiChon }: PropsSidebar) {
   const { pathname } = useLocation()
-  const duLieu = useDuLieuKhung()
+  const duLieu = useDuLieuMenu()
   const { mo: moTimKiem } = useTimKiem()
   const moBangPhimTat = useMoBangPhimTat()
   const idDangHoc = useId()

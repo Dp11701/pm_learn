@@ -9,8 +9,7 @@ import Badge from '../../components/trang-thai/Badge'
 import { useTimKiem } from '../../components/tim-kiem/TimKiem'
 import { useMoBangPhimTat } from '../phim-tat'
 import { useGiaoDien } from '../giao-dien'
-import { useDuLieuKhung } from './du-lieu-khung'
-import { MENU, TEN_APP, ariaCurrent, badgeCua, type BadgeMenu } from './menu'
+import { MENU, TEN_APP, ariaCurrent, badgeCua, useDuLieuMenu, type BadgeMenu } from './menu'
 import { useMenuDangMo } from './thanh-tren'
 import NutGiaoDien, { nhanGiaoDien } from './NutGiaoDien'
 import Logo from './Logo'
@@ -55,7 +54,7 @@ function BadgeRail({ badge, dangMo }: { badge: BadgeMenu; dangMo: boolean }) {
 const O = 'h-[var(--rail-o-h)] w-[var(--rail-o-w)] rounded-[var(--radius-sm)]'
 
 export default function Rail() {
-  const duLieu = useDuLieuKhung()
+  const duLieu = useDuLieuMenu()
   const { mo: moTimKiem } = useTimKiem()
   const moBangPhimTat = useMoBangPhimTat()
   const [giaoDien] = useGiaoDien()

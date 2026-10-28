@@ -1,0 +1,12 @@
+## thomas-kilmann-conflict-management-model
+
+- Kiểm parser: Thomas-Kilmann Conflict Management Model (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [An Overview of the Thomas-Kilmann Conflict Mode Instrument (TKI) — Kilmann Diagnostics (bản Internet Archive 8/6/2026)](https://web.archive.org/web/20260608135557/https://kilmanndiagnostics.com/overview-thomas-kilmann-conflict-mode-instrument-tki/); [A Brief History of the Thomas-Kilmann Conflict Mode Instrument — Ralph H. Kilmann (bản Internet Archive 11/7/2026)](https://web.archive.org/web/20260711173754/https://kilmanndiagnostics.com/a-brief-history-of-the-thomas-kilmann-conflict-mode-instrument/); [TKI Profile and Interpretive Report (báo cáo mẫu 2008) — Thomas và Kilmann, CPP, Inc. (PDF, Cornell)](https://scl.cornell.edu/sites/scl/files/downloads/basic_page/TKI_Sample_Report.pdf)
+- Agent soát đã sửa:
+  - Khái niệm **Cooperativeness**: "Hai trục này độc lập với nhau, nên kết hợp lại cho ra năm kiểu xử lý" → "Kết hợp hai trục này cho ra năm kiểu xử lý". Nguồn chỉ nói hai chiều "can be used to define five methods"; không nguồn nào nói hai trục độc lập.
+  - Đã đối chiếu, không cần sửa: định nghĩa xung đột và hai trục; mô tả năm kiểu (báo cáo CPP); 30 cặp câu chọn A/B, mục đích giảm social desirability bias, "over 90%" người quản lý tự xếp cao nhất ở collaborating và thấp nhất ở avoiding với bộ đo năm câu của Blake và Mouton; Xicom xuất bản TKI năm 1974; "Each of us is capable of using all five… because of temperament or practice"; "no right or wrong answers", hiệu quả tuỳ "requirements of the specific situation and the skill"; các bước 3–7 của Cách áp dụng khớp danh sách "Uses" của từng kiểu trong báo cáo CPP.
+  - Kiểm PMBOK: không thêm câu về năm kỹ thuật giải quyết xung đột của PMBOK (withdraw/avoid, smooth/accommodate, compromise/reconcile, force/direct, collaborate/problem solve). Bản errata PMBOK 6 không có đoạn này, và chỉ tìm được blog/diễn đàn thứ cấp, không có bản PMBOK mở được.
+- **Nên tự kiểm lại:**
+  - Ví dụ thực tế gọi cách xử lý (release đúng hạn, tắt phần thanh toán bằng feature flag, hẹn bản vá) là Collaborating. Có thể cãi rằng PO vẫn mất một phần (thanh toán ra muộn) nên đây gần Compromising; nên xem lại cách gọi.
+  - Hai trang Kilmann Diagnostics chỉ mở được qua Internet Archive. Báo cáo mẫu CPP 2008 là tài liệu thương mại do Cornell đăng lại.
+  - Nếu muốn nối với kỳ thi PMP, có thể tự thêm ánh xạ sang năm kỹ thuật của PMBOK 6 (mục 9.5.2.1) sau khi đối chiếu sách gốc.

@@ -1,0 +1,25 @@
+## discovery-phase
+
+- Kiểm parser: Discovery Phase (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [How the discovery phase works — GOV.UK Service Manual (GDS)](https://www.gov.uk/service-manual/agile-delivery/how-the-discovery-phase-works); [The Four Big Risks — Marty Cagan, SVPG](https://svpg.com/four-big-risks/); [The Cone of Uncertainty — Construx](https://www.construx.com/books/the-cone-of-uncertainty/); [How to use Jira Product Discovery (Getting started) — Atlassian](https://www.atlassian.com/software/jira/product-discovery/guides/getting-started/introduction)
+- Agent soát đã sửa:
+  - So sánh, hàng "Câu hỏi chính", cột Feasibility Study: "Phương án đã chọn có khả thi…?" → "Các phương án đề xuất có khả thi…?". Hàng "Cách làm chính" trong cùng bảng ghi "so sánh phương án". Vì vậy chưa thể nói phương án đã được chọn.
+  - Tham khảo, Construx: link cũ `/blog/the-cone-of-uncertainty/` giờ tự chuyển sang `/books/the-cone-of-uncertainty/`. Đã thay bằng link đích.
+  - Tham khảo, Atlassian: link cũ chuyển sang `/getting-started/introduction`. Đã thay bằng link đích.
+- Đối chiếu, không cần sửa:
+  - GOV.UK khớp các ý sau:
+    - không build trong discovery;
+    - chất vấn giải pháp có sẵn và viết lại thành vấn đề, kể cả điều không thuộc vấn đề;
+    - định lượng chi phí của vấn đề;
+    - tách ràng buộc cứng và mềm;
+    - xét phương án không cần build;
+    - mời nhiều vai trò;
+    - "dừng sau discovery không phải thất bại".
+  - SVPG khớp định nghĩa bốn loại rủi ro.
+  - Construx khớp ý "4x mỗi phía lúc Initial Concept" và ý "nón chỉ hẹp khi ra quyết định, kể cả chốt điều sẽ không làm".
+- **Nên tự kiểm lại:**
+  - GOV.UK nói discovery "không có thời lượng cố định, thường khoảng 4–8 tuần". Tình huống và câu hỏi trong bài dùng mốc 2–3 tuần. Đó là giả định, phù hợp dự án nhỏ, không phải chuẩn.
+  - Ý "sửa hướng khi đã code nhiều thường tốn hơn hẳn vài tuần tìm hiểu" là nhận định của người viết. Bài không dẫn số liệu cho ý này.
+  - Ý "go/no-go do người có thẩm quyền quyết dựa trên tiêu chí đặt từ đầu" là thực hành chung. GOV.UK chỉ nói discovery xong khi đã quyết có sang alpha hay không.
+  - Theo SVPG, PM chịu trách nhiệm rủi ro value và viability, còn tech lead chịu rủi ro feasibility. Góc dev lead trong bài dùng đúng tinh thần này. Lưu ý: "Product Manager" của Cagan không hẳn là Project Manager.
+  - Cột Feasibility Study và POC trong bảng So sánh là mô tả chung, không có nguồn trong Tham khảo. Hãy đối chiếu với bài feasibility-study và poc khi duyệt.

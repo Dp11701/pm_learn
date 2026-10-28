@@ -1,0 +1,11 @@
+## nexus
+
+- Kiểm parser: Nexus (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Online Nexus Guide (01/2021) — Ken Schwaber, Scrum.org](https://www.scrum.org/resources/online-nexus-guide) (curl bị Scrum.org trả mã 202 chặn bot, nên đọc qua [bản Internet Archive 13/02/2026](https://web.archive.org/web/20260213220304/https://www.scrum.org/resources/online-nexus-guide); vẫn giữ link gốc); [Scaling Scrum with Nexus — Scrum.org](https://www.scrum.org/resources/scaling-scrum) (cũng đọc qua [bản Internet Archive](https://web.archive.org/web/20251229180318/https://www.scrum.org/resources/scaling-scrum)); [The Scrum Guide (11/2020) — Ken Schwaber, Jeff Sutherland](https://scrumguides.org/scrum-guide.html); [LeSS Framework — less.works](https://less.works/less/framework/index); [Scrum of Scrums (Agile Glossary) — Agile Alliance](https://www.agilealliance.org/glossary/scrum-of-scrums/)
+- Agent soát đã sửa:
+  - Góc dev lead → PM, "Bạn đã quen": "Scrum Guide 2020 vốn đã yêu cầu… dùng chung Product Goal, Product Backlog, Product Owner và Definition of Done" → "vốn đã khuyên… dùng chung Product Goal, Product Backlog, Product Owner, và bắt buộc dùng chung Definition of Done". Scrum Guide viết "should share" cho ba thứ đầu và chỉ dùng "must" cho Definition of Done.
+  - So sánh, ô "Product Owner và backlog" của Scrum of Scrums: "Không quy định" → "Kỹ thuật gốc không quy định". Agile Alliance không nói gì về PO hay backlog. Tuy vậy, Scrum@Scale (nơi Scrum of Scrums là thành phần chính) có Chief Product Owner và backlog chung, nên cần nói rõ là đang nói về kỹ thuật gốc.
+- **Nên tự kiểm lại:**
+  - Các ý đã khớp Nexus Guide: 3–9 Scrum Team; "Scaled Scrum is still Scrum"; thành phần và trách nhiệm của Nexus Integration Team; việc của NIT được ưu tiên hơn việc trong nhóm; Increment chỉ done khi đã tích hợp, có giá trị và dùng được; nhóm được làm DoD chặt hơn, không được lỏng hơn; Nexus Sprint Review thay Sprint Review riêng; giảm người có thể giao nhiều giá trị hơn; bản 01/2021. Năm 2001 của Scrum of Scrums và quy mô LeSS khớp Agile Alliance và less.works.
+  - Ở Tự kiểm tra câu 1, ý "phải tìm hướng nằm ngoài Nexus Guide cơ bản" là nhận định của người viết. Nexus Guide không nói gì về trường hợp hơn 9 nhóm.
+  - Cột Scrum of Scrums trong bảng chỉ mô tả kỹ thuật theo Agile Alliance. Bạn có thể đối chiếu với bài scrum-of-scrums nếu muốn biết bản Scrum@Scale.

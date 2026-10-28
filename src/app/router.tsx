@@ -12,6 +12,7 @@ import KhongTimThay from '../pages/KhongTimThay'
 import LoiTrang from '../pages/loi/LoiTrang'
 import LoiUngDung from '../pages/loi/LoiUngDung'
 import TrangLinhVuc from '../pages/TrangLinhVuc'
+import TrangLoTrinh from '../pages/TrangLoTrinh'
 import TrangMucHoc from '../pages/TrangMucHoc'
 import TrangSapCo from '../pages/TrangSapCo'
 import TrangNoiDung from '../pages/noi-dung/TrangNoiDung'
@@ -72,6 +73,11 @@ export const cacRoute: RouteObject[] = [
                 path: 'noi-dung',
                 Component: TrangNoiDung,
                 handle: { tenTrang: 'Nội dung' } satisfies HandleRoute,
+              },
+              {
+                path: 'lo-trinh',
+                Component: TrangLoTrinh,
+                handle: { tenTrang: 'Lộ trình' } satisfies HandleRoute,
               },
               { path: 'hoc/:slug', Component: TrangMucHoc },
               { path: 'linh-vuc/:slug', Component: TrangLinhVuc },

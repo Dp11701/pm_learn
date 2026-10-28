@@ -1,0 +1,13 @@
+## change-control-board-ccb
+
+- Kiểm parser: Change Control Board (CCB) (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [CDC UP Practices Guide: Change Management (11/30/06, bản Internet Archive) — Centers for Disease Control and Prevention](https://web.archive.org/web/20201020135247/https://www2a.cdc.gov/cdcup/library/practices_guides/CDC_UP_Change_Management_Practices_Guide.pdf); [CDC UP Change Request Form (example) (bản Internet Archive, đọc bằng textutil) — Centers for Disease Control and Prevention](https://web.archive.org/web/20220115224116/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Change_Request_Form_Example.doc); [NASA Systems Engineering Handbook, mục 6.5 Configuration Management — NASA](https://www.nasa.gov/reference/6-5-configuration-management/); [What Is a CAB? Change Advisory Board Explained — Atlassian](https://www.atlassian.com/itsm/change-management/change-advisory-board); [The Scrum Guide (11/2020) — Ken Schwaber, Jeff Sutherland](https://scrumguides.org/scrum-guide.html)
+- Agent soát đã sửa:
+  - Tự kiểm tra, câu 4: "Quyết định chưa được thực hiện thì change log chưa nên đóng" → "… thì dòng của change request đó trong change log chưa nên đóng". Change log là sổ chung của cả dự án, cái được đóng là từng dòng (CDC Plan Template: trạng thái Closed gán cho từng CR).
+  - Tự kiểm tra, câu 5: "CCB chỉ cần khi dự án có baseline hoặc hợp đồng…" → "CCB cần khi…". Bỏ chữ "chỉ" vì đây là nhận định của người viết, không nguồn nào nói vậy.
+- **Nên tự kiểm lại:**
+  - Các ý khớp nguyên văn nguồn: định nghĩa CCB "formally constituted group of stakeholders responsible for reviewing, evaluating, approving, delaying, or rejecting changes to the project… All decisions and recommendations… are recorded" và ví dụ ngưỡng 5.000 USD (CDC Practices Guide, trang 2); bốn lựa chọn Approved / Approved with Conditions / Rejected / More Info (CDC CR Form, phần 3); CCB "chaired by someone with program/project change authority", thành viên "with authority to commit the team they represent" (NASA 6.5); CAB do change manager dẫn dắt, xét thay đổi rủi ro cao hơn (Atlassian); Product Owner "one person, not a committee" (Scrum Guide).
+  - Nguồn CDC chỉ còn trên Internet Archive (CDC đã gỡ bộ CDC UP); nội dung là bản 11/30/06, khá cũ.
+  - Ngưỡng "không đổi mốc và dưới 3 ngày công" trong Ví dụ là giả định của người viết, không lấy từ nguồn.
+  - Câu "dự án hybrid: Product Owner sắp backlog, thay đổi chạm mốc/ngân sách/hợp đồng mới lên CCB" là cách làm thực tế theo nhận định của người viết (bài đã ghi rõ không phải quy định của Scrum Guide).
+  - Ví dụ CCB họp thứ Năm; ngày quyết CR-013 ở bài Change Request và Change log đã đổi thành 2026-09-17 (thứ Năm) cho khớp.

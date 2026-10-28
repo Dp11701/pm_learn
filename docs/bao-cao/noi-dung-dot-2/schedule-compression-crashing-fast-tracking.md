@@ -1,0 +1,13 @@
+## schedule-compression-crashing-fast-tracking
+
+- Kiểm parser: Schedule compression (crashing, fast tracking) (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Schedule Assessment Guide (GAO-16-89G), Strategies for Recovery and Acceleration (Table 6) — U.S. Government Accountability Office](https://gaoinnovations.gov/schedule-guide/strategies-for-recovery-and-acceleration.html) (link gốc trả 403 với truy cập tự động; đọc bản https://web.archive.org/web/20250201205143/https://gaoinnovations.gov/schedule-guide/strategies-for-recovery-and-acceleration.html); [NASA Schedule Management Handbook (NASA/SP-2010-3403, Rev. 1, 2020), mục 7.3.5.1 — NASA OCFO](https://www.nasa.gov/wp-content/uploads/2020/11/nasa_schedule_management_hand_book.pdf); [Brooks's law — Wikipedia](https://en.wikipedia.org/wiki/Brooks%27s_law)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, Crashing: "(người, giờ làm thêm, công cụ)" → "(người, công cụ)". GAO Table 6 tách "Add overtime and reduce vacations" thành kỹ thuật riêng, và chính bài liệt kê "làm thêm giờ" ở mục "Các cách khác"; NASA cũng để "Adjust the Calendar" riêng với crashing.
+  - Khái niệm cốt lõi, Brooks's law: thêm "Chính Brooks gọi đây là cách nói đơn giản hoá quá mức, nhưng nó đúng với quy luật chung" (Wikipedia trích Brooks: "outrageous oversimplification"), tránh hiểu là luật tuyệt đối.
+  - Đã đối chiếu: crashing tăng chi phí, có thể giảm chất lượng với người ít kinh nghiệm; fast tracking đổi FS thành SS, có thể quá tải, giảm chất lượng, thêm rủi ro; các cách khác (tách việc dài, xem lại constraint và lag, xem lại ước lượng, làm thêm giờ, bớt phạm vi, dùng contingency); tập trung vào việc găng và việc găng dài; lưu lịch trước khi đổi, ghi kỹ thuật, tính lại critical path (GAO Table 6). NASA 7.3.5.1 định nghĩa crashing (cần thêm tiền) và fast tracking (việc nối tiếp làm song song). Câu Brooks năm 1975, ramp up, kênh trao đổi tăng nhanh theo số người, giao người mới việc tách biệt (Wikipedia).
+  - Đã tự tính lại: crash B 10→7: A-B-D = 16, A-C-D = 17 → dự án 17, sớm 2 ngày; fast track C sớm 1 ngày → A-C-D = 16, hai đường cùng 16. Tự kiểm tra 1 (rút C: vẫn 19) và 2 (B→5: A-B-D 14, dự án 17) đúng.
+- **Nên tự kiểm lại:**
+  - Brooks's law chỉ có nguồn thứ cấp Wikipedia; nguồn gốc là sách The Mythical Man-Month (1975), không có bản mở miễn phí để đối chiếu.
+  - Link gaoinnovations.gov trả 403 khi gọi tự động; mở thử trong trình duyệt, không được thì dùng link Internet Archive ở trên.
+  - "Fast tracking không thêm nguồn lực" và cột "Cần duyệt" trong bảng So sánh là kiến thức chung / nhận định của người viết; GAO chỉ nói một số kỹ thuật "may have contractual implications".

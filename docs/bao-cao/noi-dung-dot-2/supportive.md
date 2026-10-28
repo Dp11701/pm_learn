@@ -1,0 +1,14 @@
+## supportive
+
+- Kiểm parser: Supportive (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Which PMO Is Right for Your Organization? (2023) — PMI](https://www.pmi.org/learning/thought-leadership/which-pmo-is-right-for-your-organization) (pmi.org chặn curl, đọc bản Internet Archive 16/07/2026); [Project governance and PMO, mục 2.2.1 — The Open University, OpenLearn](https://www.open.edu/openlearn/money-business/project-governance-and-project-management-office-pmo/content-section-2.2.1) (đọc bản Internet Archive 12/03/2026); [What is a PMO? — Atlassian](https://www.atlassian.com/agile/project-management/pmo); [What is a project management office (PMO)? — CIO](https://www.cio.com/article/2441862/what-is-a-project-management-office-pmo-and-do-you-need-one.html); [Project management office — Wikipedia](https://en.wikipedia.org/wiki/Project_management_office) (mở được, đã bỏ khỏi Tham khảo vì OpenLearn đã nói cùng ý); [A guide to PMO types (21/03/2023) — Planisware](https://planisware.com/resources/project-management-office-pmo/how-choose-right-pmo-type-and-organizational-structure) (mở được, đã bỏ: nguồn của hãng bán phần mềm, tự mâu thuẫn ở ý "supportive hợp với ai")
+- Agent soát đã sửa:
+  - Tham khảo: bỏ Planisware và Wikipedia, thêm PMI 2023 (bản Internet Archive) và OpenLearn (dẫn phân loại của PMI). Đây là hai nguồn controlling.md cùng thư mục đã dùng.
+  - Khái niệm cốt lõi: "Knowledge hub … Planisware mô tả …" → "Project repository (kho tri thức chung) … theo cách phân loại PMI dùng (qua OpenLearn), supportive PMO đóng vai trò như kho lưu trữ này". OpenLearn viết "This type of PMO serves as a project repository".
+  - Vì sao PM cần biết: thêm câu "PMI cũng lưu ý mô hình này chủ yếu hợp với nhóm đã trưởng thành, còn nhóm thiếu kinh nghiệm thường cần được dẫn dắt chặt tay hơn". Theo PMI 2023, mục "Avoid it" của supportive PMO.
+  - So sánh, hàng "Thường hợp khi" cột Supportive: "Cần linh hoạt, PM có kinh nghiệm, ít yêu cầu tuân thủ" → "Nhóm đã trưởng thành, giàu kinh nghiệm", cho khớp từng chữ với bảng của controlling.md và directive.md, và khớp PMI 2023 ("capable, mature project teams").
+- **Nên tự kiểm lại:**
+  - Các nguồn lệch nhau ở ý "supportive hợp với ai". PMI 2023 và Atlassian nói hợp với nhóm trưởng thành, giàu kinh nghiệm. Planisware vừa nói hợp với tổ chức có độ trưởng thành quản lý dự án thấp, vừa nói hợp khi PM giỏi và giàu kinh nghiệm. CIO dẫn ý rằng startup cần đổi hướng nhanh nên dùng supportive. Bài theo PMI 2023 và Atlassian.
+  - Câu hỏi 4 (PM giàu kinh nghiệm, cần đổi hướng nhanh) dựa trên CIO (chuyên gia Sargeant) và Atlassian, không có trong PMI.
+  - "Hỗ trợ khi cần" (on-demand support) khớp CIO ("services to support those teams as needed"). Câu "Nhóm không yêu cầu thì PMO không chen vào" là cách diễn giải của người viết.
+  - Phân loại supportive / controlling / directive là của PMBOK Guide; bài chỉ đối chiếu qua OpenLearn, chưa xem bản PMBOK gốc.

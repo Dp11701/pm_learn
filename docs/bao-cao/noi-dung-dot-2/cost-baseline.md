@@ -1,0 +1,15 @@
+## cost-baseline
+
+- Kiểm parser: Cost Baseline (tai-lieu) · Đủ khối 8/8
+- Nguồn đã mở: [Project Management, 2nd Edition, mục 9.4 Establishing the Project Budget — Abdullah Oguz, Cleveland State University](https://pressbooks.ulib.csuohio.edu/projectmanagement2ndedition/chapter/9-4-establishing-the-project-budget/); [Cost Estimating and Assessment Guide GAO-20-195G (bản Internet Archive, đọc bằng pypdf) — U.S. GAO](https://web.archive.org/web/20250105172704/https://www.gao.gov/assets/gao-20-195g.pdf); [Taking step four with earned value: establish the project baseline (PM Network 9(5), 1995, bản Internet Archive) — Quentin W. Fleming, Joel M. Koppelman](https://web.archive.org/web/20241210091445/https://www.pmi.org/learning/library/earned-value-establish-the-project-baseline-10417)
+- Agent soát đã sửa:
+  - Tự kiểm tra, câu 2 (dùng 15 triệu management reserve): thêm căn cứ GAO, chương 18 (trang 236): management reserve nằm ngoài performance measurement baseline và "is distributed to the appropriate control account" khi rủi ro xảy ra; PMB + MR = contract budget base. Ý "baseline tăng, tổng ngân sách không đổi" vì vậy không còn chỉ là suy luận của người soạn.
+  - Đã đối chiếu, không sửa — Số liệu: 60 + 10 = 70, + 5 = 75; 80 + 0 = 80; 70 + 10 = 80; tổng 235. Từng dòng: 45 + 30 + 0 = 75, 30 + 50 + 0 = 80, 0 + 30 + 50 = 80. Theo tháng 75 / 110 / 50, luỹ kế 75 / 185 / 235; 235 + 20 = 255. Đúng hết.
+  - Đã đối chiếu, không sửa — Dòng 1.2.1, 1.3.2, 1.4.1 (v1.1 theo CR-004) khớp tên và phiên bản trong scope-baseline.md; cách chia contingency trong baseline, management reserve ngoài baseline và ghi chú GAO dùng tên ngược khớp contingency-management-reserve-allocation.md và earned-value-management.md.
+  - Đã đối chiếu, không sửa — Oguz 9.4: Determine Budget theo PMBOK 6 cộng chi phí work package ra "authorized cost baseline", time-phased, được key stakeholders duyệt; contingency nằm trong baseline (ví dụ $10.000 + $2.000), management reserve cho "unknown-unknowns" áp cho cả ngân sách.
+  - Đã đối chiếu, không sửa — GAO: footnote 5 chương 1 (contingency/MR dùng ngược PMBOK, "other organizations may use the terms differently"); chương 18: PMB không gồm MR và fee, đường luỹ kế hình chữ S, lỗi front-loading và rubber baseline đúng như bài mô tả.
+  - Đã đối chiếu, không sửa — Fleming & Koppelman: baseline time-phased, MR trừ khỏi budget base để ra PMB, profit/fee nằm ngoài, chủ đầu tư phải duyệt mọi thay đổi PMB.
+- **Nên tự kiểm lại:**
+  - Ý PMBOK 6 chỉ đọc qua giáo trình Oguz (hình 9.4.1 "Adapted from PMBOK Guide Sixth Edition"), không mở bản PMBOK gốc. Hình 9.4.1 là ảnh, agent soát chỉ đọc được chữ quanh hình.
+  - Vai trò lập/duyệt ("Sponsor và các stakeholder chính duyệt"), cột "Quy tắc thay đổi", và câu trả lời về Scrum (câu 5) là thực hành chung của người soạn, không có nguồn trực tiếp.
+  - Fleming & Koppelman nói MR "should be controlled by the project manager", còn PMI và bài contingency-management-reserve-allocation nói cấp quản lý giữ MR. Bài để trung tính ("ai giữ quyền dùng management reserve"), bạn tự chọn theo tổ chức mình.

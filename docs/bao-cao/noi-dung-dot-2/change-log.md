@@ -1,0 +1,11 @@
+## change-log
+
+- Kiểm parser: Change log (tai-lieu) · Đủ khối 8/8
+- Nguồn đã mở: [PMBOK Guide Sixth Edition, Errata (Fourth Printing) — Project Management Institute](https://www.pmi.org/-/media/pmi/documents/public/pdf/pmbok-standards/pmbok-guide-6th-edition-errata-4th-printing.pdf); [CDC UP Practices Guide: Change Management (11/30/06, bản Internet Archive) — Centers for Disease Control and Prevention](https://web.archive.org/web/20201020135247/https://www2a.cdc.gov/cdcup/library/practices_guides/CDC_UP_Change_Management_Practices_Guide.pdf); [CDC UP Change Management Plan Template (bản Internet Archive, đọc bằng textutil) — Centers for Disease Control and Prevention](https://web.archive.org/web/20220115224110/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Change_Management_Plan_Template.doc); [Templates for Large Projects — UC Berkeley Technology Program Office](https://technology.berkeley.edu/TPO/toolkit/templates-large); [Keep a Changelog 1.1.0 — Olivier Lacan](https://keepachangelog.com/en/1.1.0/)
+- Agent soát đã sửa:
+  - Mẫu điền sẵn, CR-013: ngày quyết và ngày đóng 2026-09-18 → 2026-09-17, khớp bài Change Request và lịch họp thứ Năm của CCB.
+- **Nên tự kiểm lại:**
+  - Ý PMBOK lấy từ trang sửa trong PDF errata của PMI (trang 617, phần The Standard, mục 5.2 Perform Integrated Change Control): "A project document that is normally updated as a result of this process is the change log. The change log is used to document changes that occur during a project." Không phải bản PMBOK đầy đủ, nhưng là nguyên văn của PMI.
+  - Các ý CDC khớp nguyên văn: mọi dự án "regardless of type or size, should maintain a change log"; mỗi CR "a single line item"; rà "daily but should happen at least weekly for even the simplest projects" (Practices Guide); năm trạng thái Open / Work in Progress / In Review / Testing / Closed và các trường tối thiểu (Plan Template). Cột Tác động, Quyết định, Việc cập nhật, Ngày đóng là phần người viết thêm, bài đã ghi rõ.
+  - process_group chỉ gồm execution, monitoring-and-control, trong khi bài nói mẫu log được chuẩn bị ở planning. Có thể thêm planning nếu bạn muốn khớp câu chữ; agent soát để nguyên vì log thật chỉ có dòng khi có CR đầu tiên.
+  - Bài hơi ngắn (~1.600 từ) nhưng đủ khối; không bổ sung.

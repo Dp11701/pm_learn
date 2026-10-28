@@ -1,12 +1,16 @@
 // Menu của khung app (§6.1, C34): thứ tự, route, icon như frame; mục đang mở suy từ đường dẫn. Chỉ còn 4 mục:
 // Thống kê, Bộ hồ sơ dự án, Chứng chỉ, Thuật ngữ, Ghi chú, Cài đặt (nhóm P1) đã bỏ khỏi phạm vi (đề xuất mục 10).
+import { useMemo } from 'react'
 import { Copy, LayoutDashboard, Library, Route, type LucideIcon } from 'lucide-react'
 import { dinhDangSo } from '../../../shared/dinh-dang'
+import { layCay, type Cay } from '../../../shared/roadmap'
 import { chuBadge, type KieuBadge } from '../../components/trang-thai/Badge'
-import type { DuLieuKhung } from './du-lieu-khung'
+import { useTrangThaiNoiDung, type TraNoiDung } from '../du-lieu/noi-dung'
+import { useSoTheDenHan } from '../du-lieu/on-tap'
+import { useDuLieuKhung, type DuLieuKhung } from './du-lieu-khung'
 
 /** Tên app (logo C34, tooltip rail, top bar khi không có tên trang). */
-export const TEN_APP = 'Học PM A–Z'
+export const TEN_APP = 'PMP'
 
 export type KhoaMenu = 'tong-quan' | 'lo-trinh' | 'on-tap' | 'noi-dung'
 
@@ -79,6 +83,52 @@ export function badgeCua(khoa: KhoaMenu, duLieu: DuLieuKhung): BadgeMenu | null 
   if (khoa === 'on-tap') return taoBadge(duLieu.soTheDenHan, 'thẻ đến hạn', 'dac')
   if (khoa === 'noi-dung') return taoBadge(duLieu.soBanNhap, 'bản nháp', 'vien')
   return null
+}
+
+/**
+ * Số mục học có nội dung Bản nháp (AI · Tự viết) — badge Nội dung (đề xuất 3.3, 3.7: bảng chính Chờ duyệt; bài Đã
+ * duyệt có bản sửa vẫn là Đã duyệt nên không tính). undefined khi chưa biết trạng thái nội dung.
+ */
+export function soBanNhapTrong(cay: Pick<Cay, 'mucHoc'>, tra: TraNoiDung): number | undefined {
+  let so = 0
+  for (const m of cay.mucHoc) {
+    const tt = tra(m.id)
+    if (tt === undefined) return undefined
+    if (tt.loai === 'ban-nhap') so += 1
+  }
+  return so
+}
+
+/** Số bản nháp theo trạng thái nội dung của server; undefined khi chưa tải (hoặc ngoài máy chủ, cây lỗi). */
+export function useSoBanNhap(): number | undefined {
+  const tra = useTrangThaiNoiDung()
+  return useMemo(() => {
+    try {
+      return soBanNhapTrong(layCay(), tra)
+    } catch {
+      // Cây lỗi: trang lỗi cây tự báo, badge coi như chưa có.
+      return undefined
+    }
+  }, [tra])
+}
+
+/**
+ * Dữ liệu khung cho menu (sidebar, rail): số badge lấy từ dữ liệu thật — thẻ đến hạn (GET /api/on-tap) và bản
+ * nháp (trạng thái nội dung) — khi đã tải; chưa có (ngoài QueryClientProvider: gallery, test khung) thì dùng giá
+ * trị của khung (DuLieuKhungProvider).
+ */
+export function useDuLieuMenu(): DuLieuKhung {
+  const duLieu = useDuLieuKhung()
+  const soTheDenHan = useSoTheDenHan()
+  const soBanNhap = useSoBanNhap()
+  return useMemo(
+    () => ({
+      ...duLieu,
+      soTheDenHan: soTheDenHan ?? duLieu.soTheDenHan,
+      soBanNhap: soBanNhap ?? duLieu.soBanNhap,
+    }),
+    [duLieu, soTheDenHan, soBanNhap],
+  )
 }
 
 /** Tiêu đề top bar mobile khi trang không tự đặt và route không có tên: tên mục menu đang mở. */

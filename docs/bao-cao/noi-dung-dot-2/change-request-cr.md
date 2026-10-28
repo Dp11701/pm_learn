@@ -1,0 +1,15 @@
+## change-request-cr
+
+- Kiểm parser: Change Request (CR) (tai-lieu) · Đủ khối 8/8
+- Nguồn đã mở: [CDC UP Change Request Form (example) (bản Internet Archive, đọc bằng textutil) — Centers for Disease Control and Prevention](https://web.archive.org/web/20220115224116/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Change_Request_Form_Example.doc); [CDC UP Practices Guide: Change Management (11/30/06, bản Internet Archive) — Centers for Disease Control and Prevention](https://web.archive.org/web/20201020135247/https://www2a.cdc.gov/cdcup/library/practices_guides/CDC_UP_Change_Management_Practices_Guide.pdf); [CDC UP Change Management Plan Template (bản Internet Archive, đọc bằng textutil) — Centers for Disease Control and Prevention](https://web.archive.org/web/20220115224110/https://www2.cdc.gov/cdcup/library/templates/CDC_UP_Change_Management_Plan_Template.doc); [Templates for Large Projects — UC Berkeley Technology Program Office](https://technology.berkeley.edu/TPO/toolkit/templates-large); [NASA Systems Engineering Handbook, mục 6.2 Requirements Management — NASA](https://www.nasa.gov/reference/6-2-requirements-management/)
+- Agent soát đã sửa:
+  - Cấu trúc tài liệu, câu dẫn: "Các mục dưới đây theo cách chia đó." → thêm "thêm phần phương án thay thế mà mẫu change request của UC Berkeley cũng gợi ý". Mẫu CDC không có mục phương án thay thế (chỉ có Recommendations); trang Berkeley ghi mẫu CR giúp "identify alternatives".
+  - Cấu trúc tài liệu, Mã CR: "ngày cần có quyết định" → "ngày cần có thay đổi (Date Required)". Trường trên mẫu CDC là "Date Required", không nói là hạn ra quyết định.
+  - Cấu trúc tài liệu, Mức ưu tiên: thêm "(mẫu của CDC có thêm Mandatory)". Mẫu CDC có bốn mức Low / Medium / High / Mandatory.
+  - Mẫu điền sẵn, CR-013: ngày quyết của CCB 2026-09-18 → 2026-09-17, cho khớp lịch họp thứ Năm ở bài CCB (18/9/2026 là thứ Sáu). Đã sửa cùng ở bài Change log.
+- **Nên tự kiểm lại:**
+  - Đã đối chiếu mã giữa các bài: CR-012 (Approved with Conditions, PM, 09-09; bỏ "lọc nâng cao") khớp Change log (Testing) và RTM (REQ-034 thêm theo CR-012, REQ-035 hoãn 09-09); CR-014 (Approved, PM, 09-22) khớp Change log (đóng 09-26) và RTM (REQ-021 v1.1, nghiệm thu 09-26); CR-013 khớp Change log. Bài Scope baseline dùng CR-004 cho dự án khác (đặt lịch khám), không xung đột.
+  - "Mã CR do Change Manager cấp" và các trường tối thiểu lấy từ CDC Plan Template; phần PM điền (giờ công, thời lượng, lịch, chi phí, khuyến nghị) và ba phần theo ba người dùng lấy từ CDC CR Form. "Rủi ro mới" trong phần tác động dựa trên mục "Evaluate Risk" của CDC Practices Guide, không có ô riêng trên mẫu.
+  - CR-012 bỏ một story khỏi release mà PM vẫn tự duyệt "theo ngưỡng": hợp lý nếu ngưỡng chỉ xét ngày công và mốc, nhưng nhiều tổ chức coi bỏ phạm vi đã cam kết là việc của CCB/sponsor. Bạn nên quyết theo change management plan của mình.
+  - Gợi ý tạo issue type "Change Request" trên Jira là gợi ý của người viết, không lấy từ nguồn.
+  - Nguồn CDC chỉ còn trên Internet Archive, bản 11/30/06.

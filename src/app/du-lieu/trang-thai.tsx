@@ -7,6 +7,10 @@
 //   đã xác nhận gần nhất + toast lỗi "Thử lại"; lưu xong thì toast "Đã chuyển … sang …" + "Hoàn tác" 5 giây
 //   (Hoàn tác gửi lại giá trị cũ với via 'hoan-tac'). Các lần ghi chạy nối tiếp theo thứ tự bấm.
 // - useGhiLuotMo(id): ghi một lượt mở bài cho mỗi lần vào trang bài.
+// - useDatHangLoat(): đặt Chưa học / Đang học / Bỏ qua cho nhiều mục (Danh sách, trang Lĩnh vực — đề xuất 3.9, bất
+//   biến 2: không có Đã xong). Không lạc quan: một transaction ở server, xong mới đổi ảnh chụp; toast "Đã chuyển n mục
+//   sang …" + "Hoàn tác" (trả từng mục về giá trị cũ, mục đã đổi sau đó thì giữ nguyên). Chạy nối tiếp cùng lần đặt
+//   một mục.
 // - Cờ "Cần ôn lại" (đề xuất 3.3, bất biến 3): danh sách `canOnLai` của GET /api/state (server tính); chỉ tính khi
 //   mục đang Đã xong (canOnLaiCua). Đổi khỏi Đã xong → bỏ cờ ngay (lạc quan); đặt Đã xong → tải lại ảnh chụp khi hết
 //   lần ghi (lần ghi của chính tab không làm tải lại theo revision); sang ngày mới (homNay của /api/meta) → tải lại.
@@ -20,22 +24,33 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { z } from 'zod'
 import { canOnLaiTrong } from '../../../shared/domain/can-on-lai'
-import { TEN_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
+import {
+  CAC_TRANG_THAI_HOC,
+  TEN_TRANG_THAI_HOC,
+  type TrangThaiHoc,
+} from '../../../shared/domain/trang-thai'
 import { layCay, type MucHoc } from '../../../shared/roadmap'
 import {
+  CAC_TRANG_THAI_HANG_LOAT,
   mucCua,
   type AnhChupHoc,
+  type GiaTriTrangThai,
+  type KetQuaDatHangLoat,
   type KetQuaDatTrangThai,
   type KetQuaGhiLuotMo,
+  type KetQuaHoanTacHangLoat,
   type MucTrangThai,
+  type TrangThaiHangLoat,
   type ViaMotMuc,
 } from '../../../server/du-lieu/hop-dong-trang-thai'
 import TenMuc from '../../components/TenMuc'
 import { useToast } from '../../components/Toast'
 import { DA_LUU_LY_DO_BO_QUA } from '../../copy/cho-duyet'
+import { daChuyenHangLoat, daHoanTacHangLoat, khongMucNaoDoi } from '../../copy/cho-duyet-lo-trinh'
 import { useKetNoi } from '../ket-noi'
-import { guiDatTrangThai, guiLuotMo, taiAnhChup } from './api'
+import { goiApi, guiDatTrangThai, guiLuotMo, taiAnhChup } from './api'
 import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
 import {
   danhSachDangHoc,
@@ -364,6 +379,157 @@ export function useDatTrangThai(): ApiDatTrangThai {
       },
     }
   }, [cacLan, client, mutate])
+}
+
+// ---------- Đặt hàng loạt ----------
+
+const KHOA_HANG_LOAT = [...KHOA_GHI, 'hang-loat'] as const
+const KHOA_HOAN_TAC_HANG_LOAT = [...KHOA_GHI, 'hang-loat', 'hoan-tac'] as const
+
+const LuocDoGiaTriTruoc = z.object({
+  trangThai: z.enum(CAC_TRANG_THAI_HOC),
+  lyDo: z.string().optional(),
+})
+
+const LuocDoKetQuaHangLoat: z.ZodType<KetQuaDatHangLoat> = z.object({
+  revision: z.number(),
+  trangThai: z.enum(CAC_TRANG_THAI_HANG_LOAT),
+  daDoi: z.array(z.string()),
+  truoc: z.record(z.string(), LuocDoGiaTriTruoc),
+})
+
+const LuocDoKetQuaHoanTac: z.ZodType<KetQuaHoanTacHangLoat> = z.object({
+  revision: z.number(),
+  daKhoiPhuc: z.array(z.string()),
+  giuNguyen: z.array(z.string()),
+})
+
+/** POST /api/trang-thai/hang-loat */
+export function guiDatHangLoat(
+  ids: readonly string[],
+  trangThai: TrangThaiHangLoat,
+): Promise<KetQuaDatHangLoat> {
+  return goiApi('/api/trang-thai/hang-loat', LuocDoKetQuaHangLoat, {
+    method: 'POST',
+    body: { ids, trangThai },
+  })
+}
+
+/** POST /api/trang-thai/hang-loat/hoan-tac */
+export function guiHoanTacHangLoat(
+  trangThai: TrangThaiHangLoat,
+  truoc: Record<string, GiaTriTrangThai>,
+): Promise<KetQuaHoanTacHangLoat> {
+  return goiApi('/api/trang-thai/hang-loat/hoan-tac', LuocDoKetQuaHoanTac, {
+    method: 'POST',
+    body: { trangThai, truoc },
+  })
+}
+
+interface BienHangLoat {
+  ids: readonly string[]
+  trangThai: TrangThaiHangLoat
+}
+
+interface BienHoanTacHangLoat {
+  trangThai: TrangThaiHangLoat
+  truoc: Record<string, GiaTriTrangThai>
+}
+
+/** Gắn giá trị mới của nhiều mục vào ảnh chụp (một lần ghi, revision theo phản hồi). */
+function ganNhieuMuc(
+  client: QueryClient,
+  cacMuc: readonly [string, MucTrangThai | null][],
+  revision: number,
+): void {
+  if (cacMuc.length === 0) return
+  ghiNhanRevisionCuaTab(client, revision)
+  client.setQueryData<AnhChupHoc>(KHOA_TRANG_THAI, (cu) => {
+    if (!cu) return cu
+    let moi = cu
+    for (const [id, muc] of cacMuc) moi = ganMuc(moi, id, muc)
+    return { ...moi, revision: revisionSauGhi(cu.revision, revision) }
+  })
+}
+
+export interface ApiDatHangLoat {
+  /** Đặt trạng thái cho các mục; `khiXong` chạy khi server đã ghi xong (vd. bỏ chọn). */
+  dat: (ids: readonly string[], trangThai: TrangThaiHangLoat, khiXong?: () => void) => void
+  /** Đang có lần đặt hàng loạt hoặc Hoàn tác chưa xong */
+  dangLuu: boolean
+}
+
+export function useDatHangLoat(): ApiDatHangLoat {
+  const client = useQueryClient()
+  const { toast } = useToast()
+
+  /** Lưu lỗi: server không ghi gì (một transaction) — toast lỗi + "Thử lại"; tải lại ảnh chụp cho chắc. */
+  const baoLoi = (thuLai: () => void) => {
+    if (client.isMutating({ mutationKey: KHOA_GHI }) <= 1) {
+      void client.invalidateQueries({ queryKey: KHOA_TRANG_THAI })
+    }
+    toast({ loai: 'loi', noiDung: LOI_LUU, hanhDong: { nhan: THU_LAI, chay: thuLai } })
+  }
+
+  const hoanTac = useMutation<KetQuaHoanTacHangLoat, Error, BienHoanTacHangLoat>({
+    mutationKey: KHOA_HOAN_TAC_HANG_LOAT,
+    scope: PHAM_VI_DAT,
+    mutationFn: ({ trangThai, truoc }) => guiHoanTacHangLoat(trangThai, truoc),
+    onSuccess: (kq, bien) => {
+      ganNhieuMuc(
+        client,
+        kq.daKhoiPhuc.map((id) => [id, mucCua(bien.truoc[id] ?? { trangThai: 'chua-hoc' })]),
+        kq.revision,
+      )
+      // Trả về Đã xong: cờ "Cần ôn lại" do server tính → tải lại ảnh chụp khi hết lần ghi
+      if (kq.daKhoiPhuc.some((id) => bien.truoc[id]?.trangThai === 'da-xong')) {
+        canTaiCanOnLai.add(client)
+      }
+      toast({ noiDung: daHoanTacHangLoat(kq.daKhoiPhuc.length, kq.giuNguyen.length) })
+    },
+    onError: (_loi, bien) => baoLoi(() => hoanTac.mutate(bien)),
+    onSettled: () => taiCanOnLaiNeuRanh(client, client.isMutating({ mutationKey: KHOA_GHI }) - 1),
+  })
+
+  const dat = useMutation<KetQuaDatHangLoat, Error, BienHangLoat>({
+    mutationKey: KHOA_HANG_LOAT,
+    scope: PHAM_VI_DAT,
+    mutationFn: ({ ids, trangThai }) => guiDatHangLoat(ids, trangThai),
+    onSuccess: (kq) => {
+      const ten = TEN_TRANG_THAI_HOC[kq.trangThai]
+      if (kq.daDoi.length === 0) {
+        toast({ noiDung: khongMucNaoDoi(ten) })
+        return
+      }
+      const muc = mucCua({ trangThai: kq.trangThai })
+      ganNhieuMuc(
+        client,
+        kq.daDoi.map((id) => [id, muc]),
+        kq.revision,
+      )
+      toast({
+        noiDung: daChuyenHangLoat(kq.daDoi.length, ten),
+        hanhDong: {
+          nhan: HOAN_TAC,
+          chay: () => hoanTac.mutate({ trangThai: kq.trangThai, truoc: kq.truoc }),
+        },
+      })
+    },
+    onError: (_loi, bien) => baoLoi(() => dat.mutate(bien)),
+  })
+
+  const { mutate } = dat
+  const dangLuu = dat.isPending || hoanTac.isPending
+  return useMemo(
+    () => ({
+      dat: (ids, trangThai, khiXong) => {
+        if (ids.length === 0) return
+        mutate({ ids: [...ids], trangThai }, { onSuccess: () => khiXong?.() })
+      },
+      dangLuu,
+    }),
+    [mutate, dangLuu],
+  )
 }
 
 // ---------- Lượt mở bài ----------

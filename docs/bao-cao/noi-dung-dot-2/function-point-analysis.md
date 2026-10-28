@@ -1,0 +1,14 @@
+## function-point-analysis
+
+- Kiểm parser: Function Point Analysis (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Function Point Analysis (FPA) — IFPUG](https://ifpug.org/ifpug-standards/fpa); [Function point — Wikipedia](https://en.wikipedia.org/wiki/Function_point) (nguồn yếu, đã bỏ); [Introduction to Function Points — Sheila P. Dennis, David Garmus](https://eng.auburn.edu/~kchang/comp6710/readings/Introduction%20to%20Function%20Points.htm); [A Preliminary Study for the development of an Early Method for the Measurement in Function Points of a Software Product — Ramón Asensio Monge và cộng sự](https://arxiv.org/abs/cs/0402015) (đã đọc bản PDF); [Weighting of Functional Components — Total Metrics](https://totalmetrics.com/help/Background_and_Articles_on_Functional_Size/Introduction_to_Function_Point_Analysis/Weighting_of_Functional_Components.htm)
+- Agent soát đã sửa:
+  - Tham khảo, bài Dennis và Garmus: "(CrossTalk, 2006)" → "(DoD Software Tech News, Vol. 9, No. 2, 6/2006; bản lưu trên trang Đại học Auburn)". Bản lưu ghi rõ chép từ softwaretechnews.com/stn9-2/dennis.html và "June 2006 Vol. 9, Number 2"; không phải tạp chí CrossTalk.
+  - Tham khảo: bỏ Wikipedia "Function point"; ba ý dùng từ đó đã có nguồn khác (Albrecht/IBM cuối thập niên 1970 và ISO 20926:2009 ở trang IFPUG) hoặc là hạn chế đã biết (xem dưới).
+  - Khái niệm cốt lõi, Function point: bỏ "(bài báo năm 1979)" vì không còn nguồn trong bài nói năm này (IFPUG: "late 1970s"; Dennis và Garmus: "IBM first introduced the Function Point (FP) metric in 1978"); thêm "(bản hiện hành 20926:2009)" theo IFPUG.
+- **Nên tự kiểm lại:**
+  - Đã khớp: định nghĩa ILF, EIF, EI, EO, EQ, DET, RET, FTR và các bảng độ phức tạp (arXiv, mục 1, IFPUG 4.1); trọng số ILF 7/10/15, EIF 5/7/10, EI 3/4/6, EO 4/5/7, EQ 3/4/6 (arXiv bảng 4, Total Metrics); VAF 0,65–1,35 từ 14 GSC (Dennis và Garmus); "IFPUG 4.3 records this size as the Functional Size. Any further adjustment is not recommended… now an optional add-on" (Total Metrics); không phụ thuộc công nghệ, nền tảng, ngôn ngữ (IFPUG); dùng cho benchmark và SLA thuê ngoài (Dennis và Garmus).
+  - Ý "FP không phản ánh độ phức tạp thuật toán bên trong" (bảng So sánh, câu hỏi 5) giờ không có nguồn trong bài; Wikipedia có viết "no ISO recognized FSM Method that includes algorithmic complexity", nhưng là nguồn yếu.
+  - Trang IFPUG lúc mở có chèn một đoạn quảng cáo cờ bạc tiếng Hà Lan lạ (có vẻ trang bị chèn nội dung); phần nội dung FPA vẫn đúng, nhưng nên để ý khi bấm link.
+  - Phép tính đã tự kiểm theo bảng IFPUG 4.1: ILF 1 RET/15 DET = Low 7; EIF 1 RET/10 DET = Low 5; EI 2 FTR/8 DET = Average 4; EI 1 FTR/4 DET = Low 3; EQ 1 FTR/7 DET = Low 3; EO 2 FTR/8 DET = Average 5; tổng 27; 27 × 6–10 = 162–270 giờ; câu hỏi ILF 3 RET/25 DET = Average 10; 200 × 8 = 1.600.
+  - Năng suất 6–10 giờ/FP trong ví dụ là số giả định, không có nguồn.
