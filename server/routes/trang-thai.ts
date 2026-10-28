@@ -31,8 +31,10 @@ import { LoiApi } from '../loi.ts'
 // - PUT  /api/trang-thai/:id                 đặt trạng thái 1 mục (Hoàn tác gửi via 'hoan-tac' với giá trị cũ);
 // - POST /api/trang-thai/hang-loat           { ids, trangThai } đặt Chưa học / Đang học / Bỏ qua cho nhiều mục
 //                                            (không bao giờ Đã xong — bất biến 2), một transaction;
-// - POST /api/trang-thai/hang-loat/hoan-tac  { trangThai, truoc } trả các mục về giá trị cũ (mục đã đổi sau đó
-//                                            thì giữ nguyên), một transaction;
+// - POST /api/trang-thai/hang-loat/hoan-tac  { trangThai, truoc } trả các mục về giá trị cũ, một transaction. Server
+//                                            kiểm lại từng mục theo status_events (bất biến 2): chỉ khôi phục khi
+//                                            sự kiện cuối là lần hàng loạt từ đúng giá trị cũ đó; mục đã đổi sau đó
+//                                            hoặc `truoc` không khớp (giả, gửi lại) thì giữ nguyên;
 // - POST /api/luot-mo/:id                    ghi lần mở bài gần nhất.
 // id phải là mục học của cây (bất biến 8), không thì 404.
 
@@ -123,7 +125,9 @@ export function routeTrangThai(db: Db, cay: Pick<Cay, 'mucTheoId'>): Router {
             ? TB_HANG_LOAT.trangThai
             : truong === 'ids'
               ? TB_HANG_LOAT.ids(toiDa())
-              : TB_HOC.thanBody('{ "ids": ["…"], "trangThai": "chua-hoc" | "dang-hoc" | "bo-qua" }'),
+              : TB_HOC.thanBody(
+                  '{ "ids": ["…"], "trangThai": "chua-hoc" | "dang-hoc" | "bo-qua" }',
+                ),
         ),
       )
     }

@@ -142,7 +142,13 @@ describe('GET /api/state', () => {
     const res = await get('/api/state')
     expect(res.status).toBe(200)
     expect(res.headers['cache-control']).toBe('no-store')
-    expect(res.body).toEqual({ revision: 0, trangThai: {}, luotMo: {}, canOnLai: [] })
+    expect(res.body).toEqual({
+      revision: 0,
+      trangThai: {},
+      luotMo: {},
+      canOnLai: [],
+      banGhiNgoaiCay: 0,
+    })
   })
 
   it('bất biến 8: bản ghi của mục không còn trong cây vẫn giữ trong DB, không vào ảnh chụp', async () => {
@@ -153,6 +159,68 @@ describe('GET /api/state', () => {
     expect(Object.keys(res.body.trangThai)).toEqual([mucA.id])
     expect(res.body.luotMo).toEqual({})
     expect(dongTrangThai(ID_LA)?.status).toBe('done')
+    // item_status + status_events + item_visits của mục lạ; bản ghi của mucA không tính
+    expect(res.body.banGhiNgoaiCay).toBe(3)
+  })
+
+  it('bất biến 8: banGhiNgoaiCay đếm mọi bảng bản ghi theo mục (P0: banner Tổng quan), không tính bản tạm / slug cũ', async () => {
+    const luc = nowIso()
+    const chen = (sql: string, ...thamSo: unknown[]) => db.prepare(sql).run(...thamSo)
+    for (const id of [ID_LA, 'mo-coi-thu-hai', mucA.id]) {
+      chen(
+        'INSERT INTO notes (item_id, body, created_at, updated_at) VALUES (?, ?, ?, ?)',
+        id,
+        'g',
+        luc,
+        luc,
+      )
+      chen(
+        'INSERT INTO restatements (item_id, text, created_at, updated_at) VALUES (?, ?, ?, ?)',
+        id,
+        'n',
+        luc,
+        luc,
+      )
+      for (const mat of ['a', 'b']) {
+        chen(
+          `INSERT INTO flashcards (item_id, front, back, due_on, created_at, updated_at)
+           VALUES (?, ?, 'sau', ?, ?, ?)`,
+          id,
+          mat,
+          homNay(),
+          luc,
+          luc,
+        )
+      }
+      chen(
+        `INSERT INTO self_check (item_id, question_key, answer, created_at, updated_at)
+         VALUES (?, 'k', 'tl', ?, ?)`,
+        id,
+        luc,
+        luc,
+      )
+    }
+    chen(
+      `INSERT INTO content_approvals (item_id, approved_on, hash, body, superseded_at, created_at, updated_at)
+       VALUES (?, '2026-10-01', 'h', 'bản', NULL, ?, ?)`,
+      ID_LA,
+      luc,
+      luc,
+    )
+    // Không phải bản ghi của người dùng: bản tạm trình soạn, slug cũ
+    chen(
+      'INSERT INTO editor_buffers (key, item_id, text, updated_at) VALUES (?, ?, ?, ?)',
+      'x.md',
+      ID_LA,
+      't',
+      luc,
+    )
+    chen('INSERT INTO slug_cu (slug, item_id) VALUES (?, ?)', 'slug-cu', ID_LA)
+
+    const res = await get('/api/state')
+    // Mỗi mục lạ: ghi chú 1 + Nói lại 1 + thẻ 2 + tự kiểm tra 1 = 5; ID_LA thêm 1 bản chụp duyệt
+    expect(res.body.banGhiNgoaiCay).toBe(5 + 5 + 1)
+    expect(res.body.trangThai).toEqual({})
   })
 })
 
@@ -181,6 +249,7 @@ describe('PUT /api/trang-thai/:id', () => {
       trangThai: { [mucA.id]: { status: 'learning' } },
       luotMo: {},
       canOnLai: [],
+      banGhiNgoaiCay: 0,
     })
   })
 

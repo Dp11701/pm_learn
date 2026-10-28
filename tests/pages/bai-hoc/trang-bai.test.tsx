@@ -70,7 +70,7 @@ describe('đầu bài (F11, D1, D2, D8, D10)', () => {
     expect(screen.getByText('Đã duyệt · 18/10/2026')).toBeTruthy()
     expect(h1().textContent).toBe(`${sc.label} — giải nghĩa giữ chỗ`)
     expect(h1().querySelector('[lang="en"]')?.textContent).toBe(sc.label)
-    expect(document.title).toBe(`${sc.label} · Học PM A–Z`)
+    expect(document.title).toBe(`${sc.label} · PMP`)
 
     const nhom = screen.getByRole('radiogroup', { name: 'Trạng thái học' })
     expect(

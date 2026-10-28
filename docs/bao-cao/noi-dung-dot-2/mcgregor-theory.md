@@ -1,0 +1,15 @@
+## mcgregor-theory
+
+- Kiểm parser: McGregor Theory (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Douglas M. McGregor — MIT Sloan School of Management, Institute for Work and Employment Research](https://mitsloan.mit.edu/institute-work-and-employment-research/douglas-m-mcgregor); [Theory X and Theory Y (Encyclopedia of Management) — Gale, qua Encyclopedia.com](https://www.encyclopedia.com/management/encyclopedias-almanacs-transcripts-and-maps/theory-x-and-theory-y); [Who Created Maslow's Iconic Pyramid? (2019) — Scott Barry Kaufman, Scientific American](https://www.scientificamerican.com/blog/beautiful-minds/who-created-maslows-iconic-pyramid/); [Theory X and Theory Y — Wikipedia](https://en.wikipedia.org/wiki/Theory_X_and_Theory_Y) (yếu, chỉ dùng để đối chiếu, không đưa vào bài)
+- Agent soát đã sửa:
+  - giai_nghia: "Thuyết X và thuyết Y của McGregor" (7 chữ) → "Thuyết X và Y của McGregor", cho đúng giới hạn 2–6 chữ của prompt.
+  - Khái niệm "Hard và soft management": "cả hai đều không hiệu quả" → "cả hai đều không đủ để tạo động lực cho nhân viên". Encyclopedia of Management không dùng chữ "ineffective", chỉ nói cả hai kiểu "were [not] sufficient to motivate employees".
+  - Khái niệm "Theory X": "coi trọng sự an toàn" → "đặt sự an toàn lên trên các phần thưởng khác", sát ý nguồn hơn (value security above other work rewards).
+  - Ví dụ thực tế: "PM bỏ bước duyệt PR" → "PM bỏ bước tự mình duyệt mọi PR (review code giữa các dev vẫn giữ)". Câu cũ có thể bị hiểu là bỏ luôn review code, đó là bài học sai cho dev lead.
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: McGregor là nhà tâm lý học, Professor of Management ở MIT; bài viết 1957 và sách The Human Side of Enterprise 1960 (Encyclopedia of Management); các giả định của Theory X; Theory Y với nỗ lực tự nhiên, nhận trách nhiệm trong điều kiện phù hợp, sáng tạo không chỉ ở số ít; McGregor dùng ý "nhu cầu đã thoả không còn thúc đẩy" của Maslow; hai phê bình (Theory Y như cách thao túng nếu không chia lợi ích; nghiên cứu thực nghiệm chưa chứng minh rõ); Schein kể McGregor "discouraged" khi Theory Y thành bộ nguyên tắc "monolithic" như Theory X (MIT Sloan).
+  - Giả định "tự định hướng và tự kiểm soát khi cam kết với mục tiêu" là giả định nổi tiếng trong sách 1960, nhưng chỉ khớp được gián tiếp qua Encyclopedia ("control processes based on subordinates' self-control"). Muốn chắc, đối chiếu với chương 4 của The Human Side of Enterprise.
+  - Khái niệm "Giả định tự xác nhận" là cách gọi của người viết. Nguồn chỉ nói người ta trở nên thụ động "as a result of experience in organizations" (Encyclopedia) và câu McGregor về việc đáp lại bằng cách đánh giá thấp quản lý (MIT Sloan); không nguồn nào dùng chữ "self-fulfilling".
+  - Câu "Bridgman, Cummings và Ballard cho rằng McGregor đã cố ý giản lược Maslow" dựa trên bài phỏng vấn trên Scientific American ("deliberately ignored many of the nuances"); đây là quan điểm của nhóm tác giả, không phải kết luận chung của giới nghiên cứu.
+  - Bảng So sánh, phần Cách áp dụng và ý "chọn mức kiểm soát có lý do" là nhận định của người viết, không trích từ một nguồn.

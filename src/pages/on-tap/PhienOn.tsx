@@ -5,7 +5,7 @@
 //   xoá (404): báo, bỏ qua, không đếm. Lỗi khác: báo, thẻ ở lại để bấm lại.
 // - "Thoát phiên" / Esc rời phiên, không hỏi (đã lưu từng câu).
 // - Cuối phiên: số Nhớ / Quên + lần ôn kế tiếp; "Ôn lại n thẻ đã quên" là vòng luyện thêm (luyenThem: không đổi
-//   hộp, không tính tỉ lệ nhớ); "Về Ôn tập".
+//   hộp, không tính tỉ lệ nhớ) dựng từ thẻ server trả sau mỗi câu (hộp hiện tại — Quên đã về hộp 1); "Về Ôn tập".
 // - Hết thẻ đến hạn: "Hôm nay không còn thẻ nào cần ôn" + "Tạo thẻ" + "Về Ôn tập".
 // Phím so theo e.code qua usePhimTat (không chạy khi đang gõ / ghép chữ / giữ Alt, Ctrl, ⌘; dialog đang mở).
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
@@ -52,7 +52,8 @@ interface Vong {
 }
 
 interface CauTraLoi {
-  theId: number
+  /** Thẻ sau lần trả lời (server trả: hộp, hạn mới) */
+  the: TheOn
   ket: KetQuaOn
 }
 
@@ -143,8 +144,8 @@ export default function PhienOn() {
       dangGuiRef.current = true
       datDangGui(true)
       try {
-        await onThe({ theId: the.id, ket, luyenThem: vong.luyenThem })
-        sangThe({ theId: the.id, ket })
+        const kq = await onThe({ theId: the.id, ket, luyenThem: vong.luyenThem })
+        sangThe({ the: kq.the, ket })
       } catch (loi) {
         if (loi instanceof LoiGoiApi && (loi.status === 409 || loi.status === 404)) {
           // Đã ôn ở nơi khác / vừa bị xoá: bỏ qua thẻ này, không đếm
@@ -165,14 +166,14 @@ export default function PhienOn() {
   )
 
   const onLaiQuen = useCallback(() => {
-    if (!vong) return
-    const quen = new Set(traLoi.filter((c) => c.ket === 'quen').map((c) => c.theId))
+    // Thẻ đã quên theo thứ tự đã trả lời, ở dạng server trả sau câu trả lời (hộp hiện tại, không phải bản
+    // chụp đầu phiên)
     dichFocus.current = 'truoc'
-    datVong({ cacThe: vong.cacThe.filter((t) => quen.has(t.id)), luyenThem: true })
+    datVong({ cacThe: traLoi.filter((c) => c.ket === 'quen').map((c) => c.the), luyenThem: true })
     datThu(0)
     datDaLat(false)
     datTraLoi([])
-  }, [vong, traLoi])
+  }, [traLoi])
 
   const thoat = useCallback(() => navigate('/on-tap'), [navigate])
 
@@ -292,16 +293,7 @@ interface PropsMatThe {
   khiTra: (ket: KetQuaOn) => void
 }
 
-function MatThe({
-  the,
-  daLat,
-  dangGui,
-  luyenThem,
-  refTruoc,
-  refSau,
-  khiLat,
-  khiTra,
-}: PropsMatThe) {
+function MatThe({ the, daLat, dangGui, luyenThem, refTruoc, refSau, khiLat, khiTra }: PropsMatThe) {
   const muc = layCay().mucTheoId.get(the.itemId)
   return (
     <article className="flex flex-col gap-5 rounded-[var(--radius-md)] border border-border bg-surface p-6">

@@ -31,7 +31,12 @@ function lanMo(anhChup: AnhChupHoc, id: string): number {
  * cây. Cùng thời điểm mở thì theo thứ tự cây.
  */
 export function cacMucDangHoc(cay: Cay, anhChup: AnhChupHoc): MucHoc[] {
-  return cay.mucHoc
+  return xepDangHoc(cay.mucHoc, anhChup)
+}
+
+/** Mục Đang học trong `cacMuc` (theo thứ tự cây), mở gần nhất trước — như cacMucDangHoc. */
+function xepDangHoc(cacMuc: readonly MucHoc[], anhChup: AnhChupHoc): MucHoc[] {
+  return cacMuc
     .filter((m) => anhChup.trangThai[m.id]?.status === 'learning')
     .map((muc) => ({ muc, lan: lanMo(anhChup, muc.id) }))
     .sort((a, b) => (b.lan === a.lan ? a.muc.index - b.muc.index : b.lan - a.lan))
@@ -43,10 +48,29 @@ export function cacMucDangHoc(cay: Cay, anhChup: AnhChupHoc): MucHoc[] {
  * cây (lần đầu là mục đầu tiên của cây). Chưa có ảnh chụp, hoặc không còn mục Đang học / Chưa học → undefined.
  */
 export function hocTiep(cay: Cay, anhChup: AnhChupHoc | undefined): MucHoc | undefined {
+  return hocTiepTrong(cay.mucHoc, anhChup)
+}
+
+/**
+ * "Học tiếp" giới hạn trong một tập mục theo thứ tự cây (vd. các mục của một lĩnh vực — "Học tiếp trong lĩnh vực",
+ * §8.4): mục Đang học mở gần nhất của tập, không có thì mục Chưa học đầu tiên của tập.
+ */
+export function hocTiepTrong(
+  cacMuc: readonly MucHoc[],
+  anhChup: AnhChupHoc | undefined,
+): MucHoc | undefined {
   if (!anhChup) return undefined
-  return (
-    cacMucDangHoc(cay, anhChup)[0] ?? cay.mucHoc.find((m) => anhChup.trangThai[m.id] === undefined)
-  )
+  return xepDangHoc(cacMuc, anhChup)[0] ?? cacMuc.find((m) => anhChup.trangThai[m.id] === undefined)
+}
+
+/** Đã có dữ liệu học chưa: ít nhất một mục của cây có trạng thái khác Chưa học (banner lần đầu F05). */
+export function coTrangThaiHoc(cay: Pick<Cay, 'mucHoc'>, anhChup: AnhChupHoc): boolean {
+  return cay.mucHoc.some((m) => anhChup.trangThai[m.id] !== undefined)
+}
+
+/** Có lượt mở bài nào của mục trong cây không (sắp "Mở gần đây" chỉ có nghĩa khi có). */
+export function coLuotMo(cay: Pick<Cay, 'mucHoc'>, anhChup: AnhChupHoc | undefined): boolean {
+  return anhChup !== undefined && cay.mucHoc.some((m) => anhChup.luotMo[m.id] !== undefined)
 }
 
 export interface DanhSachDangHoc {

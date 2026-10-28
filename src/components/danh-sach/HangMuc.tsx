@@ -2,8 +2,9 @@
 // học (§11: luôn có icon + chữ) · tên (link tới bài, lang=en) · cờ "Cần ôn lại" (chỉ mục Đã xong) · chip loại · chip
 // nội dung. Vạch trái 4px là trạng thái học (kênh "vạch trái" chỉ dùng cho trạng thái học, như hàng C9).
 // Bàn phím do DanhSachMuc lo: link của hàng là điểm focus (roving tabindex), Space chọn / bỏ chọn; ô chọn không nằm
-// trong thứ tự Tab (vẫn bấm chuột và trình đọc màn hình dùng được).
-import type { ReactNode } from 'react'
+// trong thứ tự Tab (vẫn bấm chuột và trình đọc màn hình dùng được). Hàng đang chọn: link có mô tả "Đã chọn"
+// (aria-describedby tới một span ẩn) để trình đọc màn hình đọc trạng thái chọn khi focus vào hàng.
+import { useId, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import {
   TEN_TRANG_THAI_HOC,
@@ -11,7 +12,7 @@ import {
   type TrangThaiNoiDung,
 } from '../../../shared/domain/trang-thai'
 import type { MucHoc } from '../../../shared/roadmap'
-import { CHON_MUC } from '../../copy/cho-duyet-lo-trinh'
+import { CHON_MUC, DA_CHON_MUC } from '../../copy/cho-duyet-lo-trinh'
 import TenMuc from '../TenMuc'
 import ChipLoai from '../trang-thai/ChipLoai'
 import ChipNoiDung from '../trang-thai/ChipNoiDung'
@@ -55,11 +56,13 @@ export default function HangMuc({
   duongDan,
 }: PropsHangMuc) {
   const canOnLai = coCo && trangThai === 'da-xong'
+  const idDaChon = useId()
   return (
     <div
       data-hang-muc={muc.id}
       data-trang-thai={trangThai}
       data-chon={chon || undefined}
+      data-noi-bat={noiBat || undefined}
       className={`flex min-h-11 items-center gap-3 rounded-r-[var(--radius-sm)] border-l-4 py-1.5 pr-3 pl-2 ${VACH[trangThai]} ${
         chon ? 'bg-surface-2' : 'hover:bg-surface-2'
       } ${noiBat ? 'shadow-[inset_0_0_0_1.5px_var(--text)]' : ''}`}
@@ -72,9 +75,7 @@ export default function HangMuc({
         aria-label={`${CHON_MUC} ${muc.label}`}
         className="size-4 shrink-0 cursor-pointer accent-[var(--primary)]"
       />
-      <span
-        className={`flex w-[7.5rem] shrink-0 items-center gap-1.5 text-muted ${LOP_CHU_META}`}
-      >
+      <span className={`flex w-[7.5rem] shrink-0 items-center gap-1.5 text-muted ${LOP_CHU_META}`}>
         <IconTrangThai trangThai={trangThai} canOnLai={canOnLai} toMau size={16} />
         {TEN_TRANG_THAI_HOC[trangThai]}
       </span>
@@ -83,11 +84,18 @@ export default function HangMuc({
           to={`/hoc/${muc.slug}`}
           data-lien-ket-muc={muc.id}
           tabIndex={tabIndex}
+          aria-describedby={chon ? idDaChon : undefined}
           className="focus-trong w-fit max-w-full rounded-[var(--radius-sm)] text-[length:var(--fs-ui)] leading-[var(--lh-ui)] text-text no-underline [overflow-wrap:anywhere] hover:underline"
         >
           <TenMuc>{muc.label}</TenMuc>
         </Link>
         {duongDan}
+        {/* Chỉ làm mô tả của link (hidden vẫn dùng được cho aria-describedby, không bị đọc lặp khi duyệt trang) */}
+        {chon && (
+          <span id={idDaChon} hidden>
+            {DA_CHON_MUC}
+          </span>
+        )}
       </span>
       {canOnLai && <CoCanOnLai />}
       <span className="flex w-[6.5rem] shrink-0 justify-start">

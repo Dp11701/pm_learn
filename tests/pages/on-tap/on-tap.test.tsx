@@ -55,11 +55,9 @@ describe('/on-tap', () => {
     expect(
       await screen.findByRole('heading', { level: 2, name: '2 thẻ đến hạn hôm nay' }),
     ).toBeTruthy()
-    expect(document.title).toBe('Ôn tập · Học PM A–Z')
+    expect(document.title).toBe('Ôn tập · PMP')
     expect(screen.getByText('10 thẻ · Leitner 5 hộp')).toBeTruthy()
-    const hop = within(screen.getByRole('region', { name: 'Hộp Leitner' })).getAllByRole(
-      'listitem',
-    )
+    const hop = within(screen.getByRole('region', { name: 'Hộp Leitner' })).getAllByRole('listitem')
     expect(hop.map((h) => h.textContent)).toEqual([
       'Hộp 14ôn sau 1 ngày',
       'Hộp 23ôn sau 2 ngày',
@@ -77,13 +75,17 @@ describe('/on-tap', () => {
   })
 
   it('0 thẻ đến hạn: "Bắt đầu phiên" khoá, có lần ôn kế tiếp; chưa ôn lần nào: "Chưa có tỉ lệ nhớ"', async () => {
-    sv.onTap = onTapRong({ hop: { 1: 1, 2: 0, 3: 0, 4: 0, 5: 0 }, tongThe: 1, hanKeTiep: '2026-10-29' })
+    sv.onTap = onTapRong({
+      hop: { 1: 1, 2: 0, 3: 0, 4: 0, 5: 0 },
+      tongThe: 1,
+      hanKeTiep: '2026-10-29',
+    })
     moTrang('/on-tap')
     expect(await screen.findByText('Lần ôn kế tiếp 29/10/2026')).toBeTruthy()
     expect(screen.getByRole('heading', { name: '0 thẻ đến hạn hôm nay' })).toBeTruthy()
-    expect((screen.getByRole('button', { name: 'Bắt đầu phiên' }) as HTMLButtonElement).disabled).toBe(
-      true,
-    )
+    expect(
+      (screen.getByRole('button', { name: 'Bắt đầu phiên' }) as HTMLButtonElement).disabled,
+    ).toBe(true)
     expect(screen.getByText('Chưa có tỉ lệ nhớ')).toBeTruthy()
   })
 
@@ -124,9 +126,9 @@ describe('/on-tap/phien', () => {
     expect(await screen.findByText('Câu hỏi 1')).toBeTruthy()
     expect(screen.getByText('Thẻ 1/2')).toBeTruthy()
     // Tên mục là link tới bài
-    expect(
-      screen.getByRole('link', { name: cay.mucHoc[0].label }).getAttribute('href'),
-    ).toBe(`/hoc/${cay.mucHoc[0].slug}`)
+    expect(screen.getByRole('link', { name: cay.mucHoc[0].label }).getAttribute('href')).toBe(
+      `/hoc/${cay.mucHoc[0].slug}`,
+    )
     expect(screen.queryByText('Đáp án 1')).toBeNull()
     await expectNoAxeViolations(container)
 
@@ -177,36 +179,90 @@ describe('/on-tap/phien', () => {
     expect(duongDan()).toBe('/on-tap')
   })
 
+  // Hồi quy review: vòng luyện thêm dựng từ thẻ server trả sau câu trả lời, không từ bản chụp đầu phiên.
+  it('vòng luyện thêm hiện hộp hiện tại của thẻ (Quên → hộp 1), không phải hộp lúc vào phiên', async () => {
+    const the1 = taoThe(0, { hop: 3 })
+    sv.onTap = onTapRong({ denHan: [the1], hop: { 1: 0, 2: 0, 3: 1, 4: 0, 5: 0 }, tongThe: 1 })
+    moTrang('/on-tap/phien')
+    expect(await screen.findByText('Câu hỏi 1')).toBeTruthy()
+    expect(screen.getByText(/· Hộp 3$/)).toBeTruthy()
+    phim('Space', ' ')
+    phim('Digit1', '1')
+    await screen.findByRole('heading', { name: 'Xong phiên hôm nay' })
+    fireEvent.click(screen.getByRole('button', { name: 'Ôn lại 1 thẻ đã quên' }))
+    expect(await screen.findByText('Câu hỏi 1')).toBeTruthy()
+    expect(screen.getByText(/· Hộp 1$/)).toBeTruthy()
+    expect(screen.queryByText(/Hộp 3/)).toBeNull()
+  })
+
   it('bấm hai lần chỉ gửi một câu; 409 (đã ôn ở nơi khác): báo, bỏ qua thẻ, không đếm', async () => {
     const the1 = taoThe(0)
     const the2 = taoThe(1)
     sv.onTap = onTapRong({ denHan: [the1, the2], tongThe: 2 })
-    sv.traLoiOn = (theId) =>
-      theId === the1.id
-        ? { status: 409, data: { loi: `Thẻ id ${theId} chưa đến hạn ôn (hạn 29/10/2026).` } }
-        : {
-            status: 200,
-            data: {
-              revision: 2,
-              daDoi: true,
-              luyenThem: false,
-              ket: 'nho',
-              the: { ...the2, hop: 2, hanOn: '2026-10-29' },
-              truoc: the2,
-            },
-          }
     moTrang('/on-tap/phien')
     await screen.findByText('Câu hỏi 1')
+    // Thẻ 1 vừa được ôn ở tab khác sau khi phiên này chụp danh sách
+    sv.onNoiKhac(the1.id)
     fireEvent.click(screen.getByRole('button', { name: 'Lật thẻ' }))
     const nho = screen.getByRole('button', { name: 'Nhớ' })
     fireEvent.click(nho)
     fireEvent.click(nho)
-    expect(await screen.findByText(/^Thẻ id \d+ chưa đến hạn ôn/)).toBeTruthy()
+    expect(
+      await screen.findByText(`Thẻ id ${the1.id} chưa đến hạn ôn`, { exact: false }),
+    ).toBeTruthy()
     expect(await screen.findByText('Câu hỏi 2')).toBeTruthy()
     expect(sv.cacLanOn()).toHaveLength(1)
     phim('Space', ' ')
     phim('Digit2', '2')
     expect(await screen.findByText('Nhớ 1 · Quên 0 · Lần ôn kế tiếp 29/10/2026')).toBeTruthy()
+    expect(sv.cacLanOn()).toHaveLength(2)
+  })
+
+  it('đang lưu: Quên / Nhớ khoá, phím 1 / 2 không gửi thêm; lỗi khác: báo, thẻ ở lại để gửi lại', async () => {
+    const the1 = taoThe(0)
+    sv.onTap = onTapRong({ denHan: [the1], tongThe: 1 })
+    let moKhoa: () => void = () => {}
+    let lan = 0
+    sv.traLoiOn = () => {
+      lan += 1
+      return lan === 1 ? { status: 500, data: { loi: 'Lỗi máy chủ.' } } : undefined
+    }
+    moTrang('/on-tap/phien')
+    await screen.findByText('Câu hỏi 1')
+    phim('Space', ' ')
+    phim('Digit1', '1')
+    expect(await screen.findByText('Lỗi máy chủ.')).toBeTruthy()
+    // Thẻ ở lại, đã lật; gửi lại được
+    expect(screen.getByText('Thẻ 1/1')).toBeTruthy()
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Quên' }).getAttribute('aria-busy')).toBeNull(),
+    )
+
+    // Lần gửi treo: hai nút báo bận, phím không gửi thêm
+    const fetchCu = globalThis.fetch
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === 'POST') await new Promise<void>((r) => (moKhoa = r))
+        return fetchCu(input, init)
+      }),
+    )
+    phim('Digit1', '1')
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Quên' }).getAttribute('aria-disabled')).toBe(
+        'true',
+      ),
+    )
+    expect(screen.getByRole('button', { name: 'Nhớ' }).getAttribute('aria-disabled')).toBe('true')
+    phim('Digit2', '2')
+    fireEvent.click(screen.getByRole('button', { name: 'Nhớ' }))
+    await act(async () => moKhoa())
+    expect(await screen.findByRole('heading', { name: 'Xong phiên hôm nay' })).toBeTruthy()
+    expect(screen.getByText('Nhớ 0 · Quên 1 · Lần ôn kế tiếp 28/10/2026')).toBeTruthy()
+    expect(sv.cacLanOn()).toEqual([
+      { theId: the1.id, body: { ket: 'quen', luyenThem: false } },
+      { theId: the1.id, body: { ket: 'quen', luyenThem: false } },
+    ])
   })
 
   it('không còn thẻ đến hạn: câu F23 + "Về Ôn tập" + "Tạo thẻ"; Esc thoát về /on-tap', async () => {

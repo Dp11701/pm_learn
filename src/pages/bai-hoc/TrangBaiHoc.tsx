@@ -9,12 +9,14 @@
 //   cuối bài (trước chân bài), giữ neo #flashcard.
 // Chữ thân bài 17/28, các khối cách 40 · chân bài "Đã xong, sang bài tiếp" + pager.
 // Phím (§11, sổ src/app/phim-tat): 1–4 đặt trạng thái, [ ] mục trước / sau (bỏ qua mục Bỏ qua).
+// Vào bằng #flashcard (vd. "Tạo thẻ" của Ôn tập): cuộn tới card Flashcard và focus nó khi trang dựng xong.
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
 import { ChevronRight } from 'lucide-react'
 import { giaiLienQuan } from '../../../shared/noi-dung'
 import { CAC_TRANG_THAI_HOC, type TrangThaiHoc } from '../../../shared/domain/trang-thai'
 import { chuoiCha, layCay, type MucHoc } from '../../../shared/roadmap'
+import { useHoc } from '../../app/du-lieu/hoc'
 import { useSlugCu } from '../../app/du-lieu/thay-cay'
 import { usePhimTat } from '../../app/phim-tat'
 import { LE_NGANG_TRANG } from '../../app/khung/le-trang'
@@ -27,6 +29,7 @@ import { duongDanNut, truocTiep } from '../../components/bai-hoc/dinh-vi'
 import BannerBai from './BannerBai'
 import { cacOAppKhungBai, cacOHien, mucLuc, neoBonBuoc } from './bo-cuc'
 import ChuaCoNoiDung from './ChuaCoNoiDung'
+import { useMoToiFlashcard } from './mo-toi-flashcard'
 import DauBai from './DauBai'
 import type { TaiBai } from './du-lieu-bai'
 import type { DatTrangThaiTrang, TrangThaiTrang } from './kieu-trang'
@@ -72,6 +75,9 @@ export default function TrangBaiHoc({ muc, bai, hoc, datHoc }: PropsTrangBaiHoc)
   const { trangThaiCua } = hoc
   const { truoc, tiep } = truocTiep(cay, muc, trangThaiCua)
   const coCotPhai = useCoCotPhai()
+  // #flashcard: chờ bài và dữ liệu học (Ghi chú, Flashcard) tải xong rồi mới cuộn tới card.
+  const dangTaiHoc = useHoc(muc.id).dangTai
+  useMoToiFlashcard(bai.tinhTrang !== 'dang-tai' && !dangTaiHoc)
 
   // Top bar mobile: "‹ cấp cha" (§6.2, D6).
   const cha = chuoiCha(cay, muc.id).at(-1)

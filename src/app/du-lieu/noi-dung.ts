@@ -7,7 +7,9 @@
 // - cửa sổ được focus lại: file .md sửa ngoài app (trình soạn khác, Claude) chưa làm tăng revision tới khi có
 //   lượt quét nhanh của phase 2b, nên đây là cách duy nhất để chip bắt kịp file trên đĩa.
 // Ngoài QueryClientProvider (test component lẻ, gallery) thì không gọi API và không có chip.
-import { useContext, useEffect, useMemo } from 'react'
+// useLoiTrangThaiNoiDung(): cùng query, cho nơi phải phân biệt "đang tải" với "tải lỗi" (tra trả undefined cả hai
+// lúc) để hiện lỗi + "Thử lại" thay vì skeleton mãi (Tổng quan, Lộ trình lọc theo nội dung, tab Độ phủ).
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { QueryClient, QueryClientContext, useIsMutating, useQuery } from '@tanstack/react-query'
 import type { TrangThaiNoiDung } from '../../../shared/domain/trang-thai'
 import { useKetNoi } from '../ket-noi'
@@ -31,19 +33,45 @@ function taiLai(client: QueryClient) {
   void client.invalidateQueries({ queryKey: KHOA_TRANG_THAI_NOI_DUNG }, { cancelRefetch: false })
 }
 
-export function useTrangThaiNoiDung(): TraNoiDung {
+/** Query bảng trạng thái nội dung (chung cho useTrangThaiNoiDung và useLoiTrangThaiNoiDung). */
+function useQueryNoiDung() {
   const ctx = useContext(QueryClientContext)
   const client = ctx ?? layClientRong()
-  const { data } = useQuery(
+  const q = useQuery(
     {
       queryKey: KHOA_TRANG_THAI_NOI_DUNG,
       queryFn: () => taiTrangThaiNoiDung(),
       enabled: ctx !== undefined,
-      // Độ mới do revision và focus quyết (effect dưới), không tải lại khi gắn thêm nơi dùng.
+      // Độ mới do revision và focus quyết (effect của useTrangThaiNoiDung), không tải lại khi gắn thêm nơi dùng.
       staleTime: Number.POSITIVE_INFINITY,
     },
     client,
   )
+  return { ctx, client, q }
+}
+
+export interface LoiTrangThaiNoiDung {
+  /** Tải lỗi và chưa có bảng nào để dùng (có bảng cũ thì vẫn dùng bảng cũ, không báo lỗi). */
+  loi: boolean
+  /** Tải lại ngay (nút "Thử lại"). */
+  taiLai: () => void
+}
+
+/** Lỗi tải bảng trạng thái nội dung + Thử lại; ngoài QueryClientProvider thì không bao giờ lỗi. */
+export function useLoiTrangThaiNoiDung(): LoiTrangThaiNoiDung {
+  const { q } = useQueryNoiDung()
+  const loi = q.isError && q.data === undefined
+  const { refetch } = q
+  const thuLai = useCallback(() => void refetch(), [refetch])
+  return useMemo(() => ({ loi, taiLai: thuLai }), [loi, thuLai])
+}
+
+export function useTrangThaiNoiDung(): TraNoiDung {
+  const {
+    ctx,
+    client,
+    q: { data },
+  } = useQueryNoiDung()
   const revisionMeta = useKetNoi().meta?.revision
   const soDangGhi = useIsMutating({ mutationKey: KHOA_GHI }, client)
 

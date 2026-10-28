@@ -60,6 +60,12 @@ export interface AnhChupHoc {
    * ≤ hôm nay (server), xếp theo id. Server luôn gửi; tuỳ chọn trong kiểu để dữ liệu kiểu phase 2a vẫn hợp lệ.
    */
   canOnLai?: string[]
+  /**
+   * Bước 2: số bản ghi (trạng thái, lịch sử, lượt mở, 4 bước, ghi chú, thẻ, giờ học, sổ nội dung, bản chụp duyệt)
+   * thuộc mục không còn trong cây — giữ trong DB, không tính tiến độ (bất biến 8); > 0 thì Tổng quan hiện banner
+   * "n bản ghi thuộc mục không còn trong cây". Server luôn gửi; tuỳ chọn trong kiểu như canOnLai.
+   */
+  banGhiNgoaiCay?: number
 }
 
 /** Body của PUT /api/trang-thai/:id */
@@ -147,6 +153,9 @@ export interface KetQuaHoanTacHangLoat {
   revision: number
   /** id các mục đã trả về giá trị cũ */
   daKhoiPhuc: string[]
-  /** id các mục đã đổi sau lần đặt hàng loạt (không còn trạng thái đó) nên giữ nguyên */
+  /**
+   * id các mục giữ nguyên: đã đổi sau lần đặt hàng loạt, hoặc giá trị cũ gửi lên không khớp giá trị cũ server đã
+   * ghi cho lần đó (status_events) — Hoàn tác không bao giờ đặt được giá trị mục chưa từng có (bất biến 2)
+   */
   giuNguyen: string[]
 }

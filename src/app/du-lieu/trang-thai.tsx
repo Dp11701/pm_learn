@@ -9,8 +9,8 @@
 // - useGhiLuotMo(id): ghi một lượt mở bài cho mỗi lần vào trang bài.
 // - useDatHangLoat(): đặt Chưa học / Đang học / Bỏ qua cho nhiều mục (Danh sách, trang Lĩnh vực — đề xuất 3.9, bất
 //   biến 2: không có Đã xong). Không lạc quan: một transaction ở server, xong mới đổi ảnh chụp; toast "Đã chuyển n mục
-//   sang …" + "Hoàn tác" (trả từng mục về giá trị cũ, mục đã đổi sau đó thì giữ nguyên). Chạy nối tiếp cùng lần đặt
-//   một mục.
+//   sang …" + "Hoàn tác" (trả từng mục về giá trị cũ, mục đã đổi sau đó thì giữ nguyên) — toast này không tự đóng.
+//   Chạy nối tiếp cùng lần đặt một mục.
 // - Cờ "Cần ôn lại" (đề xuất 3.3, bất biến 3): danh sách `canOnLai` của GET /api/state (server tính); chỉ tính khi
 //   mục đang Đã xong (canOnLaiCua). Đổi khỏi Đã xong → bỏ cờ ngay (lạc quan); đặt Đã xong → tải lại ảnh chụp khi hết
 //   lần ghi (lần ghi của chính tab không làm tải lại theo revision); sang ngày mới (homNay của /api/meta) → tải lại.
@@ -507,7 +507,10 @@ export function useDatHangLoat(): ApiDatHangLoat {
         kq.daDoi.map((id) => [id, muc]),
         kq.revision,
       )
+      // Lưới an toàn của lần ghi nhiều mục (Chưa học / Bỏ qua đè cả Đã xong, không hỏi): toast không tự đóng sau 5
+      // giây, để người chỉ dùng bàn phím kịp Tab tới "Hoàn tác" (đóng bằng X, hoặc bị 2 toast mới hơn đẩy ra).
       toast({
+        thoiGian: null,
         noiDung: daChuyenHangLoat(kq.daDoi.length, ten),
         hanhDong: {
           nhan: HOAN_TAC,

@@ -153,9 +153,7 @@ export interface TraMuc {
 export function khopBoLoc(muc: MucHoc, boLoc: BoLoc, tra: TraMuc): boolean {
   if (boLoc.trangThai.length > 0) {
     const tt = tra.trangThai(muc.id)
-    const khop = boLoc.trangThai.some((v) =>
-      v === 'can-on-lai' ? tra.canOnLai(muc.id) : v === tt,
-    )
+    const khop = boLoc.trangThai.some((v) => (v === 'can-on-lai' ? tra.canOnLai(muc.id) : v === tt))
     if (!khop) return false
   }
   if (boLoc.loai.length > 0 && !boLoc.loai.includes(muc.mau)) return false

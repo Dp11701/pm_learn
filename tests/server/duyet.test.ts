@@ -148,11 +148,18 @@ describe('POST /api/duyet/:id — duyệt bản nháp', () => {
     const sau = docFile(sc.duongDanTuongDoi)
     expect(sau).toBe(
       text
-        .replace('trang_thai_noi_dung: ban-nhap  # sẽ đổi', 'trang_thai_noi_dung: da-duyet  # sẽ đổi')
+        .replace(
+          'trang_thai_noi_dung: ban-nhap  # sẽ đổi',
+          'trang_thai_noi_dung: da-duyet  # sẽ đổi',
+        )
         .replace('khoa_la: [a, b]\n---', 'khoa_la: [a, b]\nngay_duyet: 2026-10-26\n---'),
     )
     const fm = docFrontmatter(sau!).frontmatter
-    expect(fm).toMatchObject({ trangThaiNoiDung: 'da-duyet', ngayDuyet: '2026-10-26', nguon: 'tu-viet' })
+    expect(fm).toMatchObject({
+      trangThaiNoiDung: 'da-duyet',
+      ngayDuyet: '2026-10-26',
+      nguon: 'tu-viet',
+    })
 
     // Bản chụp = đúng file trên đĩa; sổ khớp, giữ ngày nhập
     const bc = docBanChupHienHanh(mt.db, sc.id)
@@ -224,6 +231,53 @@ describe('POST /api/duyet/:id — duyệt bản nháp', () => {
     expect(soBanChup()).toBe(1)
   })
 
+  it('409 khi file đã ghi da-duyet mà app chưa có bản chụp hiện hành (◎ / đổi ngoài app): giữ ngay_duyet của file', async () => {
+    // ◎: DB không có bản chụp nào của mục → chỉ "Quét lại" + "Nhận là Đã duyệt" (giữ ngay_duyet trong file)
+    const text = banDaDuyet(sc, '2026-09-01')
+    nhan(sc, text)
+    const bai = await mt.get(`/api/bai/${sc.id}`).expect(200)
+    expect(bai.body.canhBaoDuyet).toBe('chua-xac-nhan')
+    let res = await mt.post(`/api/duyet/${sc.id}`).send({ hashNhap: bai.body.hashFile }).expect(409)
+    expect(res.body.loi).toBe(TB_DUYET.fileGhiDaDuyet)
+    expect(docFile(sc.duongDanTuongDoi)).toBe(text)
+    expect(docBanChupHienHanh(mt.db, sc.id)).toBeUndefined()
+
+    // Đổi ngoài app: DB chỉ còn bản chụp đã bị thay
+    const textPestle = banDaDuyet(pestle, '2026-09-02')
+    nhan(pestle, textPestle)
+    mt.db.transaction(() =>
+      chupBanDuyet(mt.db, { itemId: pestle.id, noiDung: 'bản cũ', ngayDuyet: '2026-08-01' }),
+    )()
+    mt.db
+      .prepare('UPDATE content_approvals SET superseded_at = ? WHERE item_id = ?')
+      .run('2026-10-01T00:00:00.000Z', pestle.id)
+    const baiPestle = await mt.get(`/api/bai/${pestle.id}`).expect(200)
+    expect(baiPestle.body.canhBaoDuyet).toBe('doi-ngoai-app')
+    res = await mt
+      .post(`/api/duyet/${pestle.id}`)
+      .send({ hashNhap: baiPestle.body.hashFile })
+      .expect(409)
+    expect(res.body.loi).toBe(TB_DUYET.fileGhiDaDuyet)
+    expect(docFile(pestle.duongDanTuongDoi)).toBe(textPestle)
+
+    expect(soFileOp()).toBe(0)
+    expect(thungRac()).toEqual({})
+
+    // Tab Chờ duyệt vẫn liệt kê (là Bản nháp, bất biến 7) nhưng gắn cờ để không mời "Duyệt"
+    const cho = await mt.get('/api/duyet/cho-duyet').expect(200)
+    expect(
+      cho.body.banNhap.map((d: { id: string; canhBaoDuyet: string | null }) => [
+        d.id,
+        d.canhBaoDuyet,
+      ]),
+    ).toEqual(
+      [
+        [sc.id, 'chua-xac-nhan'],
+        [pestle.id, 'doi-ngoai-app'],
+      ].sort((a, b) => cay.mucTheoId.get(a[0])!.index - cay.mucTheoId.get(b[0])!.index),
+    )
+  })
+
   it('409 khi frontmatter lỗi (loai khác mẫu) — file giữ nguyên', async () => {
     const text = banNhap(sc).replace('loai: chu-de', 'loai: tai-lieu')
     nhan(sc, text)
@@ -243,7 +297,10 @@ describe('POST /api/duyet/:id — duyệt bản nháp', () => {
       .expect(404)
     expect(res.body.loi).toContain('khong-co-muc-nay')
     await mt.get('/api/duyet/khong-co-muc-nay').expect(404)
-    await mt.post('/api/duyet/khong-co-muc-nay/ban-sua').send({ hashNhap: 'a'.repeat(64) }).expect(404)
+    await mt
+      .post('/api/duyet/khong-co-muc-nay/ban-sua')
+      .send({ hashNhap: 'a'.repeat(64) })
+      .expect(404)
     await mt.post('/api/duyet/khong-co-muc-nay/bo-ban-sua').expect(404)
 
     res = await mt.post(`/api/duyet/${sc.id}`).send({ hashNhap: 'abc' }).expect(400)
@@ -284,7 +341,10 @@ describe('bản sửa (<slug>.ban-sua.md, bất biến 5)', () => {
     expect(cho.body).toEqual({ banNhap: [], banSua: [{ id: sc.id, ngayNhap: '2026-10-24' }] })
 
     // Bài đã duyệt không bao giờ bị đường duyệt bản nháp ghi đè
-    await mt.post(`/api/duyet/${sc.id}`).send({ hashNhap: bamNoiDung(sua) }).expect(409)
+    await mt
+      .post(`/api/duyet/${sc.id}`)
+      .send({ hashNhap: bamNoiDung(sua) })
+      .expect(409)
 
     const res = await mt
       .post(`/api/duyet/${sc.id}/ban-sua`)
@@ -404,15 +464,31 @@ describe('GET /api/duyet/cho-duyet', () => {
         ngayNhap: '2026-10-25',
         duKhoi: { co: expect.any(Number), tong: expect.any(Number) },
         coLoi: false,
+        canhBaoDuyet: null,
       },
-      { id: pestle.id, nguon: 'ai', ngayNhap: '2026-10-22', duKhoi: { co: 7, tong: 9 }, coLoi: false },
-      { id: bani.id, nguon: 'tu-viet', ngayNhap: '2026-10-22', duKhoi: { co: 9, tong: 9 }, coLoi: false },
+      {
+        id: pestle.id,
+        nguon: 'ai',
+        ngayNhap: '2026-10-22',
+        duKhoi: { co: 7, tong: 9 },
+        coLoi: false,
+        canhBaoDuyet: null,
+      },
+      {
+        id: bani.id,
+        nguon: 'tu-viet',
+        ngayNhap: '2026-10-22',
+        duKhoi: { co: 9, tong: 9 },
+        coLoi: false,
+        canhBaoDuyet: null,
+      },
       {
         id: sc.id,
         nguon: 'ai',
         ngayNhap: '2026-10-01',
         duKhoi: { co: expect.any(Number), tong: 9 },
         coLoi: true,
+        canhBaoDuyet: null,
       },
     ])
     // Cùng tập với "Bản nháp" của GET /api/noi-dung/trang-thai
@@ -481,10 +557,7 @@ describe('giết tiến trình giữa file_op duyệt → chạy tiếp → như
 
   const cacKeHoach: [string, (m: MtNhe) => Promise<KeHoachDuyet>][] = [
     ['duyệt bản nháp', (m) => keHoachDuyetBai(m.db, m.goc, pestle, bamNoiDung(banNhap(pestle)))],
-    [
-      'duyệt bản sửa',
-      (m) => keHoachDuyetBanSua(m.db, m.goc, sc, bamNoiDung(banSuaCua(sc))),
-    ],
+    ['duyệt bản sửa', (m) => keHoachDuyetBanSua(m.db, m.goc, sc, bamNoiDung(banSuaCua(sc)))],
   ]
 
   for (const [ten, lap] of cacKeHoach) {

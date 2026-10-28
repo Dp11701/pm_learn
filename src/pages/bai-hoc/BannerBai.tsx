@@ -5,9 +5,12 @@
 // - file ghi Đã duyệt nhưng app chưa có bản chụp: "File ghi Đã duyệt nhưng app chưa xác nhận" + "Quét lại";
 // - bản Đã duyệt bị sửa / xoá ngoài app (đang hiện bản chụp): "File đã đổi ngoài app" + "Quét lại để kiểm tra";
 // - bản nháp: "Bản nháp do AI soạn — chưa được bạn duyệt, có thể sai." / "Bản nháp do bạn tự viết — chưa
-//   duyệt." ("Vào chế độ duyệt" có ở phase 7a).
+//   duyệt." + nút "Duyệt bài" (bước 4, duyệt bài gọn: không có chế độ duyệt — đề xuất mục 10);
+// - bài Đã duyệt có bản sửa chưa duyệt: "Có thay đổi chưa duyệt" + "Duyệt bản sửa" / "Bỏ bản sửa" (BannerBanSua).
 // "Quét lại" mở tab Nhập và quét lại ngay (?quet=1, phase 2b).
 import Banner from '../../components/Banner'
+import BannerBanSua from '../../components/duyet/BannerBanSua'
+import NutDuyetBai from '../../components/duyet/NutDuyetBai'
 import { NutLink } from '../../components/Nut'
 import NutSaoChepDongLoi from '../../components/NutSaoChepDongLoi'
 import { DUONG_DAN_QUET_LAI } from '../../components/bai-hoc/dinh-vi'
@@ -26,7 +29,13 @@ function vietHoaDau(s: string): string {
   return s.charAt(0).toLocaleUpperCase('vi') + s.slice(1)
 }
 
-export default function BannerBai({ muc, duLieu }: { muc: MucHoc; duLieu: DuLieuBai }) {
+/**
+ * Dữ liệu banner: phần trang bài dùng + hashFile của GET /api/bai/:id (useBai trả nguyên phản hồi, gồm cả
+ * hashFile; test / gallery dựng DuLieuBai không có thì nút "Duyệt bài" tắt).
+ */
+export type DuLieuBanner = DuLieuBai & { hashFile?: string | null }
+
+export default function BannerBai({ muc, duLieu }: { muc: MucHoc; duLieu: DuLieuBanner }) {
   const { loiDoc, trangThaiNoiDung } = duLieu
   if (loiDoc) {
     return (
@@ -68,8 +77,12 @@ export default function BannerBai({ muc, duLieu }: { muc: MucHoc; duLieu: DuLieu
             ? 'Bản nháp do AI soạn — chưa được bạn duyệt, có thể sai.'
             : 'Bản nháp do bạn tự viết — chưa duyệt.'
         }
+        hanhDong={<NutDuyetBai muc={muc} bai={duLieu.bai} hashNhap={duLieu.hashFile ?? null} />}
       />
     )
+  }
+  if (trangThaiNoiDung.loai === 'da-duyet' && trangThaiNoiDung.coBanSua) {
+    return <BannerBanSua muc={muc} />
   }
   return null
 }

@@ -28,8 +28,7 @@ const hoanTac = (body: unknown) =>
 
 function dong(id: string) {
   return mt.db.prepare('SELECT status, skip_reason FROM item_status WHERE item_id = ?').get(id) as
-    | { status: string; skip_reason: string | null }
-    | undefined
+    { status: string; skip_reason: string | null } | undefined
 }
 
 function dat(id: string, trangThai: 'dang-hoc' | 'da-xong' | 'bo-qua', lyDo?: string) {
@@ -194,6 +193,75 @@ describe('POST /api/trang-thai/hang-loat/hoan-tac', () => {
     const res = await hoanTac(body)
     expect(res.status).toBe(400)
     expect(res.body.loi).toMatch(cau)
+  })
+
+  it('bất biến 2: truoc giả (không có lần đặt hàng loạt nào) không đặt được Đã xong', async () => {
+    // Đặt Đang học từng mục (PUT), không qua hàng loạt
+    dat(mucA.id, 'dang-hoc')
+    dat(mucB.id, 'dang-hoc')
+    dat(mucC.id, 'dang-hoc')
+    const rev = layRevision(mt.db)
+    const daXong = { trangThai: 'da-xong' }
+    const res = await hoanTac({
+      trangThai: 'dang-hoc',
+      truoc: { [mucA.id]: daXong, [mucB.id]: daXong, [mucC.id]: daXong },
+    })
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({
+      revision: rev,
+      daKhoiPhuc: [],
+      giuNguyen: [mucA.id, mucB.id, mucC.id],
+    })
+    for (const m of [mucA, mucB, mucC]) expect(dong(m.id)?.status).toBe('learning')
+    expect(docSuKien(mt.db).filter((s) => s.via === 'hoan-tac')).toEqual([])
+    expect(layRevision(mt.db)).toBe(rev)
+  })
+
+  it('bất biến 2: truoc khác giá trị cũ mà lần hàng loạt đã ghi → giữ nguyên, chỉ khôi phục giá trị thật', async () => {
+    dat(mucB.id, 'bo-qua', 'Không dùng')
+    const lan = await hangLoat({ ids: [mucA.id, mucB.id], trangThai: 'dang-hoc' })
+    expect(lan.body.truoc).toEqual({
+      [mucA.id]: { trangThai: 'chua-hoc' },
+      [mucB.id]: { trangThai: 'bo-qua', lyDo: 'Không dùng' },
+    })
+    // mucA trước đó Chưa học: không trả thành Đã xong; mucB trước đó Bỏ qua: không trả thành Đã xong
+    const gia = await hoanTac({
+      trangThai: 'dang-hoc',
+      truoc: { [mucA.id]: { trangThai: 'da-xong' }, [mucB.id]: { trangThai: 'da-xong' } },
+    })
+    expect(gia.body).toMatchObject({ daKhoiPhuc: [], giuNguyen: [mucA.id, mucB.id] })
+    expect(dong(mucA.id)?.status).toBe('learning')
+    expect(dong(mucB.id)?.status).toBe('learning')
+    // trangThai sai (lần hàng loạt đặt Đang học, không phải Bỏ qua) cũng không khôi phục gì
+    const sai = await hoanTac({ trangThai: 'bo-qua', truoc: lan.body.truoc })
+    expect(sai.body).toMatchObject({ daKhoiPhuc: [], giuNguyen: [mucA.id, mucB.id] })
+    // Đúng giá trị cũ thì vẫn hoàn tác được
+    const that = await hoanTac({ trangThai: 'dang-hoc', truoc: lan.body.truoc })
+    expect(that.body).toMatchObject({ daKhoiPhuc: [mucA.id, mucB.id], giuNguyen: [] })
+    expect(dong(mucA.id)).toBeUndefined()
+    expect(dong(mucB.id)).toEqual({ status: 'skip', skip_reason: 'Không dùng' })
+  })
+
+  it('không hoàn tác lại lần nữa, không hoàn tác mục đã đổi sau đó (kể cả về lại đúng trạng thái đó)', async () => {
+    dat(mucA.id, 'da-xong')
+    dat(mucB.id, 'da-xong')
+    const lan = await hangLoat({ ids: [mucA.id, mucB.id, mucC.id], trangThai: 'bo-qua' })
+    expect(lan.body.daDoi).toEqual([mucA.id, mucB.id, mucC.id])
+    // mucB: đổi sang Đang học rồi về lại Bỏ qua; mucC: chỉ thêm lý do Bỏ qua (không có sự kiện)
+    dat(mucB.id, 'dang-hoc')
+    dat(mucB.id, 'bo-qua')
+    dat(mucC.id, 'bo-qua', 'Để sau')
+    const res = await hoanTac({ trangThai: 'bo-qua', truoc: lan.body.truoc })
+    expect(res.body).toMatchObject({ daKhoiPhuc: [mucA.id], giuNguyen: [mucB.id, mucC.id] })
+    expect(dong(mucA.id)?.status).toBe('done')
+    expect(dong(mucB.id)?.status).toBe('skip')
+    expect(dong(mucC.id)).toEqual({ status: 'skip', skip_reason: 'Để sau' })
+
+    // Gửi lại đúng body đó sau khi mucA bị đặt lại Bỏ qua từng mục: sự kiện cuối không còn là hàng loạt
+    dat(mucA.id, 'bo-qua')
+    const lai = await hoanTac({ trangThai: 'bo-qua', truoc: lan.body.truoc })
+    expect(lai.body).toMatchObject({ daKhoiPhuc: [], giuNguyen: [mucA.id, mucB.id, mucC.id] })
+    expect(dong(mucA.id)?.status).toBe('skip')
   })
 
   it('bất biến 8: id không có trong cây → 404, không mục nào bị ghi', async () => {

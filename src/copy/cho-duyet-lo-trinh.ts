@@ -38,10 +38,16 @@ export const HUONG_DAN_CHON =
 /** Tên ô chọn của một hàng, vd. "Chọn Scope Creep" (tên mục gắn lang="en" ở nơi dùng). */
 export const CHON_MUC = 'Chọn'
 
+/** Mô tả (aria-describedby) của link một hàng đang được chọn, đọc khi focus vào hàng. */
+export const DA_CHON_MUC = 'Đã chọn'
+
 /** Tên menu "Đặt trạng thái…" khi đang lưu (cho trình đọc màn hình). */
 export const DANG_LUU_HANG_LOAT = 'Đang lưu…'
 
 // ---------- Lộ trình — bộ lọc (src/pages/lo-trinh) ----------
+
+/** Tên vùng các nhóm chip lọc + ô sắp xếp (cho trình đọc màn hình). */
+export const BO_LOC = 'Bộ lọc'
 
 /** Tên các nhóm chip lọc. */
 export const TEN_NHOM_LOC = {
@@ -79,6 +85,12 @@ export const TEN_DANH_SACH = 'Các mục học'
 /** Không tải được trạng thái học (thay bảng danh sách). */
 export const KHONG_TAI_DUOC_TRANG_THAI = 'Không tải được trạng thái học.'
 
+/**
+ * Không tải được trạng thái nội dung (thay bảng danh sách khi đang lọc theo Nội dung; thay card "Nội dung bài học"
+ * của Tổng quan). Kèm "Thử lại".
+ */
+export const KHONG_TAI_DUOC_NOI_DUNG = 'Không tải được trạng thái nội dung.'
+
 // ---------- Trang Lĩnh vực (src/pages/TrangLinhVuc.tsx) ----------
 
 /** Dòng dưới H1, vd. "Phần Project Management · 16 mục · 13 chủ đề · 3 tài liệu · 2 nhóm" (§8.4; tên phần lang=en). */
@@ -103,6 +115,13 @@ export const MUC_KHAC = 'Mục khác'
 /** Nút của banner lần đầu (F05) → bài của mục đầu tiên trong cây. */
 export const BAT_DAU_MUC_DAU = 'Bắt đầu với mục đầu tiên'
 
+/**
+ * Câu banner lần đầu (F05) khi không tải được trạng thái nội dung: câu F05 bỏ vế "hiện x/n mục có nội dung", vd.
+ * "Roadmap có 199 mục. Bắt đầu từ đâu?".
+ */
+export const lanDauKhongSoNoiDung = (soMuc: number) =>
+  `Roadmap có ${so(soMuc)} mục. Bắt đầu từ đâu?`
+
 /** Card Tiếp tục học khi không còn mục Đang học / Chưa học. */
 export const KHONG_CON_MUC_HOC_TIEP = 'Không còn mục Đang học hay Chưa học.'
 
@@ -111,6 +130,8 @@ export const THE_CAN_ON_HOM_NAY = 'Thẻ cần ôn hôm nay'
 export const BAT_DAU_ON = 'Bắt đầu ôn'
 export const KHONG_CO_THE_DEN_HAN = 'Hôm nay không có thẻ đến hạn.'
 export const XEM_ON_TAP = 'Xem Ôn tập'
+/** Card thẻ ôn khi không tải được dữ liệu Ôn tập (kèm "Thử lại"). */
+export const KHONG_TAI_DUOC_THE_ON = 'Không tải được số thẻ cần ôn.'
 
 /** Card độ phủ nội dung: tiêu đề + link sang /noi-dung. */
 export const DO_PHU_NOI_DUNG = 'Nội dung bài học'

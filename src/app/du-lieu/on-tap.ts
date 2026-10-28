@@ -151,8 +151,7 @@ export function useOnTap({ taiKhiMo = false }: { taiKhiMo?: boolean } = {}): DuL
     if (!ctx || duLieu === undefined || soDangGhi > 0) return
     // Gọi canTaiLaiTheoMeta mỗi lần (nó ghi nhớ revision meta cao nhất đã thấy).
     const theoRevision =
-      revisionMeta !== undefined &&
-      canTaiLaiTheoMeta(ctx, 'on-tap', revisionMeta, duLieu.revision)
+      revisionMeta !== undefined && canTaiLaiTheoMeta(ctx, 'on-tap', revisionMeta, duLieu.revision)
     // Chỉ khi meta đã sang ngày sau ngày của dữ liệu (dữ liệu mới hơn meta thì chờ meta, không tải vòng).
     const sangNgayMoi = homNayMeta !== undefined && homNayMeta > duLieu.homNay
     if (theoRevision || sangNgayMoi) {

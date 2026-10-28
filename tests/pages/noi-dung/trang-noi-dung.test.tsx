@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // Trang Nội dung /noi-dung, tab Nhập (phase 2b; F21/F22; đề xuất 1.6, 1.7, 3.8; D21) trên máy chủ giả theo hợp đồng
-// nhập: tab + URL, lô F22 (đủ 5 loại + ✕, "Nhập 13 file"), Gán cho mục…, file trùng, ◎, "Sao chép dòng lỗi" của dòng
+// nhập: tab + URL (mặc định Chờ duyệt từ bước 4 — nội dung tab ở cho-duyet.test.tsx), lô F22 (đủ 5 loại + ✕, "Nhập 13 file"), Gán cho mục…, file trùng, ◎, "Sao chép dòng lỗi" của dòng
 // ✕ (thay link trình soạn — trình soạn trong app đã bỏ, đề xuất mục 10), nhập +
 // Hoàn tác, Quét lại (nhập thẳng / có bảng / không có gì), "Có n file chưa nhận", ?muc= gán sẵn, giới hạn
 // phía trình duyệt, lô hết hạn (410), lỗi kiểm tra, axe.
@@ -120,7 +120,7 @@ async function thaF22() {
 }
 
 describe('trang và tab (F21, F22)', () => {
-  it('không có ?tab= → Nhập; H1, title, dòng đếm theo trạng thái nội dung, "Chờ duyệt (n)"', async () => {
+  it('không có ?tab= → Chờ duyệt; H1, title, dòng đếm theo trạng thái nội dung, "Chờ duyệt (n)"', async () => {
     sv.trangThaiNoiDung = {
       [muc('scope-creep').id]: { loai: 'da-duyet', ngayDuyet: '2026-10-18' },
       [muc('pestle').id]: { loai: 'ban-nhap', nguon: 'ai' },
@@ -128,40 +128,92 @@ describe('trang và tab (F21, F22)', () => {
     }
     moTrang('/noi-dung')
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Nội dung')
-    expect(document.title).toBe('Nội dung · Học PM A–Z')
-    expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('true')
+    expect(document.title).toMatch(/^Nội dung · /)
     expect(
       await screen.findByText(
         `1 Đã duyệt · 2 Bản nháp · ${cay.soMucHoc - 3} Chưa có · ${cay.soMucHoc} mục`,
       ),
     ).toBeTruthy()
-    expect(screen.getByRole('tab', { name: 'Chờ duyệt (2)' })).toBeTruthy()
-    expect(screen.getByRole('tabpanel', { name: 'Nhập' })).toBeTruthy()
+    const choDuyet = screen.getByRole('tab', { name: 'Chờ duyệt (2)' })
+    expect(choDuyet.getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByRole('tabpanel', { name: 'Chờ duyệt (2)' })).toBeTruthy()
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual([
+      'Chờ duyệt (2)',
+      'Độ phủ',
+      'Nhập',
+    ])
   })
 
-  it('roving tabindex: ←/→/Home/End đổi tab, chuyển focus, URL ?tab= (giữ ?muc=); Độ phủ, Chờ duyệt là "Có ở phase 7a"', async () => {
+  it('roving tabindex: ←/→/Home/End đổi tab, chuyển focus, URL ?tab= (giữ ?muc=)', async () => {
     moTrang('/noi-dung?tab=nhap&muc=pestle')
     const nhap = screen.getByRole('tab', { name: 'Nhập' })
     expect(nhap.tabIndex).toBe(0)
     expect(screen.getByRole('tab', { name: 'Độ phủ' }).tabIndex).toBe(-1)
     nhap.focus()
     fireEvent.keyDown(nhap, { key: 'ArrowLeft' })
-    const choDuyet = screen.getByRole('tab', { name: /^Chờ duyệt/ })
-    expect(choDuyet.getAttribute('aria-selected')).toBe('true')
-    expect(document.activeElement).toBe(choDuyet)
-    expect(duongDan()).toBe('/noi-dung?tab=cho-duyet&muc=pestle')
-    expect(screen.getByText('Có ở phase 7a', { exact: false })).toBeTruthy()
-    fireEvent.keyDown(choDuyet, { key: 'Home' })
+    const doPhu = screen.getByRole('tab', { name: 'Độ phủ' })
+    expect(doPhu.getAttribute('aria-selected')).toBe('true')
+    expect(document.activeElement).toBe(doPhu)
     expect(duongDan()).toBe('/noi-dung?tab=do-phu&muc=pestle')
-    const panel = screen.getByRole('tabpanel', { name: 'Độ phủ' })
-    expect(within(panel).getByRole('link', { name: 'Nhập file .md' }).getAttribute('href')).toBe(
-      '/noi-dung?tab=nhap',
-    )
-    fireEvent.keyDown(screen.getByRole('tab', { name: 'Độ phủ' }), { key: 'End' })
+    fireEvent.keyDown(doPhu, { key: 'Home' })
+    expect(duongDan()).toBe('/noi-dung?tab=cho-duyet&muc=pestle')
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /^Chờ duyệt/ }))
+    fireEvent.keyDown(screen.getByRole('tab', { name: /^Chờ duyệt/ }), { key: 'End' })
     expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('true')
     fireEvent.keyDown(screen.getByRole('tab', { name: 'Nhập' }), { key: 'ArrowRight' })
-    expect(duongDan()).toBe('/noi-dung?tab=do-phu&muc=pestle')
+    expect(duongDan()).toBe('/noi-dung?tab=cho-duyet&muc=pestle')
     await expectNoAxeViolations(screen.getByRole('main'))
+  })
+
+  // Hồi quy review: Chờ duyệt / Độ phủ chỉ đếm file đã nhận, nên phải báo file .md trên đĩa chưa nhận (bản nháp
+  // Claude vừa ghi vào noi-dung/) ngay ở tab mặc định, không chỉ ở tab Nhập.
+  it('tab Chờ duyệt / Độ phủ: "Có n file chưa nhận" + Quét lại → tab Nhập quét lại ngay, focus tab Nhập; axe', async () => {
+    ketNoi.meta = {
+      revision: 1,
+      now: '2026-10-26T08:00:00.000Z',
+      homNay: '2026-10-26',
+      soMucHoc: cay.soMucHoc,
+      noiDung: { revision: 3, chuaNhan: 2 },
+    }
+    sv.traLoi.set('GET /api/duyet/cho-duyet', () => ({ data: { banNhap: [], banSua: [] } }))
+    sv.traLoi.set('POST /api/nhap/quet-lai', () => ({
+      data: { daNhap: 0, fileOp: null, kiemTra: null, chuaNhan: 0 },
+    }))
+    moTrang('/noi-dung')
+    expect(screen.getByRole('tab', { name: /^Chờ duyệt/ }).getAttribute('aria-selected')).toBe(
+      'true',
+    )
+    await screen.findByText('Không có bản nháp nào chờ duyệt')
+    const banner = screen.getByText('Có 2 file chưa nhận').closest('[role="status"]') as HTMLElement
+    expect(within(banner).getByText(/chưa có trong danh sách và số đếm/)).toBeTruthy()
+    await expectNoAxeViolations(screen.getByRole('main'))
+    // Tab Độ phủ cũng có
+    fireEvent.click(screen.getByRole('tab', { name: 'Độ phủ' }))
+    expect(screen.getByText('Có 2 file chưa nhận')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Quét lại' }))
+    const nhap = screen.getByRole('tab', { name: 'Nhập' })
+    expect(nhap.getAttribute('aria-selected')).toBe('true')
+    expect(document.activeElement).toBe(nhap)
+    await screen.findByText('Quét lại xong: không có file nào cần nhập.')
+    expect(sv.goi('POST /api/nhap/quet-lai')).toHaveLength(1)
+    expect(duongDan()).toBe('/noi-dung?tab=nhap')
+    // Ở tab Nhập chỉ còn banner của tab Nhập
+    expect(screen.getAllByText('Có 2 file chưa nhận')).toHaveLength(1)
+  })
+
+  it('không có file chưa nhận: tab Chờ duyệt không có banner', async () => {
+    ketNoi.meta = {
+      revision: 1,
+      now: '2026-10-26T08:00:00.000Z',
+      homNay: '2026-10-26',
+      soMucHoc: cay.soMucHoc,
+      noiDung: { revision: 3, chuaNhan: 0 },
+    }
+    sv.traLoi.set('GET /api/duyet/cho-duyet', () => ({ data: { banNhap: [], banSua: [] } }))
+    moTrang('/noi-dung')
+    await screen.findByText('Không có bản nháp nào chờ duyệt')
+    expect(screen.queryByText(/file chưa nhận/)).toBeNull()
   })
 })
 

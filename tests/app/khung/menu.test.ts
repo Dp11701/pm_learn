@@ -78,8 +78,9 @@ describe('menu khung (§6.1; phạm vi rút gọn — đề xuất mục 10)', (
   it('tiêu đề top bar mặc định = tên mục menu, ngoài menu = tên app', () => {
     expect(tieuDeMacDinh('/')).toBe('Tổng quan')
     expect(tieuDeMacDinh('/on-tap/phien')).toBe('Ôn tập')
-    expect(tieuDeMacDinh('/khong-co')).toBe('Học PM A–Z')
-    expect(TEN_APP).toBe('Học PM A–Z')
+    expect(tieuDeMacDinh('/khong-co')).toBe(TEN_APP)
+    // Tên app người dùng chọn (28/10/2026); đuôi document.title (TieuDeTrang) cũng dùng tên này
+    expect(TEN_APP).toBe('PMP')
   })
 
   it('tên trang từ handle của route sâu nhất có đặt', () => {

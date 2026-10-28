@@ -80,7 +80,7 @@ function DuongDan() {
   return <p data-testid="duong-dan">{pathname}</p>
 }
 
-function moBai(rong: number, slug = sc.slug) {
+function moBai(rong: number, slug = sc.slug, neo = '') {
   giaMatchMedia(rong)
   const client = new QueryClient({
     defaultOptions: {
@@ -93,7 +93,7 @@ function moBai(rong: number, slug = sc.slug) {
       <QueryClientProvider client={client}>
         <ToastProvider>
           <PhimTatProvider>
-            <MemoryRouter initialEntries={[`/hoc/${slug}`]}>
+            <MemoryRouter initialEntries={[`/hoc/${slug}${neo}`]}>
               <main>
                 <Routes>
                   <Route path="/hoc/:slug" element={<TrangMucHoc />} />
@@ -209,6 +209,44 @@ describe('≥ 1280: cột phải (F11)', () => {
     const { container } = moBai(1440)
     await choBai()
     await expectNoAxeViolations(container)
+  })
+})
+
+// Hồi quy review: "Tạo thẻ" của Ôn tập mở /hoc/<slug>#flashcard — card phải vào tầm nhìn và nhận focus.
+describe('vào bằng #flashcard ("Tạo thẻ" của Ôn tập)', () => {
+  const cuon = vi.fn()
+  beforeEach(() => {
+    cuon.mockClear()
+    Element.prototype.scrollIntoView = cuon
+  })
+  afterEach(() => {
+    delete (Element.prototype as Partial<Element>).scrollIntoView
+  })
+  const cuonCard = () => cuon.mock.contexts.filter((el) => el === flashcard()[0]).length
+
+  it('≥ 1280: trang dựng xong → cuộn cột phải vừa đủ thấy card (nearest) và focus card, một lần', async () => {
+    moBai(1440, sc.slug, '#flashcard')
+    await choBai()
+    await waitFor(() => expect(document.activeElement).toBe(flashcard()[0]))
+    expect(cotPhai()!.contains(flashcard()[0])).toBe(true)
+    expect(cuon).toHaveBeenCalledWith(expect.objectContaining({ block: 'nearest' }))
+    expect(cuonCard()).toBe(1)
+  })
+
+  it('1024–1279: card ở cuối bài → cuộn tới đầu card (start) và focus card', async () => {
+    moBai(1024, sc.slug, '#flashcard')
+    await choBai()
+    await waitFor(() => expect(document.activeElement).toBe(flashcard()[0]))
+    expect(article().contains(flashcard()[0])).toBe(true)
+    expect(cuon).toHaveBeenCalledWith(expect.objectContaining({ block: 'start' }))
+  })
+
+  it('không có #flashcard: không cuộn tới card, không lấy focus', async () => {
+    moBai(1440)
+    await choBai()
+    await new Promise((r) => setTimeout(r, 20))
+    expect(cuonCard()).toBe(0)
+    expect(document.activeElement).not.toBe(flashcard()[0])
   })
 })
 

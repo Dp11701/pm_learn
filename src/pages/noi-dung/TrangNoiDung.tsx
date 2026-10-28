@@ -1,7 +1,13 @@
-// Trang Nội dung /noi-dung (§8.8; F21, F21b, F22): H1 "Nội dung" + dòng đếm "x Đã duyệt · y Bản nháp · z Chưa có ·
-// n mục" (bất biến 7) + tab Độ phủ · Chờ duyệt (n) · Nhập (?tab=do-phu | cho-duyet | nhap).
-// - Phase 2b chỉ có tab Nhập (TabNhap); Độ phủ và Chờ duyệt là C38 "Có ở phase 7a" kèm nút "Nhập file .md".
-// - Không có ?tab= (vd. từ sidebar): mở Nhập — tab duy nhất dùng được tới phase 7a.
+// Trang Nội dung /noi-dung (§8.8; F21, F21b, F22; bước 4 rút gọn theo đề xuất mục 10): H1 "Nội dung" + dòng đếm
+// "x Đã duyệt · y Bản nháp · z Chưa có · n mục" (bất biến 7) + tab Chờ duyệt (n) · Độ phủ · Nhập
+// (?tab=cho-duyet | do-phu | nhap).
+// - Chờ duyệt (TabChoDuyet): bản nháp chờ duyệt + bản sửa chờ duyệt; duyệt bằng nút trên banner của bài.
+// - Độ phủ (TabDoPhu): ba số của cả roadmap, rồi theo phần › lĩnh vực, link sang Lộ trình lọc mục chưa có.
+// - Nhập (TabNhap): kéo thả / Quét lại (?quet=1), gán sẵn mục (?muc=).
+// - Không có ?tab= hợp lệ (vd. từ sidebar): mở Chờ duyệt — việc chính của trang từ bước 4.
+// - Có file .md trong thư mục nội dung chưa nhận (chuaNhan của /api/meta; Chờ duyệt, Độ phủ chỉ đếm file đã nhận):
+//   ở tab Chờ duyệt / Độ phủ có banner "Có n file chưa nhận" + "Quét lại" → sang tab Nhập và quét lại ngay (?quet=1),
+//   focus về tab Nhập. Tab Nhập có banner riêng của nó.
 // - Tab: roving tabindex, ←/→/Home/End chuyển và chọn luôn (tự kích hoạt), URL đổi bằng replace, giữ ?muc=.
 // - Thư mục nội dung đổi (Claude ghi file, sửa ngoài app) → tải lại trạng thái nội dung: khung app theo dõi
 //   revision nội dung của /api/meta cho mọi trang (useTheoDoiNoiDung ở KhungApp).
@@ -9,19 +15,22 @@ import { useId, useRef, type KeyboardEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { dinhDangSo } from '../../../shared/dinh-dang'
 import { layCay } from '../../../shared/roadmap'
+import { useNoiDungMeta } from '../../app/du-lieu/nhap'
 import { useTrangThaiNoiDung } from '../../app/du-lieu/noi-dung'
-import { NutLink } from '../../components/Nut'
+import Banner from '../../components/Banner'
+import Nut from '../../components/Nut'
 import TieuDeTrang from '../../components/TieuDeTrang'
-import { SapCo } from '../../components/TrangThaiTrong'
-import { CHO_DUYET_SAP_CO, DO_PHU_SAP_CO } from '../../copy/cho-duyet'
+import { CHUA_NHAN_CHUA_TINH } from '../../copy/cho-duyet-duyet'
 import { KhungTrang, LOP_H1 } from '../chung'
+import TabChoDuyet from './TabChoDuyet'
+import TabDoPhu from './TabDoPhu'
 import TabNhap from './TabNhap'
 
-export const CAC_TAB = ['do-phu', 'cho-duyet', 'nhap'] as const
+export const CAC_TAB = ['cho-duyet', 'do-phu', 'nhap'] as const
 export type KhoaTab = (typeof CAC_TAB)[number]
 
-/** Tab mở khi không có ?tab= hợp lệ (tới phase 7a: Nhập). */
-export const TAB_MAC_DINH: KhoaTab = 'nhap'
+/** Tab mở khi không có ?tab= hợp lệ. */
+export const TAB_MAC_DINH: KhoaTab = 'cho-duyet'
 
 export function tabTuUrl(gt: string | null): KhoaTab {
   return (CAC_TAB as readonly string[]).includes(gt ?? '') ? (gt as KhoaTab) : TAB_MAC_DINH
@@ -54,20 +63,28 @@ export default function TrangNoiDung() {
   const [params, datParams] = useSearchParams()
   const tab = tabTuUrl(params.get('tab'))
   const dem = useDemNoiDung()
+  const chuaNhan = useNoiDungMeta()?.chuaNhan ?? 0
   const nutTab = useRef<Partial<Record<KhoaTab, HTMLButtonElement | null>>>({})
 
   const ten: Record<KhoaTab, string> = {
-    'do-phu': 'Độ phủ',
     'cho-duyet': dem && dem.banNhap > 0 ? `Chờ duyệt (${dinhDangSo(dem.banNhap)})` : 'Chờ duyệt',
+    'do-phu': 'Độ phủ',
     nhap: 'Nhập',
   }
   const idTab = (k: KhoaTab) => `${id}tab-${k}`
   const idPanel = (k: KhoaTab) => `${id}panel-${k}`
 
-  function chonTab(k: KhoaTab) {
+  function chonTab(k: KhoaTab, quetLai = false) {
     const moi = new URLSearchParams(params)
     moi.set('tab', k)
+    if (quetLai) moi.set('quet', '1')
     datParams(moi, { replace: true })
+  }
+
+  /** "Quét lại" của banner file chưa nhận: tab Nhập quét lại ngay (?quet=1); nút biến mất nên focus về tab Nhập. */
+  function quetLaiONhap() {
+    chonTab('nhap', true)
+    nutTab.current.nhap?.focus()
   }
 
   function khiPhim(e: KeyboardEvent<HTMLButtonElement>) {
@@ -85,12 +102,6 @@ export default function TrangNoiDung() {
     nutTab.current[k]?.focus()
   }
 
-  const linkNhap = (
-    <NutLink to={{ search: '?tab=nhap' }} replace bien="phu">
-      Nhập file .md
-    </NutLink>
-  )
-
   return (
     <KhungTrang>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -104,6 +115,19 @@ export default function TrangNoiDung() {
           </span>
         )}
       </div>
+
+      {tab !== 'nhap' && chuaNhan > 0 && (
+        <Banner
+          tieuDe={`Có ${dinhDangSo(chuaNhan)} file chưa nhận`}
+          moTa={CHUA_NHAN_CHUA_TINH}
+          hanhDong={
+            <Nut bien="phu" onClick={quetLaiONhap}>
+              Quét lại
+            </Nut>
+          }
+          className="max-w-[960px]"
+        />
+      )}
 
       <div role="tablist" aria-label="Nội dung" className="flex gap-1 border-b border-border">
         {CAC_TAB.map((k) => {
@@ -136,18 +160,7 @@ export default function TrangNoiDung() {
       </div>
 
       <div role="tabpanel" id={idPanel(tab)} aria-labelledby={idTab(tab)} className="min-w-0">
-        {tab === 'nhap' ? (
-          <TabNhap />
-        ) : (
-          <SapCo
-            phase="7a"
-            tieuDe={tab === 'do-phu' ? 'Độ phủ' : 'Chờ duyệt'}
-            moTa={tab === 'do-phu' ? DO_PHU_SAP_CO : CHO_DUYET_SAP_CO}
-            khung
-            className="max-w-[720px] bg-surface"
-            nut={linkNhap}
-          />
-        )}
+        {tab === 'nhap' ? <TabNhap /> : tab === 'do-phu' ? <TabDoPhu /> : <TabChoDuyet />}
       </div>
     </KhungTrang>
   )

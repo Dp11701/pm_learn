@@ -21,7 +21,7 @@ import { dangGhepChu } from '../TruongNhap'
 import TenMuc from '../TenMuc'
 import { chuPhanSo, ThanhTienDo } from '../trang-thai/TienDo'
 import { LOP_CHU_META } from '../trang-thai/mau-trang-thai'
-import { demTrongNut, dungCayHien, mucTheoNut, type PhanTuHien } from './cay-hien'
+import { demTrongNut, dungCayHien, mucTheoNut, type NhomHien, type PhanTuHien } from './cay-hien'
 import HangMuc from './HangMuc'
 
 export type KieuDanhSach =
@@ -49,6 +49,20 @@ const LOP_TIEU_DE: Record<number, string> = {
   2: 'text-[length:var(--fs-h2)] leading-[var(--lh-h2)] font-bold',
   3: 'text-[length:var(--fs-ui)] leading-[var(--lh-ui)] font-semibold',
   4: 'text-[length:var(--fs-meta)] leading-[var(--lh-meta)] font-semibold',
+}
+
+type KhoiHien = { loai: 'muc'; cacMuc: MucHoc[] } | { loai: 'nhom'; nhom: NhomHien }
+
+/** Gom các mục liền nhau (cùng cấp) thành một khối; nhóm đứng riêng. Hàm thuần. */
+function gomMucLienNhau(ds: readonly PhanTuHien[]): KhoiHien[] {
+  const khoi: KhoiHien[] = []
+  for (const pt of ds) {
+    const cuoi = khoi.at(-1)
+    if (pt.loai === 'nhom') khoi.push({ loai: 'nhom', nhom: pt.nhom })
+    else if (cuoi?.loai === 'muc') cuoi.cacMuc.push(pt.muc)
+    else khoi.push({ loai: 'muc', cacMuc: [pt.muc] })
+  }
+  return khoi
 }
 
 /** Link của các hàng theo thứ tự DOM. */
@@ -134,31 +148,19 @@ export default function DanhSachMuc({
   )
 
   /** Các phần tử cùng cấp theo thứ tự cây: mục liền nhau gom một <ul>, nhóm là một khối có tiêu đề. */
-  function vePhanTu(ds: readonly PhanTuHien[], cap: number) {
-    const khoi: ReactNode[] = []
-    let mucLienNhau: MucHoc[] = []
-    const dongMuc = () => {
-      if (mucLienNhau.length === 0) return
-      khoi.push(
-        <ul key={`muc-${mucLienNhau[0].id}`} className="m-0 flex list-none flex-col gap-0.5 p-0">
-          {mucLienNhau.map((m) => veHang(m))}
-        </ul>,
-      )
-      mucLienNhau = []
-    }
-    for (const pt of ds) {
-      if (pt.loai === 'muc') {
-        mucLienNhau.push(pt.muc)
-        continue
-      }
-      dongMuc()
-      khoi.push(veNhom(pt.nhom, cap))
-    }
-    dongMuc()
-    return khoi
+  function vePhanTu(ds: readonly PhanTuHien[], cap: number): ReactNode[] {
+    return gomMucLienNhau(ds).map((k) =>
+      k.loai === 'nhom' ? (
+        veNhom(k.nhom, cap)
+      ) : (
+        <ul key={`muc-${k.cacMuc[0].id}`} className="m-0 flex list-none flex-col gap-0.5 p-0">
+          {k.cacMuc.map((m) => veHang(m))}
+        </ul>
+      ),
+    )
   }
 
-  function veNhom(nhom: { nut: Nut; con: PhanTuHien[] }, cap: number) {
+  function veNhom(nhom: NhomHien, cap: number) {
     const { nut } = nhom
     const so = demTrongNut(theoNut.get(nut.id) ?? [], trangThaiCua)
     const The = `h${Math.min(cap, 6)}` as 'h2' | 'h3' | 'h4'

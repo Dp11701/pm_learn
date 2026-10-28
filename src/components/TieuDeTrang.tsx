@@ -1,11 +1,11 @@
 import { useEffect, type ReactNode } from 'react'
+import { TEN_APP } from '../app/ten-app'
 
 export const ID_TIEU_DE_TRANG = 'tieu-de-trang'
-const TEN_APP = 'Học PM A–Z'
 
 /**
- * H1 của trang: đặt document.title = "{trang} · Học PM A–Z"; khung app đưa focus về đây sau khi
- * chuyển trang (§11). `tenTrang` là chữ thuần cho title khi children có định dạng.
+ * H1 của trang: đặt document.title = "{trang} · {TEN_APP}" (tên app người dùng chốt, như logo); khung app đưa
+ * focus về đây sau khi chuyển trang (§11). `tenTrang` là chữ thuần cho title khi children có định dạng.
  */
 export default function TieuDeTrang({
   children,

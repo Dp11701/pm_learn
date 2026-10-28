@@ -1,0 +1,15 @@
+## internal-rate-of-return-irr
+
+- Kiểm parser: Internal Rate of Return (IRR) (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Principles of Finance, chương 16 (16.1, 16.3, 16.4, 16.5) — Julie Dahlquist, Rainford Knight (OpenStax)](https://openstax.org/books/principles-finance/pages/16-3-internal-rate-of-return-irr-method); [IRR function — Microsoft Support](https://support.microsoft.com/en-us/office/irr-function-64925eaa-9988-495b-b290-3ad0c163c1bc); [XIRR function — Microsoft Support](https://support.microsoft.com/en-us/office/xirr-function-de1242ec-6477-445b-b11b-a303ad9adc9d); [Hurdle Rate Definition — CFI Team (Corporate Finance Institute)](https://corporatefinanceinstitute.com/resources/valuation/hurdle-rate-definition/); [Creating bulletproof business cases (PMI Global Congress 2011) — Richard Larson, Elizabeth Larson (PMI)](https://www.pmi.org/learning/library/business-cases-project-scope-analysis-6119)
+- Agent soát đã sửa:
+  - Tham khảo, dòng OpenStax: thêm "16.1 Payback Period Method" vào danh sách mục. Ba ý về payback trong bảng So sánh (bỏ qua giá trị thời gian của tiền, bỏ qua dòng tiền sau mốc hoàn vốn, công ty tự đặt mốc thời gian tối đa) nằm ở mục 16.1, không ở 16.3–16.5 như dòng cũ ghi.
+  - Khái niệm "Dòng tiền đổi dấu nhiều lần": MIRR tái đầu tư "theo một mức do bạn chọn" → "theo một mức cho trước, thường là cost of capital". OpenStax 16.4 tính MIRR bằng cost of capital của công ty; đây không phải con số PM tự chọn.
+  - Khái niệm "Hurdle rate": WACC "(chi phí vốn bình quân)" → "(chi phí vốn bình quân gia quyền)", đúng nghĩa weighted average cost of capital.
+- **Nên tự kiểm lại:**
+  - Đã tự tính lại mọi con số: IRR của A ≈ 23,4%, của B ≈ 18,9%; NPV ở 12%: A ≈ 60, B ≈ 181 triệu; ngưỡng hoà vốn của tiết kiệm: B giảm ≈ 10,8%, A ≈ 16,7%; dòng tiền −1.000 / +2.300 / −1.320 có NPV = 0 ở cả 10% và 20%, NPV ở 12% ≈ +1,3 triệu; (1 + 2%)^12 − 1 ≈ 26,8%. Bạn có thể gõ lại vào Excel hoặc Google Sheets để tự thấy.
+  - Câu "dòng tiền đổi dấu nhiều lần có thể không có IRR nào": OpenStax chỉ nói có thể không có một nghiệm duy nhất và nêu ví dụ hai IRR. Trường hợp không có IRR đúng về toán (ví dụ −100 / +300 / −250 có NPV âm ở mọi mức chiết khấu), nhưng các nguồn đã dẫn không viết rõ.
+  - Câu "với dòng tiền thông thường, IRR > hurdle rate và NPV ở hurdle rate > 0 cho cùng kết luận nhận hay bỏ" là suy ra từ cách OpenStax định nghĩa IRR là điểm đồ thị NPV cắt trục hoành. Không có câu nguồn nào nói thẳng như vậy.
+  - Vai trò PM (lập/rà bảng dòng tiền, cập nhật IRR khi trễ lịch hay đội chi phí, báo sponsor) là nhận định của người viết. Bài PMI chỉ khuyên nhờ financial analyst trong tổ chức hỗ trợ.
+  - Kết luận "hàm IRR trên dòng tiền theo tháng trả về tỷ lệ mỗi tháng" là hệ quả toán học. Trang Microsoft chỉ nói dòng tiền phải đều kỳ (tháng hoặc năm), không ghi rõ kết quả tính theo kỳ.
+  - pmi.org trả 403 cho truy cập tự động. Agent soát đã đọc bản Internet Archive (02/2025) của đúng URL này. Bạn mở bằng trình duyệt (có thể cần đăng nhập PMI) để đối chiếu đoạn về PBP, ROI, IRR, NPV và hurdle rate.

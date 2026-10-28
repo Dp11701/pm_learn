@@ -1,6 +1,7 @@
 import { ngayCua, now } from '../../shared/clock.ts'
 import type { Db } from '../db/index.ts'
 import { layRevision, tangRevision } from '../db/settings.ts'
+import { demBanGhiNgoaiCay } from './ngoai-cay.ts'
 import { mucCanOnLai } from './the.ts'
 import {
   giaTriCua,
@@ -43,22 +44,19 @@ export function docMucTrangThai(db: Db, id: string): MucTrangThai | undefined {
   return dong && sangMuc(dong)
 }
 
+type AnhChupDayDu = AnhChupHoc & { canOnLai: string[]; banGhiNgoaiCay: number }
+
 /**
  * Ảnh chụp dữ liệu học cho GET /api/state. `laMuc` lọc theo cây: bản ghi của mục không còn trong cây vẫn
- * nằm trong DB (bất biến 8) nhưng không vào ảnh chụp, nên không tính tiến độ. canOnLai tính lúc đọc theo
- * homNay() của server (bất biến 3). Đọc trong một transaction để các phần khớp cùng một revision.
+ * nằm trong DB (bất biến 8) nhưng không vào ảnh chụp, nên không tính tiến độ; chỉ SỐ bản ghi đó đi kèm
+ * (banGhiNgoaiCay — banner Tổng quan). canOnLai tính lúc đọc theo homNay() của server (bất biến 3). Đọc trong
+ * một transaction để các phần khớp cùng một revision.
  */
-export function docAnhChup(
-  db: Db,
-  laMuc: (id: string) => boolean = () => true,
-): AnhChupHoc & { canOnLai: string[] } {
+export function docAnhChup(db: Db, laMuc: (id: string) => boolean = () => true): AnhChupDayDu {
   return db.transaction(() => docAnhChupTrong(db, laMuc))()
 }
 
-function docAnhChupTrong(
-  db: Db,
-  laMuc: (id: string) => boolean,
-): AnhChupHoc & { canOnLai: string[] } {
+function docAnhChupTrong(db: Db, laMuc: (id: string) => boolean): AnhChupDayDu {
   const trangThai: Record<string, MucTrangThai> = {}
   const cacDong = db
     .prepare('SELECT item_id, status, skip_reason FROM item_status ORDER BY item_id')
@@ -71,7 +69,13 @@ function docAnhChupTrong(
     .all() as { item_id: string; last_opened_at: string }[]
   for (const dong of cacLuot) if (laMuc(dong.item_id)) luotMo[dong.item_id] = dong.last_opened_at
 
-  return { revision: layRevision(db), trangThai, luotMo, canOnLai: mucCanOnLai(db, laMuc) }
+  return {
+    revision: layRevision(db),
+    trangThai,
+    luotMo,
+    canOnLai: mucCanOnLai(db, laMuc),
+    banGhiNgoaiCay: demBanGhiNgoaiCay(db, laMuc),
+  }
 }
 
 export interface ThamSoDatTrangThai {
@@ -191,10 +195,49 @@ export interface ThamSoHoanTacHangLoat {
   luc?: number
 }
 
+interface DongSuKienCuoi {
+  from_status: TrangThaiDb | null
+  to_status: TrangThaiDb | null
+  via: Via
+  at: string
+}
+
+/**
+ * Mục còn đúng như lần đặt hàng loạt để lại, và giá trị cũ client gửi khớp giá trị cũ server đã ghi (bất biến 2 —
+ * server kiểm lại, 1.10): sự kiện cuối của mục là via 'hang-loat' từ `truoc` sang `daDat`, trạng thái hiện tại là
+ * `daDat` và hàng item_status chưa bị ghi lại sau sự kiện đó (vd. chỉ đổi lý do Bỏ qua — không sinh sự kiện).
+ * Nhờ vậy `truoc` giả (vd. Đã xong cho mục chưa từng Đã xong) không bao giờ được ghi. Lý do Bỏ qua cũ không lưu
+ * trong status_events nên lấy theo client — chỉ khi giá trị cũ thật là Bỏ qua (lược đồ route chỉ nhận lyDo với
+ * bo-qua).
+ */
+function conNhuLanHangLoat(
+  db: Db,
+  id: string,
+  daDat: TrangThaiDb | null,
+  truoc: TrangThaiDb | null,
+): boolean {
+  const cuoi = db
+    .prepare(
+      `SELECT from_status, to_status, via, at FROM status_events
+       WHERE item_id = ? ORDER BY id DESC LIMIT 1`,
+    )
+    .get(id) as DongSuKienCuoi | undefined
+  if (!cuoi || cuoi.via !== 'hang-loat' || cuoi.to_status !== daDat || cuoi.from_status !== truoc) {
+    return false
+  }
+  const hang = db
+    .prepare('SELECT status, updated_at FROM item_status WHERE item_id = ?')
+    .get(id) as { status: TrangThaiDb; updated_at: string } | undefined
+  if (daDat === null) return hang === undefined
+  return hang?.status === daDat && hang.updated_at === cuoi.at
+}
+
 /**
  * Hoàn tác một lần đặt hàng loạt trong MỘT transaction: trả từng mục về đúng giá trị cũ (kể cả Đã xong và lý do Bỏ
- * qua — đây là khôi phục, không phải đặt hàng loạt), chỉ khi mục vẫn đang ở trạng thái lần đó đã đặt; mục đã đổi
- * sau đó thì giữ nguyên và báo trong `giuNguyen`. Sự kiện via 'hoan-tac'; tăng revision một lần nếu có mục đổi.
+ * qua — đây là khôi phục, không phải đặt hàng loạt). Chỉ khôi phục mục còn đúng như lần đặt hàng loạt để lại VÀ giá
+ * trị cũ gửi lên khớp giá trị cũ server đã ghi trong status_events (conNhuLanHangLoat); mục đã đổi sau đó, hoặc
+ * `truoc` không khớp (gửi lại lần hai, giá trị giả) thì giữ nguyên và báo trong `giuNguyen`. Sự kiện via 'hoan-tac';
+ * tăng revision một lần nếu có mục đổi.
  */
 export function hoanTacHangLoat(db: Db, thamSo: ThamSoHoanTacHangLoat): KetQuaHoanTacHangLoat {
   const daDat = sangDb(thamSo.trangThai)
@@ -207,7 +250,7 @@ export function hoanTacHangLoat(db: Db, thamSo: ThamSoHoanTacHangLoat): KetQuaHo
     const giuNguyen: string[] = []
     for (const [id, giaTri] of Object.entries(thamSo.truoc)) {
       const cu = docMucTrangThai(db, id) ?? null
-      if ((cu?.status ?? null) !== daDat) {
+      if (!conNhuLanHangLoat(db, id, daDat, sangDb(giaTri.trangThai))) {
         giuNguyen.push(id)
         continue
       }

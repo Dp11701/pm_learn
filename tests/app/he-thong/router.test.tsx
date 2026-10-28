@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// Bảng route (§6.1 routes P0, đề xuất 4.1; phạm vi rút gọn mục 10): mọi route có trang với H1, route chưa làm tới
-// hiện C38 "Có ở phase n", slug kiểm theo cây, route lạ → 404 trong khung (D24). Route của phần đã bỏ (trang P1,
+// Bảng route (§6.1 routes P0, đề xuất 4.1; phạm vi rút gọn mục 10): mọi route có trang thật với H1 (từ bước 2 không
+// còn route chờ C38 "Có ở phase n"), slug kiểm theo cây, route lạ → 404 trong khung (D24). Route của phần đã bỏ (trang P1,
 // /phan/:slug, trình soạn …/soan, Bản của tôi) không còn: 404 trong khung.
 // /hoc/:slug là trang bài thật (phase 2a, vòng 4 bước phase 3): API trạng thái học / bài / trạng thái nội dung /
 // dữ liệu học của mục (GET /api/hoc/:id) là máy chủ giả trong bộ nhớ (giaApiBai), không đi mạng.
@@ -129,53 +129,26 @@ describe('GocApp', () => {
   })
 })
 
-describe('route tĩnh chưa làm tới', () => {
-  it.each(CAC_TRANG_TINH.map((t) => [`/${t.duongDan}`, t] as const))(
-    '%s → H1 + "Có ở phase n" trong khung',
-    async (duongDan, trang) => {
-      await moTrang(duongDan)
-      expect(h1().textContent).toBe(trang.tenTrang)
-      expect(h1().id).toBe('tieu-de-trang')
-      expect(document.title).toBe(`${trang.tenTrang} · Học PM A–Z`)
-      expect(screen.getByText(`Có ở phase ${trang.phase}`)).toBeTruthy()
-      expect(screen.getByText(trang.moTa)).toBeTruthy()
-      expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
-    },
-  )
+describe('route chờ "Có ở phase n" (C38)', () => {
+  it('không còn route chờ nào: từ bước 2 mọi route trong phạm vi rút gọn (đề xuất mục 10) là trang thật', () => {
+    expect(CAC_TRANG_TINH).toEqual([])
+  })
 
   it.each([
-    ['/', 'Xem lộ trình', '/lo-trinh'],
-    ['/lo-trinh', 'Về Tổng quan', '/'],
-    ['/on-tap', 'Về Tổng quan', '/'],
-    ['/on-tap/phien', 'Về Ôn tập', '/on-tap'],
-    ['/linh-vuc/scope-management', 'Về Lộ trình', '/lo-trinh'],
+    ['/', 'Tổng quan'],
+    ['/lo-trinh', 'Lộ trình'],
+    ['/on-tap', 'Ôn tập'],
   ])(
-    '%s: ô "Có ở phase n" có nút phụ đi tiếp "%s" (D20, §2 quy tắc 4)',
-    async (duongDan, nhan, den) => {
+    '%s → trang thật trong khung: H1 "%s", title, không còn ô "Có ở phase n"',
+    async (duongDan, ten) => {
       await moTrang(duongDan)
-      const o = screen.getByText(/^Có ở phase /).parentElement!.parentElement!
-      const nut = within(o).getByRole('link', { name: nhan })
-      expect(nut.getAttribute('href')).toBe(den)
+      expect(h1().textContent).toBe(ten)
+      expect(h1().id).toBe('tieu-de-trang')
+      expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
+      expect(document.title).toBe(`${ten} · PMP`)
+      expect(screen.queryByText(/^Có ở phase /)).toBeNull()
     },
   )
-
-  it('mọi route tĩnh đều có đúng một nút đi tiếp trỏ tới route có thật', async () => {
-    const coThat = new Set(['/', ...CAC_TRANG_TINH.map((t) => `/${t.duongDan}`)])
-    for (const t of CAC_TRANG_TINH) {
-      await moTrang(`/${t.duongDan}`)
-      const o = screen.getByText(`Có ở phase ${t.phase}`).parentElement!.parentElement!
-      const cac = within(o).getAllByRole('link')
-      expect(cac).toHaveLength(1)
-      expect(coThat.has(cac[0].getAttribute('href')!)).toBe(true)
-      cleanup()
-    }
-  })
-
-  it('chỉ còn route P0 của phạm vi rút gọn (đề xuất mục 10): không có trang P1', () => {
-    expect(CAC_TRANG_TINH.map((t) => t.duongDan).sort()).toEqual(
-      ['', 'lo-trinh', 'on-tap', 'on-tap/phien'].sort(),
-    )
-  })
 })
 
 describe('trang có slug', () => {
@@ -185,7 +158,7 @@ describe('trang có slug', () => {
     expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
     expect(h1().textContent).toBe('Scope Creep')
     expect(h1().querySelector('[lang="en"]')?.textContent).toBe('Scope Creep')
-    expect(document.title).toBe('Scope Creep · Học PM A–Z')
+    expect(document.title).toBe('Scope Creep · PMP')
     const dau = h1().closest('header')!
     expect(within(dau).getByText('Chủ đề')).toBeTruthy()
     expect(screen.getByRole('radiogroup', { name: 'Trạng thái học' })).toBeTruthy()
@@ -261,11 +234,17 @@ describe('trang có slug', () => {
     },
   )
 
-  it('/linh-vuc/:slug: H1 tên lĩnh vực, chip Lĩnh vực, "Có ở phase 4"', async () => {
+  it('/linh-vuc/:slug: trang lĩnh vực thật — H1 tên lĩnh vực (lang=en), chip Lĩnh vực, "Xem trong Lộ trình"', async () => {
     await moTrang('/linh-vuc/scope-management')
+    expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
     expect(h1().textContent).toBe('Scope Management')
-    expect(screen.getByText('Lĩnh vực')).toBeTruthy()
-    expect(screen.getByText('Có ở phase 4')).toBeTruthy()
+    expect(h1().querySelector('[lang="en"]')?.textContent).toBe('Scope Management')
+    expect(document.title).toBe('Scope Management · PMP')
+    expect(within(h1().closest('header')!).getByText('Lĩnh vực')).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Xem trong Lộ trình' }).getAttribute('href')).toBe(
+      '/lo-trinh?xem=danh-sach&linh-vuc=scope-management',
+    )
+    expect(screen.queryByText(/^Có ở phase /)).toBeNull()
   })
 
   it.each([
@@ -280,7 +259,7 @@ describe('trang có slug', () => {
     await moTrang(duongDan)
     // Slug lạ ở /hoc, /linh-vuc: hỏi bảng slug cũ trước (không có) rồi mới 404.
     await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang này.' })
-    expect(document.title).toBe('Không tìm thấy trang · Học PM A–Z')
+    expect(document.title).toBe('Không tìm thấy trang · PMP')
     expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
     expect(screen.getByRole('link', { name: 'Về Tổng quan' }).getAttribute('href')).toBe('/')
   })
@@ -296,13 +275,15 @@ describe('trang có slug', () => {
 })
 
 describe('/noi-dung (trang thật từ phase 2b)', () => {
-  it('không còn là route "Có ở phase 2b": H1 Nội dung trong khung, tab Nhập', async () => {
-    expect(CAC_TRANG_TINH.some((t) => t.duongDan === 'noi-dung')).toBe(false)
+  it('không còn là route "Có ở phase 2b": H1 Nội dung trong khung, mở tab Chờ duyệt (bước 4)', async () => {
     await moTrang('/noi-dung')
     expect(h1().textContent).toBe('Nội dung')
     expect(within(khung()!).getByRole('heading', { level: 1 })).toBe(h1())
-    expect(document.title).toBe('Nội dung · Học PM A–Z')
-    expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('true')
+    expect(document.title).toBe('Nội dung · PMP')
+    expect(screen.getByRole('tab', { name: /^Chờ duyệt/ }).getAttribute('aria-selected')).toBe(
+      'true',
+    )
+    expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('false')
     expect(screen.queryByText('Có ở phase 2b')).toBeNull()
   })
 })

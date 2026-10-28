@@ -1,0 +1,15 @@
+## msa
+
+- Kiểm parser: MSA (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [What Is a Master Service Agreement and When Do You Need One? (bản Internet Archive 25/6/2025) — Nolo (Amanda Hayes)](https://web.archive.org/web/20250625103636/https://www.nolo.com/legal-encyclopedia/what-is-a-master-service-agreement-and-when-do-you-need-one.html); [Professional Services Agreement, Standard Terms Version 1.1 kèm Cover Page và SOW — Common Paper](https://commonpaper.com/standards/professional-services-agreement/); [FAR 16.703 Basic ordering agreements — GSA, acquisition.gov](https://www.acquisition.gov/far/16.703); [FAR Overhaul Part 16 (bản RFO) — GSA, acquisition.gov](https://www.acquisition.gov/far-overhaul/far-part-deviation-guide/far-overhaul-part-16) (chỉ để đối chiếu, không đưa vào bài)
+- Agent soát đã sửa:
+  - Khái niệm cốt lõi, Change Order: "sửa chính hợp đồng khung cũng phải bằng văn bản có chữ ký của hai bên" → "… bằng văn bản, được mỗi bên ký hoặc chấp nhận điện tử". Common Paper mục Modifications ghi "signed or electronically accepted by each party", không bắt buộc chữ ký.
+  - Khái niệm cốt lõi: thuật ngữ tự đặt "Điều khoản nền" → "General terms and conditions", đúng cụm Nolo dùng và theo quy ước giữ thuật ngữ bằng tiếng Anh. Nội dung giữ nguyên.
+  - So sánh, hàng SLA: "thường là phụ lục" → "có thể là một mục hoặc phụ lục của MSA". Nolo chỉ nói SLA có thể là một mục riêng, phụ lục, hoặc cả hai; không nói "thường".
+- **Nên tự kiểm lại:**
+  - Đã khớp Nolo: MSA là khung điều khoản chung cho quan hệ làm việc lâu dài; chỉ đàm phán một lần ở đầu quan hệ; SOW còn gọi là work order hoặc work authorization; ví dụ chìa khóa tổng khách sạn; có MSA thì SOW ngắn; danh mục điều khoản (thanh toán và hóa đơn, chi phí, sở hữu trí tuệ kể cả tài liệu có từ trước, bảo mật, representations and warranties, chấm dứt, luật áp dụng); MSA nên nêu SOW phải có gì và ai có quyền đồng ý SOW. Trang Nolo gốc chặn truy cập tự động, chỉ đọc được qua bản Internet Archive.
+  - Đã khớp Common Paper: SOW thắng khi mâu thuẫn với Agreement; Cover Page thắng Standard Terms; Change Order chỉ ràng buộc khi hai bên đồng ý bằng văn bản; "Pre-Existing Materials" không được chuyển quyền cho khách mà chỉ cấp license. Đây là một mẫu cụ thể, không phải quy tắc chung; hợp đồng của bạn có thể quy định ngược lại.
+  - FAR 16.703: BOA "is not a contract" và chỉ sửa bằng cách sửa chính BOA, không qua từng đơn hàng. Bản RFO Part 16 giữ ý này nhưng đánh số lại (16.703-1(b), 16.703-3(c)); số điều có thể đổi khi rule cuối được ban hành.
+  - Các nhận định của người viết, không có nguồn trực tiếp: "MSA quyết định việc mở dự án mới nhanh hay chậm", "dev lead đọc tài liệu từ dưới lên", mô tả mốc thời gian trong bảng So sánh, và các bước 5–8 ở Cách áp dụng.
+  - Câu hỏi 3 (email có thể không đáp ứng thủ tục Change Order): việc email có được coi là "bằng văn bản" hay không tùy hợp đồng và luật áp dụng. Bài đã viết "có thể không", nên hỏi pháp chế với hợp đồng thật.
+  - Bảng So sánh có 3 văn bản đặt cạnh MSA (prompt gợi ý 1–2) kèm một đoạn về FAR. Giữ lại vì đều là mục anh em trong Legal Documents. Muốn gọn hơn, có thể bỏ hàng SLA hoặc đoạn FAR.

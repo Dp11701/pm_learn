@@ -7,10 +7,11 @@ import { layCay, type Cay } from '../../../shared/roadmap'
 import { chuBadge, type KieuBadge } from '../../components/trang-thai/Badge'
 import { useTrangThaiNoiDung, type TraNoiDung } from '../du-lieu/noi-dung'
 import { useSoTheDenHan } from '../du-lieu/on-tap'
+import { TEN_APP } from '../ten-app'
 import { useDuLieuKhung, type DuLieuKhung } from './du-lieu-khung'
 
-/** Tên app (logo C34, tooltip rail, top bar khi không có tên trang). */
-export const TEN_APP = 'PMP'
+/** Tên app (logo C34, tooltip rail, top bar khi không có tên trang): định nghĩa ở src/app/ten-app.ts. */
+export { TEN_APP }
 
 export type KhoaMenu = 'tong-quan' | 'lo-trinh' | 'on-tap' | 'noi-dung'
 

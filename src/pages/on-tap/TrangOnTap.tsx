@@ -22,7 +22,8 @@ import { KhungTrang, LOP_H1 } from '../chung'
 
 const HOP = [1, 2, 3, 4, 5] as const
 
-const LOP_CARD = 'flex flex-col gap-4 rounded-[var(--radius-md)] border border-border bg-surface p-5'
+const LOP_CARD =
+  'flex flex-col gap-4 rounded-[var(--radius-md)] border border-border bg-surface p-5'
 const LOP_H2 = 'm-0 text-[length:var(--fs-body)] leading-[var(--lh-body)] font-semibold'
 const LOP_META = 'm-0 text-[length:var(--fs-meta)] leading-[var(--lh-meta)] text-muted'
 const LOP_SO_LON = 'text-[length:var(--fs-h1)] leading-[var(--lh-h1)] font-bold tabular-nums'

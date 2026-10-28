@@ -1,0 +1,12 @@
+## ci-cd
+
+- Kiểm parser: CI/CD (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Continuous Integration (cập nhật 18/01/2024) — Martin Fowler](https://martinfowler.com/articles/continuousIntegration.html); [ContinuousDelivery (bliki) — Martin Fowler](https://martinfowler.com/bliki/ContinuousDelivery.html); [Continuous integration vs. delivery vs. deployment — Sten Pittet, Atlassian](https://www.atlassian.com/continuous-delivery/principles/continuous-integration-vs-delivery-vs-deployment); [DORA's software delivery performance metrics (cập nhật 05/01/2026) — DORA](https://dora.dev/guides/dora-metrics/)
+- Agent soát đã sửa:
+  - Không phải sửa.
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: CI là tích hợp vào mainline ít nhất mỗi ngày, có build tự động chạy test; build trên nhánh feature chưa đẩy về mainline Fowler gọi là "semi-integration", không phải CI; build gãy thì thường revert commit mới nhất, không cần cả nhóm dừng tay; "release to production is a business decision"; nên gỡ feature flag ngay khi tính năng đã release xong (Fowler). Continuous Delivery thì vẫn bấm tay để lên production. Continuous Deployment thì không có người can thiệp, chỉ test trượt mới chặn. Muốn làm Continuous Deployment phải có Continuous Delivery trước. Điều kiện cần (feature flag; tài liệu, support, marketing phải theo kịp) và lộ trình đi từ CI lên lấy từ Atlassian và Fowler.
+  - DORA: năm chỉ số và cách chia nhóm khớp trang hiện tại, kể cả việc failed deployment recovery time nằm trong nhóm throughput. DORA từng đổi tên và cách xếp nhóm qua các năm, nên hãy xem lại trang khi dùng. Trang chỉ đưa rollback và hotfix làm ví dụ cho việc "cần can thiệp ngay"; định nghĩa change fail rate không gồm hai chữ này.
+  - Câu hỏi 5: DORA nói đặt chỉ tiêu (ví dụ bắt mọi ứng dụng deploy nhiều lần mỗi ngày) dễ khiến nhóm lách số. Ví dụ "chia nhỏ deploy vô nghĩa cho đủ số" là minh hoạ của người viết. DORA khuyên đo theo từng ứng dụng hoặc service. Trang không nói gì về việc chấm điểm từng người, nên ý "không gắn chỉ số với tên dev" ở bước 9 và tiêu chí tự kiểm là gợi ý thực hành.
+  - Bảng So sánh: ô "Không quy định; release vẫn có thể thủ công và thưa" (CI) và cả hàng "Câu PM nên hỏi" là suy luận của người viết, không nguồn nào nói thẳng.
+  - Bước 5 (thêm "CI xanh trên main" và "đã deploy lên staging" vào Definition of Done) là gợi ý thực hành, không có nguồn. Câu hỏi 3 ("merge thêm lên build đỏ khiến khó biết lỗi do commit nào") khớp ý Fowler: thay đổi đè lên build đang gãy dễ gây nhầm lỗi do ai, và mỗi lần push được build riêng nên biết ngay lỗi ở lần push nào.

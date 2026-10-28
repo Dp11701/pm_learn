@@ -43,7 +43,8 @@ function sangTheOn(d: DongTheOn): TheOn {
 }
 
 function docTheOn(db: Db, id: number): TheOn | undefined {
-  const d = db.prepare(`SELECT ${COT} FROM flashcards WHERE id = ?`).get(id) as DongTheOn | undefined
+  const d = db.prepare(`SELECT ${COT} FROM flashcards WHERE id = ?`).get(id) as
+    DongTheOn | undefined
   return d && sangTheOn(d)
 }
 
@@ -54,11 +55,7 @@ export function docOnTap(
   ngay: string = homNay(),
 ): AnhChupOnTap {
   return db.transaction((): AnhChupOnTap => {
-    const cacThe = (
-      db
-        .prepare(`SELECT ${COT} FROM flashcards ORDER BY id`)
-        .all() as DongTheOn[]
-    )
+    const cacThe = (db.prepare(`SELECT ${COT} FROM flashcards ORDER BY id`).all() as DongTheOn[])
       .filter((d) => laMuc(d.item_id))
       .map(sangTheOn)
       .sort(soThuTuOn)

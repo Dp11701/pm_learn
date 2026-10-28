@@ -8,6 +8,7 @@ import { dinhDangNgay } from '../../../shared/dinh-dang'
 import { KHOA_GIAO_DIEN, datGiaoDien } from '../../../src/app/giao-dien'
 import { DU_LIEU_KHUNG_TRONG, type DuLieuKhung } from '../../../src/app/khung/du-lieu-khung'
 import { LE_NGANG_TRANG } from '../../../src/app/khung/le-trang'
+import { TEN_APP } from '../../../src/app/khung/menu'
 import { KhungTrang } from '../../../src/pages/chung'
 import { expectNoAxeViolations } from '../../ho-tro/axe'
 import { dungLocalStorageJsdom } from '../../giao-dien/moi-truong'
@@ -384,7 +385,7 @@ describe.each([800, 375])('Top bar mobile + drawer (%ipx)', (rong) => {
     const cac = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUS_DUOC))
     const dau = cac[0]
     const cuoi = cac[cac.length - 1]
-    expect(dau.textContent).toContain('Học PM A–Z')
+    expect(dau.textContent).toContain(TEN_APP)
     expect(cuoi.getAttribute('aria-label')).toBe('Bảng phím tắt')
 
     cuoi.focus()
@@ -568,7 +569,7 @@ describe('Trang 404 trong khung: không tô mục menu nào', () => {
   it('375: top bar ghi tên app, drawer không tô mục nào', () => {
     giaMatchMedia(375)
     moKhung('/hoc/khong-co-muc-nay')
-    expect(within(screen.getByRole('banner')).getByText('Học PM A–Z').tagName).toBe('P')
+    expect(within(screen.getByRole('banner')).getByText(TEN_APP).tagName).toBe('P')
     fireEvent.click(screen.getByRole('button', { name: 'Mở menu' }))
     const drawer = screen.getByRole('dialog', { name: 'Menu' })
     expect(

@@ -70,7 +70,11 @@ describe('docUrlDanhSach / ghiUrlDanhSach', () => {
 
   it('ghi lại: nhóm có giá trị, ngăn bằng dấu phẩy; sap-xep khác cây; giữ xem, bỏ muc', () => {
     const cu = new URLSearchParams('xem=danh-sach&muc=scope-creep&la=1')
-    const boLoc: BoLoc = { ...BO_LOC_TRONG, trangThai: ['dang-hoc', 'can-on-lai'], noiDung: ['chua-co'] }
+    const boLoc: BoLoc = {
+      ...BO_LOC_TRONG,
+      trangThai: ['dang-hoc', 'can-on-lai'],
+      noiDung: ['chua-co'],
+    }
     expect(ghiUrlDanhSach({ boLoc, sapXep: 'a-z' }, cu).toString()).toBe(
       'xem=danh-sach&trang-thai=dang-hoc%2Ccan-on-lai&noi-dung=chua-co&sap-xep=a-z',
     )
@@ -112,9 +116,9 @@ describe('khopBoLoc / locMuc', () => {
 
   it('trong nhóm trạng thái là HOẶC; Cần ôn lại là một giá trị của nhóm', () => {
     const b: BoLoc = { ...BO_LOC_TRONG, trangThai: ['dang-hoc', 'can-on-lai'] }
-    expect(locMuc(cay, b, tt).map((m) => m.slug)).toEqual(['scope-creep', 'risk-register'].sort(
-      (a, c) => muc(a).index - muc(c).index,
-    ))
+    expect(locMuc(cay, b, tt).map((m) => m.slug)).toEqual(
+      ['scope-creep', 'risk-register'].sort((a, c) => muc(a).index - muc(c).index),
+    )
     const chuaHoc = locMuc(cay, { ...BO_LOC_TRONG, trangThai: ['chua-hoc'] }, tt)
     expect(chuaHoc).toHaveLength(199 - 3)
   })
@@ -129,9 +133,9 @@ describe('khopBoLoc / locMuc', () => {
     expect(trongScope).toHaveLength(16)
     expect(trongScope.every((m) => m.linhVuc?.id === linhVucScope.id)).toBe(true)
     expect(locMuc(cay, { ...scope, loai: ['tai-lieu'] }, tt).length).toBeGreaterThan(0)
-    expect(locMuc(cay, { ...scope, loai: ['tai-lieu'] }, tt).every((m) => m.mau === 'tai-lieu')).toBe(
-      true,
-    )
+    expect(
+      locMuc(cay, { ...scope, loai: ['tai-lieu'] }, tt).every((m) => m.mau === 'tai-lieu'),
+    ).toBe(true)
     expect(locMuc(cay, { ...scope, noiDung: ['da-duyet'] }, tt)).toEqual([scopeCreep])
 
     const phan: BoLoc = { ...BO_LOC_TRONG, phan: [phanCuoi.slug] }

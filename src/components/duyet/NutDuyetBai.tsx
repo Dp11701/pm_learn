@@ -1,12 +1,14 @@
 // Nút "Duyệt bài" trên banner bản nháp của trang bài (bước 4; đề xuất 3.7 rút gọn: không có chế độ duyệt, không có
-// công tắc "Đã soát"): mở dialog "Duyệt bài này?" — "Sẽ thành Đã duyệt · dd/MM/yyyy" (hôm nay theo /api/meta của
-// server), khối ★ còn thiếu (vẫn cho duyệt), "Duyệt" / "Huỷ". Gửi kèm hash của bản đang đọc (hashFile của
+// công tắc "Đã soát"): mở dialog "Duyệt bài này?" — "Sẽ thành Đã duyệt · dd/MM/yyyy" (hôm nay của server: hỏi
+// GET /api/duyet/:id lúc mở dialog, chưa về thì dùng /api/meta), khối ★ còn thiếu (vẫn cho duyệt), "Duyệt" /
+// "Huỷ". Gửi kèm hash của bản đang đọc (hashFile của
 // GET /api/bai/:id): file đổi ngoài app từ lúc mở trang → máy chủ từ chối (409), trang tải lại bản mới. Duyệt xong:
 // toast "Đã duyệt {tên}" (không Hoàn tác), banner biến mất khi bài tải lại, focus về H1.
 import { useMemo, useRef, useState } from 'react'
 import { dinhDangNgay } from '../../../shared/dinh-dang'
 import type { KetQuaBai } from '../../../shared/noi-dung'
 import type { MucHoc } from '../../../shared/roadmap'
+import { useChiTietDuyet } from '../../app/du-lieu/duyet'
 import { useKetNoi } from '../../app/ket-noi'
 import { KHONG_HOAN_TAC_DUYET } from '../../copy/cho-duyet-duyet'
 import Nut from '../Nut'
@@ -40,20 +42,30 @@ export default function NutDuyetBai({
   hashNhap: string | null
 }) {
   const [mo, datMo] = useState(false)
+  // Bản bạn quyết định duyệt = bản đang hiện lúc mở dialog: giữ hash + khối thiếu của lúc đó. File đổi ngoài app
+  // khi dialog đang mở (trang tự tải bản mới) → máy chủ từ chối (409), không duyệt nhầm bản chưa đọc.
+  const [lucMo, datLucMo] = useState<{ hash: string; thieu: string[] } | null>(null)
   const daDuyet = useRef(false)
   const { dang, chay } = useHanhDongDuyet(muc)
-  const homNay = useKetNoi().meta?.homNay
+  const homNayMeta = useKetNoi().meta?.homNay
+  const homNay = useChiTietDuyet(muc.id, mo).data?.homNay ?? homNayMeta
   const thieu = useMemo(() => (bai ? khoiThieuCua(bai) : []), [bai])
 
-  async function duyet() {
+  function moHopThoai() {
     if (!hashNhap) return
-    daDuyet.current = await chay('duyet', hashNhap)
+    datLucMo({ hash: hashNhap, thieu })
+    datMo(true)
+  }
+
+  async function duyet() {
+    if (!lucMo) return
+    daDuyet.current = await chay('duyet', lucMo.hash)
     datMo(false)
   }
 
   return (
     <>
-      <Nut bien="phu" disabled={!hashNhap} onClick={() => datMo(true)}>
+      <Nut bien="phu" disabled={!hashNhap} onClick={moHopThoai}>
         Duyệt bài
       </Nut>
       <HopThoaiDuyet
@@ -62,7 +74,7 @@ export default function NutDuyetBai({
         muc={muc}
         tieuDe="Duyệt bài này?"
         moTa={`${cauSeThanh(homNay)}. ${KHONG_HOAN_TAC_DUYET}`}
-        thieu={thieu}
+        thieu={lucMo?.thieu ?? thieu}
         nhanXacNhan="Duyệt"
         dangXuLy={dang === 'duyet'}
         khiXacNhan={() => void duyet()}

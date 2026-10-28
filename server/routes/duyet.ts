@@ -1,13 +1,15 @@
 // API duyệt bài gọn (bước 4; đề xuất 3.6, 3.7 rút gọn theo mục 10; bất biến 5, 7, 8; Cần chốt 13). Hợp đồng ở
 // server/du-lieu/duyet.ts:
-// - GET  /api/duyet/cho-duyet           { banNhap: [{ id, nguon, ngayNhap, duKhoi, coLoi }], banSua: [{ id,
-//   ngayNhap }] } — ngày nhập mới nhất trước, cùng ngày theo thứ tự cây;
+// - GET  /api/duyet/cho-duyet           { banNhap: [{ id, nguon, ngayNhap, duKhoi, coLoi, canhBaoDuyet }], banSua:
+//   [{ id, ngayNhap }] } — ngày nhập mới nhất trước, cùng ngày theo thứ tự cây; canhBaoDuyet ≠ null: file đã ghi
+//   da-duyet mà app chưa xác nhận → không duyệt ở đây, chỉ Quét lại;
 // - GET  /api/duyet/:id                 { homNay, banSua } — bản sửa của mục Đã duyệt (hash, khối ★ thiếu);
 // - POST /api/duyet/:id                 { hashNhap } duyệt bản nháp → { revision, ngayDuyet };
 // - POST /api/duyet/:id/ban-sua         { hashNhap } duyệt bản sửa → { revision, ngayDuyet };
 // - POST /api/duyet/:id/bo-ban-sua      bản sửa vào thùng rác → { revision }.
 // id phải là mục học của cây (bất biến 8), không thì 404. File đã đổi so với hashNhap, không phải bản nháp /
-// không có bản sửa, lỗi frontmatter → 409, không đổi gì. Không có Hoàn tác (Cần chốt 13). revision = revision
+// không có bản sửa, lỗi frontmatter, bản nháp mà file đã ghi da-duyet (◎ / đổi ngoài app: chỉ "Nhận là Đã duyệt"
+// ở Quét lại, giữ ngay_duyet của file) → 409, không đổi gì. Không có Hoàn tác (Cần chốt 13). revision = revision
 // nội dung (cùng số với /api/meta noiDung.revision).
 import { Router, type Request } from 'express'
 import { z } from 'zod'

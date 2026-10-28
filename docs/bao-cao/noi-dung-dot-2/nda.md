@@ -1,0 +1,15 @@
+## nda
+
+- Kiểm parser: NDA (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [WIPO Guide to Trade Secrets and Innovation, Part IV: Trade secret management — WIPO](https://www.wipo.int/web-publications/wipo-guide-to-trade-secrets-and-innovation/en/part-iv-trade-secret-management.html); [WIPO Guide to Trade Secrets and Innovation, Part VI: Trade secrets in collaborative innovation — WIPO](https://www.wipo.int/web-publications/wipo-guide-to-trade-secrets-and-innovation/en/part-vi-trade-secrets-in-collaborative-innovation.html); [Mutual Non-Disclosure Agreement (trang giải thích + Standard Terms) — Common Paper](https://commonpaper.com/standards/mutual-nda/); [Mutual NDA Standard Terms 1.0 — Common Paper](https://commonpaper.com/standards/mutual-nda/1.0) (mở để đối chiếu câu chữ điều khoản, không thêm vào Tham khảo vì trang chính đã chứa đủ)
+- Agent soát đã sửa:
+  - Tóm tắt: "NDA thường là văn bản ký sớm nhất" → "thường là một trong những văn bản được ký sớm nhất". Common Paper chỉ nói NDA là một trong các văn bản dùng nhiều nhất ở đầu chu kỳ bán hàng B2B; WIPO khuyên ký "at the very beginning" của quan hệ, không nói nó luôn là văn bản đầu tiên.
+  - Confidential Information: "thông tin được bên tiết lộ đánh dấu là mật" → "xác định với bên nhận là mật (ghi 'confidential', 'proprietary' hoặc tương tự)". Standard Terms mục 1 dùng chữ "identifies … as 'confidential', 'proprietary', or the like", không bắt buộc phải đóng dấu trên tài liệu.
+  - Mutual/unilateral: "loại đơn phương hay gặp khi một người cần tiếp cận thông tin nội bộ" → "trong bối cảnh nhân sự, khi một nhân viên cần tiếp cận…". Trang Common Paper nói rõ là "HR context" và "employee".
+  - Exclusions: thêm ghi chú mẫu Common Paper đặt tên mục này là "Exceptions", để người học tra đúng chỗ trong Standard Terms.
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: câu WIPO về kiện tụng (Part IV, mục 1.3) nói trong bối cảnh giao dịch như sáp nhập, cấp phép có chia sẻ bí mật theo NDA; WIPO khuyên trả lại hoặc tiêu hủy tài liệu và "certify such destruction" (Part IV, mục 3.2); need-to-know và đánh dấu "Confidential" (Part IV); NDA giai đoạn đàm phán nên được "expressly superseded" bởi thỏa thuận hợp tác (Part VI, mục 2.2). Điều khoản chia sẻ cho người có "reasonable need to know", ràng buộc "no less protective", bên nhận "remains responsible" và bốn ngoại lệ "can demonstrate" đều đúng Standard Terms.
+  - WIPO nói về "collaboration agreement" trong hợp tác đổi mới, không nói riêng về MSA. Bảng So sánh NDA ↔ điều khoản bảo mật trong MSA là tóm tắt của người viết; câu "NDA cũ còn hiệu lực hay không tùy câu chữ hợp đồng" là nhận định, cần pháp chế xác nhận.
+  - Các ý về điều khoản đều lấy từ một mẫu cụ thể (Common Paper Mutual NDA). NDA thật của công ty bạn có thể khác về thời hạn, phạm vi chia sẻ cho affiliate hay nhà thầu phụ, cách trả lại tài liệu. Đọc bản thật trước khi áp dụng.
+  - "Bên nhận chứng minh exclusion bằng lịch sử commit" (Tự kiểm tra câu 4) là gợi ý thực hành của người viết, không phải kết luận pháp lý.
+  - Bài không nói gì về luật Việt Nam hay luật nước nào khác. Giá trị pháp lý và cách thực thi NDA tùy luật áp dụng ghi trong hợp đồng.

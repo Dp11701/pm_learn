@@ -6,7 +6,7 @@ import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { vi } from 'vitest'
-import { congNgay } from '../../../shared/lich'
+import { dinhDangNgay } from '../../../shared/dinh-dang'
 import { layCay } from '../../../shared/roadmap'
 import {
   sauKhiOn,
@@ -34,10 +34,12 @@ export interface MayChuOnTap {
   onTap: AnhChupOnTap
   anhChup: AnhChupHoc
   yeuCau: YeuCau[]
-  /** Trả lời riêng cho POST /api/on-tap/:id (mặc định: Leitner như server) */
-  traLoiOn?: (theId: number, body: YeuCauOnThe) => { status: number; data: unknown }
+  /** Trả lời riêng cho POST /api/on-tap/:id; undefined → như server (Leitner, 404, 409, luyenThem) */
+  traLoiOn?: (theId: number, body: YeuCauOnThe) => { status: number; data: unknown } | undefined
   /** Các POST /api/on-tap/:id đã nhận */
   cacLanOn: () => { theId: number; body: YeuCauOnThe }[]
+  /** Thẻ được ôn (Nhớ) ở nơi khác (tab khác): hết đến hạn, lần ôn sau trong phiên này → 409 */
+  onNoiKhac: (theId: number) => void
 }
 
 const json = (status: number, data: unknown) =>
@@ -74,6 +76,27 @@ export function onTapRong(dat: Partial<AnhChupOnTap> = {}): AnhChupOnTap {
 }
 
 export function taoMayChu(): MayChuOnTap {
+  // Mỗi test đánh số thẻ lại từ 1 ("Câu hỏi 1", "Đáp án 1"…)
+  soThe = 0
+  // Thẻ đã ôn (hộp, hạn mới); thẻ chưa có ở đây lấy từ danh sách đến hạn của ảnh chụp
+  const daOn = new Map<number, TheOn>()
+  const timThe = (theId: number) => daOn.get(theId) ?? may.onTap.denHan.find((t) => t.id === theId)
+
+  /** Lần ôn thật như server: Leitner theo HOM_NAY, bỏ khỏi danh sách đến hạn, revision + 1. */
+  function ghiLanOn(truoc: TheOn, ket: KetQuaOnThe['ket']): KetQuaOnThe {
+    const { hop, hanOn } = sauKhiOn(truoc.hop, ket, HOM_NAY)
+    const the = { ...truoc, hop, hanOn }
+    daOn.set(the.id, the)
+    const hanCu = may.onTap.hanKeTiep
+    may.onTap = {
+      ...may.onTap,
+      revision: may.onTap.revision + 1,
+      denHan: may.onTap.denHan.filter((t) => t.id !== the.id),
+      hanKeTiep: hanCu === null || hanOn < hanCu ? hanOn : hanCu,
+    }
+    return { revision: may.onTap.revision, daDoi: true, luyenThem: false, ket, the, truoc }
+  }
+
   const may: MayChuOnTap = {
     onTap: onTapRong(),
     anhChup: { revision: 1, trangThai: {}, luotMo: {} },
@@ -82,6 +105,10 @@ export function taoMayChu(): MayChuOnTap {
       may.yeuCau
         .filter((y) => y.method === 'POST' && y.url.startsWith('/api/on-tap/'))
         .map((y) => ({ theId: Number(y.url.split('/').at(-1)), body: y.body as YeuCauOnThe })),
+    onNoiKhac: (theId) => {
+      const the = timThe(theId)
+      if (the) ghiLanOn(the, 'nho')
+    },
   }
   vi.stubGlobal(
     'fetch',
@@ -97,11 +124,9 @@ export function taoMayChu(): MayChuOnTap {
       if (method === 'POST' && on) {
         const theId = Number(on[1])
         const yc = body as YeuCauOnThe
-        if (may.traLoiOn) {
-          const { status, data } = may.traLoiOn(theId, yc)
-          return json(status, data)
-        }
-        const truoc = may.onTap.denHan.find((t) => t.id === theId)
+        const rieng = may.traLoiOn?.(theId, yc)
+        if (rieng) return json(rieng.status, rieng.data)
+        const truoc = timThe(theId)
         if (!truoc) return json(404, { loi: `Không có thẻ id ${theId}.` })
         if (yc.luyenThem) {
           const kq: KetQuaOnThe = {
@@ -114,23 +139,12 @@ export function taoMayChu(): MayChuOnTap {
           }
           return json(200, kq)
         }
-        const { hop, hanOn } = sauKhiOn(truoc.hop, yc.ket, HOM_NAY)
-        const the = { ...truoc, hop, hanOn }
-        may.onTap = {
-          ...may.onTap,
-          revision: may.onTap.revision + 1,
-          denHan: may.onTap.denHan.filter((t) => t.id !== theId),
-          hanKeTiep: congNgay(HOM_NAY, 1),
+        if (truoc.hanOn > HOM_NAY) {
+          return json(409, {
+            loi: `Thẻ id ${theId} chưa đến hạn ôn (hạn ${dinhDangNgay(truoc.hanOn)}): có thể thẻ vừa được ôn rồi. Tải lại danh sách thẻ đến hạn.`,
+          })
         }
-        const kq: KetQuaOnThe = {
-          revision: may.onTap.revision,
-          daDoi: true,
-          luyenThem: false,
-          ket: yc.ket,
-          the,
-          truoc,
-        }
-        return json(200, kq)
+        return json(200, ghiLanOn(truoc, yc.ket))
       }
       return json(404, { loi: `Không có ${method} ${url}` })
     }),

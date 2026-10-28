@@ -1,13 +1,19 @@
 // Gửi một thao tác duyệt (bước 4) từ trang bài: Duyệt bài / Duyệt bản sửa / Bỏ bản sửa. Xong → toast "Đã duyệt
-// {tên}" (không Hoàn tác — Cần chốt 13) hoặc toast lỗi với câu của máy chủ (409 file đã đổi, lỗi frontmatter…);
-// cả hai trường hợp đều làm mới dữ liệu nội dung (trạng thái nội dung, bài, chờ duyệt, /api/meta) để trang hiện
-// đúng bản trên đĩa.
+// {tên}" (không Hoàn tác — Cần chốt 13) hoặc toast lỗi với câu của máy chủ (409 file đã đổi, lỗi frontmatter…),
+// không tự đóng để kịp đọc; cả hai trường hợp đều làm mới dữ liệu nội dung (mọi khoá 'noi-dung': trạng thái nội
+// dung, bài, chờ duyệt, chi tiết duyệt; và /api/meta) để mọi nơi hiện đúng bản trên đĩa.
 import { useCallback, useState } from 'react'
 import type { MucHoc } from '../../../shared/roadmap'
+import { LoiGoiApi } from '../../app/du-lieu/api'
 import { guiBoBanSua, guiDuyet, guiDuyetBanSua } from '../../app/du-lieu/duyet'
 import { cauLoi, useLamMoiNoiDung } from '../../app/du-lieu/nhap'
 import { LOI_NHAP } from '../../copy/cho-duyet'
-import { DA_BO_BAN_SUA, DA_DUYET_BAN_SUA, LOI_DUYET } from '../../copy/cho-duyet-duyet'
+import {
+  DA_BO_BAN_SUA,
+  DA_DUYET_BAN_SUA,
+  DA_TAI_LAI_BAI,
+  LOI_DUYET,
+} from '../../copy/cho-duyet-duyet'
 import TenMuc from '../TenMuc'
 import { useToast } from '../Toast'
 
@@ -48,7 +54,13 @@ export function useHanhDongDuyet(muc: MucHoc): HanhDongDuyet {
         return true
       } catch (loi) {
         const dau = viec === 'bo-ban-sua' ? LOI_DUYET.boBanSua : LOI_DUYET.duyet
-        toast({ loai: 'loi', noiDung: `${dau}: ${cauLoi(loi, LOI_NHAP.matKetNoi)}` })
+        // 409: file trên đĩa khác bản đang hiện → trang tải lại (lamMoi dưới), nói rõ cho người dùng
+        const sau = loi instanceof LoiGoiApi && loi.status === 409 ? ` ${DA_TAI_LAI_BAI}` : ''
+        toast({
+          loai: 'loi',
+          noiDung: `${dau}: ${cauLoi(loi, LOI_NHAP.matKetNoi)}${sau}`,
+          thoiGian: null,
+        })
         return false
       } finally {
         datDang(null)

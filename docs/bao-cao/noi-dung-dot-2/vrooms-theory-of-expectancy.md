@@ -1,0 +1,18 @@
+## vrooms-theory-of-expectancy
+
+- Kiểm parser: Vroom’s Theory of Expectancy (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Remembering Professor Victor H. Vroom, 1932–2023 — Yale School of Management](https://som.yale.edu/story/2023/remembering-professor-victor-h-vroom-1932-2023); [Organizational Behavior, mục 7.3 Process Theories of Motivation — J. Stewart Black, David S. Bright, OpenStax](https://openstax.org/books/organizational-behavior/pages/7-3-process-theories-of-motivation); [Organizational Behavior, mục 7.2 Content Theories of Motivation — J. Stewart Black, David S. Bright, OpenStax](https://openstax.org/books/organizational-behavior/pages/7-2-content-theories-of-motivation); [Expectancy theory — Wikipedia](https://en.wikipedia.org/wiki/Expectancy_theory)
+- Agent soát đã sửa:
+  - Khái niệm Motivational force: dòng cũ có 3 câu (mẫu cho 1–2 câu) và kèm "theo Wikipedia, chính Vroom cũng đồng ý…" → còn 2 câu: công thức gọn MF = E × I × V, rồi dạng đầy đủ (Expectancy nhân với tổng Instrumentality × Valence của mọi phần đáp lại). Theo OpenStax 7.3 (chú thích 2), ở dạng đầy đủ một phần thưởng kém hấp dẫn còn được bù bằng phần đáp lại khác, chỉ Expectancy gần bằng không mới không gì bù được. Ý về Lawler, Porter và việc Vroom đồng ý mở rộng thuyết chuyển xuống câu Tự kiểm tra 5.
+  - Khái niệm Valence: thêm "có thể là muốn có, không quan tâm hoặc không muốn". OpenStax định nghĩa valence là mức thấy một kết quả desirable, neutral hoặc undesirable; dòng cũ chỉ nói "mức coi trọng", dễ hiểu là luôn dương.
+  - Câu Tự kiểm tra 5: "giả định người ta cân nhắc khá lý trí… Lawler, Porter đã phê bình… và mở rộng thêm" → "coi người ta là lý trí, cân nhắc được mất" (OpenStax 7.3), nhóm phê bình ghi đủ Graen, Lawler, Porter, "điều chỉnh thêm", và thêm ý Vroom đồng ý thuyết nên mở rộng (Wikipedia, mục Criticism).
+  - Góc dev lead → PM, Bạn đã quen: "đó cũng là tín hiệu expectancy thấp" → "đó cũng có thể là tín hiệu…". Ước lượng cao có nhiều nguyên nhân; không nguồn nào nối thẳng hai việc này.
+  - Bảng So sánh: hàng "Đơn vị" → "Đơn vị phân tích" cho rõ nghĩa.
+  - lien_quan: thêm maslows-hierarchy-of-needs vì bài nhắc Maslow ở Tóm tắt, So sánh và câu Tự kiểm tra 4 (đủ 5 slug).
+  - Tham khảo: thêm OpenStax 7.3 (định nghĩa E1, E2, valence, công thức đầy đủ, giả định lý trí, các gợi ý cho quản lý khớp với Cách áp dụng) và OpenStax 7.2 (thuyết nội dung tập trung vào nhu cầu, ít nói về cường độ động lực; làm nền cho Tóm tắt và bảng So sánh). Hai nguồn cũ mở được và đúng việc bài dùng.
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn: Vroom (1932–2023) xuất bản Work and Motivation năm 1964, thuyết được gọi là "expectancy theory" (Yale SOM); định nghĩa Expectancy với self-efficacy, độ khó mục tiêu, cảm giác kiểm soát; Instrumentality thấp khi mọi mức kết quả được thưởng như nhau; Valence là mức hài lòng dự đoán; MF = E × I × V và chọn phương án có MF lớn nhất (Wikipedia).
+  - Thuyết nhu cầu (Maslow, Herzberg, McClelland) giúp đoán valence: OpenStax 7.3 nói nhu cầu giải thích cách valence hình thành; cách chia "process" và "content" theo OpenStax 7.2, 7.3. Bảng So sánh là tóm tắt của người viết.
+  - Nhóm phê bình (Graen, Lawler, Porter) và việc Vroom đồng ý thuyết nên mở rộng chỉ đối chiếu qua Wikipedia, chưa mở được tài liệu gốc. Mô hình Porter–Lawler là phần mở rộng nổi tiếng, nhưng bài không đi vào chi tiết.
+  - Ví dụ thực tế, các bước Cách áp dụng và phần Góc dev lead → PM là gợi ý thực hành của người viết; các bước 2, 5, 6, 7 khớp ý với danh sách gợi ý cho quản lý ở OpenStax 7.3.
+  - Mục story-points-estimation-planning-poker trong lien_quan chỉ liên quan qua ý "ước lượng cao bất thường có thể báo expectancy thấp"; bỏ đi nếu bạn thấy quá xa.
