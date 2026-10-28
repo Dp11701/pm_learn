@@ -73,6 +73,10 @@ export const LuocDoAnhChup: z.ZodType<AnhChupHoc> = z.object({
   luotMo: z.record(z.string(), z.string()),
   /** Phase 3: id các mục Cần ôn lại (server tính; bất biến 3) */
   canOnLai: z.array(z.string()).optional(),
+  /** Bước 2: số bản ghi thuộc mục không còn trong cây (bất biến 8) — banner Tổng quan */
+  banGhiNgoaiCay: z.number().optional(),
+  /** Bước 2: id các mục có ghi chú — bộ lọc "Có ghi chú" của Lộ trình */
+  coGhiChu: z.array(z.string()).optional(),
 })
 
 export const LuocDoKetQuaDat: z.ZodType<KetQuaDatTrangThai> = z.object({

@@ -2,6 +2,7 @@
 // gốc, để đặt cạnh trang thật mà so (đề xuất mục 6). Tiêu đề, kích thước lấy từ canvas.json lúc chạy.
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
+import { TEN_APP } from '../app/ten-app'
 
 export interface Frame {
   ma: string
@@ -122,7 +123,7 @@ export default function XemFrame() {
   }, [maFrame, lan])
 
   useEffect(() => {
-    if (maFrame) document.title = `Frame ${maFrame} · Học PM A–Z`
+    if (maFrame) document.title = `Frame ${maFrame} · ${TEN_APP}`
   }, [maFrame])
 
   const khungRef = useCallback((el: HTMLDivElement | null) => {

@@ -2,6 +2,7 @@
 // /_dev/thanh-phan = F01 (token) · /f02 = F02 (component phần 1) · /f02b = F02b (component phần 2).
 import { Suspense, use } from 'react'
 import { NavLink, useParams } from 'react-router'
+import { TEN_APP } from '../app/ten-app'
 import ChonGiaoDien from '../components/ChonGiaoDien'
 import { lopNut } from '../components/Nut'
 import F01 from './thanh-phan/F01'
@@ -50,7 +51,7 @@ export default function ThanhPhan() {
   useGiaTrangThai()
   return (
     <div className="min-h-screen bg-bg text-text">
-      <title>{`${trang?.ten ?? 'Gallery'} · Học PM A–Z`}</title>
+      <title>{`${trang?.ten ?? 'Gallery'} · ${TEN_APP}`}</title>
       <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-6 md:px-10 md:py-10 xl:px-20 xl:pt-10 xl:pb-16">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">

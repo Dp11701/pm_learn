@@ -4,10 +4,19 @@
 // "Ghi chú" mở panel trượt 360px, card Flashcard xuống cuối bài (giữ neo #flashcard). Mục lục từ khối thực sự hiện
 // (D15), tab Trong lĩnh vực (hàng C9 rút gọn), mở / đóng panel và trả focus; axe. Cỡ cột (720/640, 320/280) là lớp
 // CSS theo bề rộng — jsdom không bố cục nên kiểm lớp; bề rộng thật đã đo trên trình duyệt.
-import { StrictMode } from 'react'
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { StrictMode, useState } from 'react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
+import {
+  MemoryRouter,
+  Outlet,
+  Route,
+  RouterProvider,
+  Routes,
+  ScrollRestoration,
+  createMemoryRouter,
+  useLocation,
+} from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TEN_TRANG_THAI_HOC } from '../../../shared/domain/trang-thai'
 import { viTriTrongVung } from '../../../shared/roadmap'
@@ -239,6 +248,66 @@ describe('vào bằng #flashcard ("Tạo thẻ" của Ôn tập)', () => {
     await waitFor(() => expect(document.activeElement).toBe(flashcard()[0]))
     expect(article().contains(flashcard()[0])).toBe(true)
     expect(cuon).toHaveBeenCalledWith(expect.objectContaining({ block: 'start' }))
+  })
+
+  // Hồi quy: tải cả trang /hoc/<slug>#flashcard ở 1440×900 thì card nằm dưới mép màn hình — ScrollRestoration khôi
+  // phục vị trí đã lưu của khoá 'default' (window.scrollTo(0, 0)) bằng một lần cập nhật trong transition, commit SAU
+  // khi hook đã cuộn tới card. Ở đây gắn ScrollRestoration muộn (sau khi trang dựng xong) để tái hiện đúng thứ tự đó.
+  it('tải cả trang: router khôi phục vị trí cuộn SAU khi đã cuộn tới card → cuộn lại tới card, giữ focus', async () => {
+    giaMatchMedia(1440)
+    const thuTu: string[] = []
+    cuon.mockImplementation(function (this: Element, tuyChon?: ScrollIntoViewOptions) {
+      if (this.id === 'flashcard') thuTu.push(`card:${tuyChon?.block ?? 'mac-dinh'}`)
+    })
+    const cuonCuaSo = vi.spyOn(window, 'scrollTo').mockImplementation(((_x: number, y: number) => {
+      thuTu.push(`cua-so:${y}`)
+    }) as typeof window.scrollTo)
+    // Vị trí đã lưu của trang trước trong tab (khoá 'default' của lần tải tài liệu)
+    window.sessionStorage.setItem('react-router-scroll-positions', JSON.stringify({ default: 0 }))
+    let ganKhoiPhuc = () => {}
+    function Goc() {
+      const [co, datCo] = useState(false)
+      ganKhoiPhuc = () => datCo(true)
+      return (
+        <>
+          <Outlet />
+          {co && <ScrollRestoration />}
+        </>
+      )
+    }
+    const router = createMemoryRouter(
+      [{ Component: Goc, children: [{ path: '/hoc/:slug', Component: TrangMucHoc }] }],
+      { initialEntries: [`/hoc/${sc.slug}#flashcard`] },
+    )
+    const client = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false, networkMode: 'always' },
+        mutations: { networkMode: 'always' },
+      },
+    })
+    render(
+      <StrictMode>
+        <QueryClientProvider client={client}>
+          <ToastProvider>
+            <PhimTatProvider>
+              <RouterProvider router={router} />
+            </PhimTatProvider>
+          </ToastProvider>
+        </QueryClientProvider>
+      </StrictMode>,
+    )
+    await choBai()
+    await waitFor(() => expect(document.activeElement).toBe(flashcard()[0]))
+    expect(thuTu).toEqual(['card:nearest'])
+
+    // Router commit lần khôi phục đầu muộn: kéo cửa sổ về 0 → hook cuộn lại tới card
+    act(() => ganKhoiPhuc())
+    await waitFor(() => expect(thuTu).toContain('cua-so:0'))
+    await waitFor(() => expect(thuTu.at(-1)).toBe('card:nearest'))
+    expect(thuTu.lastIndexOf('card:nearest')).toBeGreaterThan(thuTu.indexOf('cua-so:0'))
+    expect(document.activeElement).toBe(flashcard()[0])
+    cuonCuaSo.mockRestore()
+    window.sessionStorage.clear()
   })
 
   it('không có #flashcard: không cuộn tới card, không lấy focus', async () => {

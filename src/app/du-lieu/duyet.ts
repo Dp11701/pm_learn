@@ -12,6 +12,7 @@ import { QueryClientContext, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 import { CAC_NGUON } from '../../../shared/noi-dung'
 import type { NguonBanNhap } from '../../../shared/domain/trang-thai'
+import type { CanhBaoDuyet } from '../../../server/noi-dung/hop-dong-bai'
 import { goiApi } from './api'
 import { layClientRong } from './trang-thai'
 
@@ -30,6 +31,11 @@ export interface DongBanNhapCho {
   duKhoi: DuKhoi
   /** File lỗi frontmatter / quá 256 KB */
   coLoi: boolean
+  /**
+   * File đã ghi da-duyet mà app chưa có bản chụp hiện hành ('chua-xac-nhan': chưa có bản chụp nào; 'doi-ngoai-app':
+   * chỉ còn bản chụp đã bị thay) — không duyệt được ở đây (409), chỉ "Quét lại"; null = bản nháp thường
+   */
+  canhBaoDuyet: CanhBaoDuyet | null
 }
 
 export interface DongBanSuaCho {
@@ -72,6 +78,7 @@ export const LuocDoChoDuyet: z.ZodType<PhanHoiChoDuyet> = z.object({
       ngayNhap: z.string(),
       duKhoi: LuocDoDuKhoi,
       coLoi: z.boolean(),
+      canhBaoDuyet: z.enum(['chua-xac-nhan', 'doi-ngoai-app']).nullable(),
     }),
   ),
   banSua: z.array(z.object({ id: z.string(), ngayNhap: z.string() })),

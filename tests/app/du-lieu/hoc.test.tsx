@@ -13,6 +13,7 @@ import {
   TRE_TU_LUU,
   useBonBuoc,
   useHoc,
+  useLuuGhiChu,
   useLuuNoiLai,
   useLuuThucHanh,
   useLuuTuKiemTra,
@@ -455,5 +456,42 @@ describe('revision', () => {
     await waitFor(() => expect(h.hoc.hoc?.ghiChu?.text).toBe('Tab khác'))
     expect(sv.dem(`GET ${GOC}`)).toBe(2)
     await waitFor(() => expect(sv.dem('GET /api/state')).toBe(2))
+  })
+
+  it('lưu / xoá ghi chú trong tab: "Có ghi chú" của ảnh chụp đổi ngay mà không tải lại ảnh chụp (bộ lọc Lộ trình)', async () => {
+    const t = {} as { coGhiChu: (id: string) => boolean; ghiChu: ReturnType<typeof useLuuGhiChu> }
+    function GhiChu() {
+      t.coGhiChu = useTrangThai().coGhiChuCua
+      h.hoc = useHoc(ID)
+      t.ghiChu = useLuuGhiChu(ID)
+      return null
+    }
+    sv.revision = 3
+    ketNoi.revision = 3
+    const { dungLai } = dung(<GhiChu />)
+    await daTai()
+    await waitFor(() => expect(sv.dem('GET /api/state')).toBe(1))
+    expect(t.coGhiChu(ID)).toBe(false)
+
+    act(() => {
+      t.ghiChu.luu('Ghi chú mới')
+      t.ghiChu.xongNgay()
+    })
+    await waitFor(() => expect(t.ghiChu.tinhTrang).toBe('da-luu'))
+    expect(t.coGhiChu(ID)).toBe(true)
+    ketNoi.revision = 4
+    dungLai()
+    await cho()
+    expect(sv.dem('GET /api/state')).toBe(1)
+    expect(t.coGhiChu(ID)).toBe(true)
+
+    // Xoá chữ (chỉ khoảng trắng) = xoá ghi chú
+    act(() => {
+      t.ghiChu.luu('  ')
+      t.ghiChu.xongNgay()
+    })
+    await waitFor(() => expect(sv.mucCua(ID).ghiChu).toBeNull())
+    await waitFor(() => expect(t.coGhiChu(ID)).toBe(false))
+    expect(sv.dem('GET /api/state')).toBe(1)
   })
 })

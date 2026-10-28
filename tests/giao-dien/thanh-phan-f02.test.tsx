@@ -93,7 +93,7 @@ describe('gallery F02 (component phần 1)', () => {
       'Trường nhập',
     ])
     expect(screen.getByText('Có ở phase 6')).toBeTruthy()
-    expect(document.title).toBe('Component phần 1 · Học PM A–Z')
+    expect(document.title).toBe('Component phần 1 · PMP')
     expect(loiConsole).not.toHaveBeenCalled()
   })
 
@@ -247,7 +247,7 @@ describe('gallery F02b (component phần 2)', () => {
     // C25, C33, C38 thật: không có hàng giữ chỗ
     expect(within(the('C33')).queryByText(/^Có ở phase/)).toBeNull()
     expect(within(the('C38')).queryByText(/^Có ở phase/)).toBeNull()
-    expect(document.title).toBe('Component phần 2 · Học PM A–Z')
+    expect(document.title).toBe('Component phần 2 · PMP')
     expect(loiConsole).not.toHaveBeenCalled()
   })
 

@@ -1,0 +1,19 @@
+## architectural-principles
+
+- Kiểm parser: Architectural principles (chu-de) · Đủ khối 9/9
+- Nguồn đã mở: [Software Architecture Guide — Martin Fowler](https://martinfowler.com/architecture/); [Design principles for Azure applications — Microsoft, Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/guide/design-principles/); [Design for change — Microsoft, Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/guide/design-principles/design-for-evolution); [AWS Well-Architected Framework: Definitions — Amazon Web Services](https://docs.aws.amazon.com/wellarchitected/latest/framework/definitions.html); [Documenting Architecture Decisions (15/11/2011) — Michael Nygard, Cognitect](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
+- Agent soát đã sửa:
+  - Vì sao PM cần biết, câu về Fowler: "phần quan trọng nhất của thiết kế, gồm những quyết định mà ta ước đã làm đúng ngay từ đầu dự án" → "những phần quan trọng của thiết kế, gồm những quyết định mà ta ước có thể làm đúng ngay từ sớm trong dự án". Fowler (dẫn Ralph Johnson) chỉ nói "the important stuff", không có chữ "nhất". Câu gốc là "decisions you wish you could get right early in a project", tức mong làm đúng từ sớm, không phải nhìn lại và ước đã làm đúng.
+  - Cùng khối, câu về cruft: "Kiến trúc kém để lại cruft" → "Kiến trúc kém là một nguyên nhân lớn làm tích tụ cruft". Fowler viết kiến trúc kém là "a major contributor to the growth of cruft", tức một nguyên nhân lớn, không phải nguyên nhân duy nhất.
+  - Khái niệm Loose coupling và high cohesion: "đó là dấu hiệu ranh giới chưa đúng" → "đó có thể là dấu hiệu ranh giới giữa các service chưa đúng; hệ thống đã tách thành nhiều service vẫn có thể bị coupling chặt". Microsoft chỉ nói việc phải cập nhật đồng bộ "might be a sign" các service chưa cohesive. Microsoft cũng nói một ứng dụng đã tách thành service vẫn có thể bị coupling chặt.
+  - So sánh, ô "Khi nào đổi" của Coding convention: "Thường xuyên hơn, hay được tự động hoá bằng linter" → "Khi nhóm thống nhất lại; thường được kiểm tra tự động bằng linter". Ý coding convention đổi thường xuyên hơn nguyên tắc kiến trúc không có nguồn và chưa chắc đúng.
+- **Nên tự kiểm lại:**
+  - Đã khớp nguồn:
+    - Azure: tên các nguyên tắc ví dụ; mức dự phòng nên khớp yêu cầu kinh doanh và mức chấp nhận rủi ro; nhắc tới RTO.
+    - Design for change: định nghĩa cohesive và loosely coupled; đóng gói domain knowledge; API có version; asynchronous messaging; fitness function và ví dụ test thời gian tải trang chạy trong CI.
+    - AWS: đánh đổi giữa các pillar dựa trên bối cảnh kinh doanh; security và operational excellence thường không bị mang ra đánh đổi.
+    - Nygard: ADR gồm 5 phần; định nghĩa quyết định "architecturally significant"; lưu ADR trong repo; quyết định cũ đánh dấu superseded thay vì xoá; hai lựa chọn "blindly accept / blindly change"; Consequences ghi cả mặt tốt lẫn mặt xấu.
+  - Cách viết mỗi nguyên tắc thành phát biểu, lý do và hệ quả (Cách áp dụng bước 2, Đề bài, Tiêu chí tự kiểm) giống mẫu Name/Statement/Rationale/Implications của TOGAF. Trang chính thức của The Open Group cần đăng nhập nên chưa đối chiếu được, và bài cũng không ghi tên TOGAF. Nếu muốn dùng đúng mẫu TOGAF, bạn hãy tự xem lại.
+  - Câu hỏi 3 hỏi về staging, nhưng AWS chỉ lấy ví dụ "development environments". Việc áp dụng cho staging là suy luận của người viết. Mức dự phòng của staging nên theo mục đích dùng staging của nhóm bạn.
+  - Ý "một nguyên tắc tốt đủ cụ thể để loại được ít nhất một phương án" và nguyên tắc "các service không đọc database của nhau" (Ví dụ thực tế, câu hỏi 4) là nhận định thực hành của người viết. Không nguồn nào trong Tham khảo nói thẳng các ý này.
+  - Bảng So sánh, các bước Cách áp dụng và phần Góc dev lead → PM là tóm tắt của người viết. Phần mô tả coding convention và việc kiểm bằng linter không có nguồn trích.

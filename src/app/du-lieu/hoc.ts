@@ -52,7 +52,7 @@ import { useKetNoi } from '../ket-noi'
 import { docNhapTam, luuNhapTam, xoaNhapTam } from '../nhap-tam'
 import { goiApi, LoiGoiApi } from './api'
 import { canTaiLaiTheoMeta, ghiNhanRevisionCuaTab, revisionSauGhi } from './revision'
-import { KHOA_GHI, KHOA_TRANG_THAI, layClientRong } from './trang-thai'
+import { ganGhiChu, KHOA_GHI, KHOA_TRANG_THAI, layClientRong } from './trang-thai'
 
 export type { MucCham, TrangThaiThucHanh }
 
@@ -582,6 +582,11 @@ function xongGhi(client: QueryClient, b: BienGhi, kq: PhanHoiGhi, tuyChon: TuyCh
   const doiTrangThai = b.yc.loai === 'xoa-the' || b.yc.loai === 'khoi-phuc-the'
   if (kq.daDoi !== false && kq.revision !== undefined) {
     nhanRevisionCuaTab(client, kq.revision, { trangThai: !doiTrangThai })
+  }
+  // Ghi chú vừa lưu / xoá: ảnh chụp trạng thái không tải lại (lần ghi của tab) nên tự cập nhật "Có ghi chú"
+  if (b.yc.loai === 'ghi-chu' && kq.daDoi !== false) {
+    const co = b.yc.text.trim() !== ''
+    client.setQueryData<AnhChupHoc>(KHOA_TRANG_THAI, (cu) => cu && ganGhiChu(cu, b.itemId, co))
   }
   // Xoá / khôi phục thẻ có thể đổi "Cần ôn lại" trong ảnh chụp trạng thái: tải lại khi không còn lần ghi nào khác
   if (doiTrangThai && client.isMutating({ mutationKey: KHOA_GHI }) <= 1) {

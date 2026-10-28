@@ -1,5 +1,6 @@
 // Bộ lọc Lộ trình dạng danh sách (shared/domain/loc-danh-sach.ts; đề xuất 3.9, §6.3): đọc / ghi URL, HOẶC trong
-// nhóm và VÀ giữa các nhóm, Cần ôn lại là một giá trị của nhóm trạng thái, sắp xếp cây / A–Z / mở gần đây.
+// nhóm và VÀ giữa các nhóm, Cần ôn lại là một giá trị của nhóm trạng thái, "Có ghi chú" (co-ghi-chu=1) là một chip
+// bật / tắt, sắp xếp cây / A–Z / mở gần đây.
 import { describe, expect, it } from 'vitest'
 import {
   BO_LOC_TRONG,
@@ -31,11 +32,13 @@ function tra(
   trangThai: Record<string, TrangThaiHoc> = {},
   canOnLai: string[] = [],
   noiDung: Record<string, TrangThaiNoiDung> | null = {},
+  coGhiChu: string[] = [],
 ): TraMuc {
   return {
     trangThai: (id) => trangThai[id] ?? 'chua-hoc',
     canOnLai: (id) => canOnLai.includes(id),
     noiDung: (id) => (noiDung === null ? undefined : (noiDung[id] ?? { loai: 'chua-co' })),
+    coGhiChu: (id) => coGhiChu.includes(id),
   }
 }
 
@@ -64,8 +67,30 @@ describe('docUrlDanhSach / ghiUrlDanhSach', () => {
       phan: [phanDau.slug, phanCuoi.slug],
       linhVuc: ['scope-management'],
       noiDung: ['da-duyet'],
+      coGhiChu: false,
     })
     expect(t.sapXep).toBe('cay')
+  })
+
+  it('co-ghi-chu=1 bật "Có ghi chú" (nhận cả tham số lặp lại); giá trị khác bỏ qua; đọc / ghi lại đúng thứ tự chuẩn', () => {
+    expect(url('co-ghi-chu=1').boLoc).toEqual({ ...BO_LOC_TRONG, coGhiChu: true })
+    expect(url('co-ghi-chu=0&co-ghi-chu=1').boLoc.coGhiChu).toBe(true)
+    for (const q of ['co-ghi-chu=0', 'co-ghi-chu=true', 'co-ghi-chu=', 'co-ghi-chu']) {
+      expect(url(q).boLoc.coGhiChu).toBe(false)
+    }
+    const boLoc: BoLoc = { ...BO_LOC_TRONG, noiDung: ['ban-nhap'], coGhiChu: true }
+    const ghi = ghiUrlDanhSach({ boLoc, sapXep: 'a-z' }, new URLSearchParams('xem=danh-sach'))
+    // Theo thứ tự đề xuất 3.9: … noi-dung, co-ghi-chu, sap-xep
+    expect(ghi.toString()).toBe('xem=danh-sach&noi-dung=ban-nhap&co-ghi-chu=1&sap-xep=a-z')
+    expect(docUrlDanhSach(ghi, cay)).toEqual({ boLoc, sapXep: 'a-z' })
+    expect(ghiUrlDanhSach({ boLoc: BO_LOC_TRONG, sapXep: 'cay' }).has('co-ghi-chu')).toBe(false)
+  })
+
+  it('"Có ghi chú" là một bộ lọc: dangLoc true khi chỉ bật nó ("Xoá bộ lọc" bật), Xoá bộ lọc trả về tắt', () => {
+    const b: BoLoc = { ...BO_LOC_TRONG, coGhiChu: true }
+    expect(dangLoc(b)).toBe(true)
+    expect(dangLoc(BO_LOC_TRONG)).toBe(false)
+    expect(BO_LOC_TRONG.coGhiChu).toBe(false)
   })
 
   it('ghi lại: nhóm có giá trị, ngăn bằng dấu phẩy; sap-xep khác cây; giữ xem, bỏ muc', () => {
@@ -142,6 +167,19 @@ describe('khopBoLoc / locMuc', () => {
     expect(locMuc(cay, phan, tt).every((m) => m.phan.id === phanCuoi.id)).toBe(true)
     // Lọc lĩnh vực loại mục không thuộc lĩnh vực nào
     expect(locMuc(cay, { ...phan, linhVuc: ['scope-management'] }, tt)).toEqual([])
+  })
+
+  it('"Có ghi chú": chỉ mục có ghi chú; VÀ với nhóm khác; tắt thì không lọc', () => {
+    const coGhi = tra({ [scopeCreep.id]: 'dang-hoc', [riskRegister.id]: 'da-xong' }, [], {}, [
+      riskRegister.id,
+      pmp.id,
+    ])
+    const b: BoLoc = { ...BO_LOC_TRONG, coGhiChu: true }
+    expect(locMuc(cay, b, coGhi)).toEqual([riskRegister, pmp].sort((x, y) => x.index - y.index))
+    expect(locMuc(cay, { ...b, trangThai: ['da-xong'] }, coGhi)).toEqual([riskRegister])
+    expect(locMuc(cay, { ...b, trangThai: ['dang-hoc'] }, coGhi)).toEqual([])
+    expect(khopBoLoc(scopeCreep, b, coGhi)).toBe(false)
+    expect(khopBoLoc(scopeCreep, BO_LOC_TRONG, coGhi)).toBe(true)
   })
 
   it('nội dung chưa biết (đang tải): không khớp khi đang lọc theo nội dung, không ảnh hưởng khi không lọc', () => {

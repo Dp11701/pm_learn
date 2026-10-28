@@ -148,6 +148,7 @@ describe('GET /api/state', () => {
       luotMo: {},
       canOnLai: [],
       banGhiNgoaiCay: 0,
+      coGhiChu: [],
     })
   })
 
@@ -221,6 +222,26 @@ describe('GET /api/state', () => {
     // Mỗi mục lạ: ghi chú 1 + Nói lại 1 + thẻ 2 + tự kiểm tra 1 = 5; ID_LA thêm 1 bản chụp duyệt
     expect(res.body.banGhiNgoaiCay).toBe(5 + 5 + 1)
     expect(res.body.trangThai).toEqual({})
+    // Ghi chú của mục lạ không vào coGhiChu (bất biến 8)
+    expect(res.body.coGhiChu).toEqual([mucA.id])
+  })
+
+  it('coGhiChu: id mục có ghi chú (bộ lọc "Có ghi chú"), xếp theo id; xoá ghi chú (chữ rỗng) thì bỏ', async () => {
+    const ghi = (id: string, text: string) =>
+      request(app)
+        .put(`/api/hoc/${encodeURIComponent(id)}/ghi-chu`)
+        .set('Host', HOST)
+        .send({ text })
+    expect((await ghi(mucC.id, 'Ghi chú C')).status).toBe(200)
+    expect((await ghi(mucA.id, 'Ghi chú A')).status).toBe(200)
+    expect((await ghi(mucB.id, '   ')).status).toBe(200)
+    let st = (await get('/api/state')).body
+    expect(st.coGhiChu).toEqual([mucA.id, mucC.id].sort())
+    // Không có trạng thái học vẫn có ghi chú; trạng thái học không đổi
+    expect(st.trangThai).toEqual({})
+    await ghi(mucC.id, '')
+    st = (await get('/api/state')).body
+    expect(st.coGhiChu).toEqual([mucA.id])
   })
 })
 
@@ -250,6 +271,7 @@ describe('PUT /api/trang-thai/:id', () => {
       luotMo: {},
       canOnLai: [],
       banGhiNgoaiCay: 0,
+      coGhiChu: [],
     })
   })
 

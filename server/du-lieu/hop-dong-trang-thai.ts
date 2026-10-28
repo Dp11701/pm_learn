@@ -66,6 +66,11 @@ export interface AnhChupHoc {
    * "n bản ghi thuộc mục không còn trong cây". Server luôn gửi; tuỳ chọn trong kiểu như canOnLai.
    */
   banGhiNgoaiCay?: number
+  /**
+   * Bước 2: id các mục có ghi chú (bảng notes, chữ khác rỗng), chỉ mục còn trong cây, xếp theo id — bộ lọc "Có ghi
+   * chú" của Lộ trình (đề xuất 3.9, URL co-ghi-chu=1). Server luôn gửi; tuỳ chọn trong kiểu như canOnLai.
+   */
+  coGhiChu?: string[]
 }
 
 /** Body của PUT /api/trang-thai/:id */

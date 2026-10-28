@@ -14,6 +14,8 @@
 // - Cờ "Cần ôn lại" (đề xuất 3.3, bất biến 3): danh sách `canOnLai` của GET /api/state (server tính); chỉ tính khi
 //   mục đang Đã xong (canOnLaiCua). Đổi khỏi Đã xong → bỏ cờ ngay (lạc quan); đặt Đã xong → tải lại ảnh chụp khi hết
 //   lần ghi (lần ghi của chính tab không làm tải lại theo revision); sang ngày mới (homNay của /api/meta) → tải lại.
+// - "Có ghi chú" (bộ lọc Lộ trình, đề xuất 3.9): danh sách `coGhiChu` của GET /api/state; lưu ghi chú trong tab cập
+//   nhật danh sách ngay (ganGhiChu, gọi từ hoc.ts) vì lần ghi của chính tab không làm tải lại ảnh chụp.
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import {
   QueryClient,
@@ -98,6 +100,13 @@ export function ganMuc(anhChup: AnhChupHoc, id: string, muc: MucTrangThai | null
   return moi
 }
 
+/** Gắn / gỡ mục khỏi `coGhiChu` của ảnh chụp sau khi lưu ghi chú; không đổi gì thì trả lại đúng đối tượng cũ. */
+export function ganGhiChu(anhChup: AnhChupHoc, id: string, co: boolean): AnhChupHoc {
+  const cu = anhChup.coGhiChu ?? []
+  if (cu.includes(id) === co) return anhChup
+  return { ...anhChup, coGhiChu: co ? [...cu, id].sort() : cu.filter((x) => x !== id) }
+}
+
 /** Cờ "Cần ôn lại" của mục: có trong `canOnLai` của server VÀ đang Đã xong. */
 export function canOnLaiCuaAnhChup(anhChup: AnhChupHoc | undefined, id: string): boolean {
   return trangThaiTrong(anhChup, id) === 'da-xong' && canOnLaiTrong(anhChup, id)
@@ -130,6 +139,8 @@ export interface DuLieuTrangThai {
   lyDoBoQuaCua: (id: string) => string | undefined
   /** Cờ "Cần ôn lại" (suy ra: Đã xong + có thẻ đến hạn theo server) */
   canOnLaiCua: (id: string) => boolean
+  /** Mục có ghi chú (bộ lọc "Có ghi chú") */
+  coGhiChuCua: (id: string) => boolean
 }
 
 export function useTrangThai(): DuLieuTrangThai {
@@ -176,6 +187,8 @@ export function useTrangThai(): DuLieuTrangThai {
 
   const { refetch } = q
   const taiLai = useCallback(() => void refetch(), [refetch])
+  const coGhiChu = anhChup?.coGhiChu
+  const tapGhiChu = useMemo(() => new Set(coGhiChu), [coGhiChu])
   return useMemo(
     () => ({
       anhChup,
@@ -185,8 +198,9 @@ export function useTrangThai(): DuLieuTrangThai {
       trangThaiCua: (id: string) => trangThaiTrong(anhChup, id),
       lyDoBoQuaCua: (id: string) => lyDoBoQuaTrong(anhChup, id),
       canOnLaiCua: (id: string) => canOnLaiCuaAnhChup(anhChup, id),
+      coGhiChuCua: (id: string) => tapGhiChu.has(id),
     }),
-    [anhChup, ctx, q.isError, taiLai],
+    [anhChup, ctx, q.isError, taiLai, tapGhiChu],
   )
 }
 

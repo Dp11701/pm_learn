@@ -27,7 +27,8 @@ import {
 import { LoiApi } from '../loi.ts'
 
 // API trạng thái học (đề xuất 1.10, 2.2, 3.1, 3.9):
-// - GET  /api/state                          ảnh chụp dữ liệu học (trạng thái + lượt mở), chỉ mục còn trong cây;
+// - GET  /api/state                          ảnh chụp dữ liệu học (trạng thái + lượt mở + Cần ôn lại + mục có ghi
+//                                            chú), chỉ mục còn trong cây; kèm số bản ghi ngoài cây;
 // - PUT  /api/trang-thai/:id                 đặt trạng thái 1 mục (Hoàn tác gửi via 'hoan-tac' với giá trị cũ);
 // - POST /api/trang-thai/hang-loat           { ids, trangThai } đặt Chưa học / Đang học / Bỏ qua cho nhiều mục
 //                                            (không bao giờ Đã xong — bất biến 2), một transaction;

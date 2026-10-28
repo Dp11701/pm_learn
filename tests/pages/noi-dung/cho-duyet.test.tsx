@@ -52,6 +52,7 @@ const CHO: PhanHoiChoDuyet = {
       ngayNhap: '2026-10-25',
       duKhoi: { co: 7, tong: 9 },
       coLoi: false,
+      canhBaoDuyet: null,
     },
     {
       id: sc.id,
@@ -59,8 +60,16 @@ const CHO: PhanHoiChoDuyet = {
       ngayNhap: '2026-10-22',
       duKhoi: { co: 9, tong: 9 },
       coLoi: false,
+      canhBaoDuyet: null,
     },
-    { id: bani.id, nguon: 'ai', ngayNhap: '2026-10-01', duKhoi: { co: 0, tong: 9 }, coLoi: true },
+    {
+      id: bani.id,
+      nguon: 'ai',
+      ngayNhap: '2026-10-01',
+      duKhoi: { co: 0, tong: 9 },
+      coLoi: true,
+      canhBaoDuyet: null,
+    },
   ],
   banSua: [{ id: rr.id, ngayNhap: '2026-10-24' }],
 }
@@ -125,6 +134,52 @@ describe('tab Chờ duyệt', () => {
 
     fireEvent.click(within(hang[1]).getByRole('link', { name: `Mở bài để duyệt: ${sc.label}` }))
     expect(duongDan()).toBe(`/hoc/${sc.slug}`)
+  })
+
+  it('file đã ghi Đã duyệt mà app chưa có bản chụp (canhBaoDuyet): cảnh báo + "Quét lại" thay "Mở bài để duyệt"; axe', async () => {
+    sv.traLoi.set('GET /api/duyet/cho-duyet', () => ({
+      data: {
+        banNhap: [
+          { ...CHO.banNhap[0], canhBaoDuyet: 'chua-xac-nhan' },
+          { ...CHO.banNhap[1], canhBaoDuyet: 'doi-ngoai-app' },
+          CHO.banNhap[2],
+        ],
+        banSua: [],
+      } satisfies PhanHoiChoDuyet,
+    }))
+    sv.traLoi.set('POST /api/nhap/quet-lai', () => ({ status: 500, data: { loi: 'Thử.' } }))
+    moTrang('/noi-dung?tab=cho-duyet')
+    const bang = await screen.findByRole('table', { name: 'Bản nháp chờ duyệt (3)' })
+    const [h1, h2, h3] = within(bang).getAllByRole('row').slice(1)
+
+    // ◎: câu banner bài (đề xuất 1.6) + link Quét lại; không có nút mở bài để duyệt
+    expect(within(h1).getByText('File ghi Đã duyệt nhưng app chưa xác nhận')).toBeTruthy()
+    expect(within(h1).queryByRole('link', { name: /^Mở bài để duyệt/ })).toBeNull()
+    const quet = within(h1).getByRole('link', { name: 'Quét lại' })
+    expect(quet.getAttribute('href')).toBe('/noi-dung?tab=nhap&quet=1')
+    // Đổi ngoài app
+    expect(within(h2).getByText('File đã đổi ngoài app')).toBeTruthy()
+    expect(within(h2).getByRole('link', { name: 'Quét lại' })).toBeTruthy()
+    expect(within(h2).queryByRole('link', { name: /^Mở bài để duyệt/ })).toBeNull()
+    // Bản nháp thường giữ nút mở bài; tên mục vẫn là link tới bài
+    expect(within(h3).getByRole('link', { name: `Mở bài để duyệt: ${bani.label}` })).toBeTruthy()
+    expect(within(h3).queryByRole('link', { name: 'Quét lại' })).toBeNull()
+    expect(within(within(h1).getByRole('rowheader')).getByRole('link').getAttribute('href')).toBe(
+      `/hoc/${pestle.slug}`,
+    )
+    await expectNoAxeViolations(screen.getByRole('main'))
+
+    // Quét lại → tab Nhập quét ngay (?quet=1), focus về tab Nhập (link vừa mất cùng tab)
+    fireEvent.click(quet)
+    await waitFor(() =>
+      expect(screen.getByRole('tab', { name: 'Nhập' }).getAttribute('aria-selected')).toBe('true'),
+    )
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Nhập' }))
+    await waitFor(() =>
+      expect(sv.yeuCau.some((y) => y.method === 'POST' && y.url === '/api/nhap/quet-lai')).toBe(
+        true,
+      ),
+    )
   })
 
   it('axe trên bảng chờ duyệt', async () => {

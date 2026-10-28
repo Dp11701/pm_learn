@@ -1,5 +1,7 @@
 // / — Tổng quan gọn (bước 2; §8.1 rút gọn theo đề xuất mục 10, 3.3, 3.9; chỉ máy tính). Không có đồng hồ, giờ học,
 // streak, heatmap, card lĩnh vực, lộ trình gợi ý (đã bỏ khỏi phạm vi).
+// - Banner trung tính khi có bản ghi thuộc mục không còn trong cây (bất biến 8: banGhiNgoaiCay của GET /api/state > 0):
+//   "n bản ghi thuộc mục không còn trong cây roadmap. Dữ liệu vẫn được giữ."
 // - Banner lần đầu (F05) khi chưa có dữ liệu học (không mục nào có trạng thái, chưa có flashcard nào): câu F05 +
 //   "Bắt đầu với mục đầu tiên" (bài của mục đầu tiên trong cây) + "Xem lộ trình".
 // - Tiếp tục học: mục "Học tiếp" (Đang học mở gần nhất, không có thì Chưa học đầu tiên) + nút "Học tiếp".
@@ -46,6 +48,7 @@ import {
 import {
   BAT_DAU_MUC_DAU,
   BAT_DAU_ON,
+  cauBanGhiNgoaiCay,
   DO_PHU_NOI_DUNG,
   dongDoPhu,
   KHONG_CO_THE_DEN_HAN,
@@ -108,12 +111,16 @@ export default function TrangTongQuan() {
   const bietNoiDung = soNoiDung !== undefined || loiNoiDung.loi
   const lanDau =
     hoc.anhChup !== undefined && !coTrangThaiHoc(cay, hoc.anhChup) && khongCoThe && bietNoiDung
+  const soBanGhiNgoaiCay = hoc.anhChup?.banGhiNgoaiCay ?? 0
 
   return (
     <KhungTrang>
       <TieuDeTrang tenTrang={TEN_TRANG} className={LOP_H1}>
         {TEN_TRANG}
       </TieuDeTrang>
+      {soBanGhiNgoaiCay > 0 && (
+        <Banner vaiTro="none" tieuDe={cauBanGhiNgoaiCay(soBanGhiNgoaiCay)} />
+      )}
       {lanDau && cay.mucHoc.length > 0 && (
         <Banner
           vaiTro="none"

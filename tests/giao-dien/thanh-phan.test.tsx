@@ -64,7 +64,7 @@ describe('gallery F01', () => {
       expect(screen.getByText(chu)).toBeTruthy()
     }
     for (const p of mauF01.iconPhan) expect(screen.getByText(p.nhan)).toBeTruthy()
-    expect(document.title).toBe('Design system · Học PM A–Z')
+    expect(document.title).toBe('Design system · PMP')
     expect(loiConsole).not.toHaveBeenCalled()
   })
 
@@ -111,7 +111,7 @@ describe('thanh chuyển trang gallery', () => {
         name: 'C1 · C4–C8 · C10–C11 · C26 · C35 · C36',
       }),
     ).toBeTruthy()
-    expect(document.title).toBe('Component phần 1 · Học PM A–Z')
+    expect(document.title).toBe('Component phần 1 · PMP')
     fireEvent.click(screen.getByRole('link', { name: 'F02b · Component phần 2' }))
     expect(
       await screen.findByRole('heading', {
@@ -119,7 +119,7 @@ describe('thanh chuyển trang gallery', () => {
         name: 'C2 · C3 · C9 · C12–C25 · C28–C34 · C37 · C38',
       }),
     ).toBeTruthy()
-    expect(document.title).toBe('Component phần 2 · Học PM A–Z')
+    expect(document.title).toBe('Component phần 2 · PMP')
     expect(
       screen.getByRole('link', { name: 'F02b · Component phần 2' }).getAttribute('aria-current'),
     ).toBe('page')

@@ -44,13 +44,17 @@ export function docMucTrangThai(db: Db, id: string): MucTrangThai | undefined {
   return dong && sangMuc(dong)
 }
 
-type AnhChupDayDu = AnhChupHoc & { canOnLai: string[]; banGhiNgoaiCay: number }
+type AnhChupDayDu = AnhChupHoc & {
+  canOnLai: string[]
+  banGhiNgoaiCay: number
+  coGhiChu: string[]
+}
 
 /**
  * Ảnh chụp dữ liệu học cho GET /api/state. `laMuc` lọc theo cây: bản ghi của mục không còn trong cây vẫn
  * nằm trong DB (bất biến 8) nhưng không vào ảnh chụp, nên không tính tiến độ; chỉ SỐ bản ghi đó đi kèm
- * (banGhiNgoaiCay — banner Tổng quan). canOnLai tính lúc đọc theo homNay() của server (bất biến 3). Đọc trong
- * một transaction để các phần khớp cùng một revision.
+ * (banGhiNgoaiCay — banner Tổng quan). canOnLai tính lúc đọc theo homNay() của server (bất biến 3). coGhiChu: id
+ * mục có ghi chú (bộ lọc "Có ghi chú"). Đọc trong một transaction để các phần khớp cùng một revision.
  */
 export function docAnhChup(db: Db, laMuc: (id: string) => boolean = () => true): AnhChupDayDu {
   return db.transaction(() => docAnhChupTrong(db, laMuc))()
@@ -69,12 +73,18 @@ function docAnhChupTrong(db: Db, laMuc: (id: string) => boolean): AnhChupDayDu {
     .all() as { item_id: string; last_opened_at: string }[]
   for (const dong of cacLuot) if (laMuc(dong.item_id)) luotMo[dong.item_id] = dong.last_opened_at
 
+  // Bảng notes đã chặn chữ rỗng (CHECK trim(body) <> ''); lọc lại cho chắc
+  const cacGhiChu = db
+    .prepare(`SELECT item_id FROM notes WHERE trim(body) <> '' ORDER BY item_id`)
+    .all() as { item_id: string }[]
+
   return {
     revision: layRevision(db),
     trangThai,
     luotMo,
     canOnLai: mucCanOnLai(db, laMuc),
     banGhiNgoaiCay: demBanGhiNgoaiCay(db, laMuc),
+    coGhiChu: cacGhiChu.map((d) => d.item_id).filter((id) => laMuc(id)),
   }
 }
 

@@ -4,14 +4,20 @@
 // - Bảng chính "Bản nháp chờ duyệt": tên mục (link /hoc/:slug, lang=en) · lĩnh vực (mục nằm thẳng trong phần thì là
 //   phần) · nguồn AI / Tự viết · Đủ khối co/tong (file lỗi: "Lỗi frontmatter") · ngày nhập dd/MM/yyyy · "Mở bài để
 //   duyệt". Trống: "Không có bản nháp nào chờ duyệt" + "Nhập file .md" (§8.8).
+// - Bản nháp mà file đã ghi Đã duyệt nhưng app chưa có bản chụp (canhBaoDuyet, đề xuất 1.6 — "◎" / đổi ngoài app):
+//   không duyệt được ở bài (server trả 409), nên thay "Mở bài để duyệt" bằng câu cảnh báo của banner bài (nguyên
+//   văn 1.6) + link "Quét lại" (/noi-dung?tab=nhap&quet=1: tab Nhập, quét ngay — rồi "Nhận là Đã duyệt"). Link mất
+//   cùng tab nên trang đưa focus về tab Nhập (khiQuetLai), như nút "Quét lại" của banner file chưa nhận.
 // - Nhóm phụ "Bản sửa chờ duyệt (m)" (chỉ khi có): bài Đã duyệt có <slug>.ban-sua.md, mở bài để duyệt / bỏ.
 // Tải lại mỗi lần mở tab và sau mọi lần ghi nội dung (khoá dưới tiền tố 'noi-dung').
 import { useId } from 'react'
 import { Link } from 'react-router'
-import { CircleAlert, FileCheck } from 'lucide-react'
+import { CircleAlert, FileCheck, TriangleAlert } from 'lucide-react'
 import { dinhDangNgay, dinhDangSo } from '../../../shared/dinh-dang'
 import { layCay, type MucHoc } from '../../../shared/roadmap'
+import { CAU_CANH_BAO_DUYET, type CanhBaoDuyet } from '../../../server/noi-dung/hop-dong-bai'
 import { useChoDuyet, type DongBanNhapCho, type DongBanSuaCho } from '../../app/du-lieu/duyet'
+import { DUONG_DAN_QUET_LAI } from '../../components/bai-hoc/dinh-vi'
 import { NutLink } from '../../components/Nut'
 import TenMuc from '../../components/TenMuc'
 import TrangThaiTrong, { DongCho, TrangThaiLoi, VungDangTai } from '../../components/TrangThaiTrong'
@@ -58,6 +64,28 @@ function NutMoBai({ muc }: { muc: MucHoc }) {
   )
 }
 
+/** Bản nháp có file đã ghi Đã duyệt: câu cảnh báo (phần trước " — " của câu banner bài, đề xuất 1.6) + "Quét lại". */
+function OCanhBaoDuyet({
+  canhBao,
+  khiQuetLai,
+}: {
+  canhBao: CanhBaoDuyet
+  khiQuetLai?: () => void
+}) {
+  const [cau] = CAU_CANH_BAO_DUYET[canhBao].split(' — ')
+  return (
+    <div className="flex items-center justify-end gap-3">
+      <span className="inline-flex items-center gap-1 text-left text-muted">
+        <TriangleAlert size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
+        {cau}
+      </span>
+      <NutLink to={DUONG_DAN_QUET_LAI} replace onClick={khiQuetLai} bien="phu" co="nho">
+        Quét lại
+      </NutLink>
+    </div>
+  )
+}
+
 /** Dòng đã ghép với mục của cây (dòng có id không còn trong cây bị bỏ — server chỉ trả mục của cây). */
 function ghepMuc<T extends { id: string }>(ds: readonly T[]): (T & { muc: MucHoc })[] {
   const cay = layCay()
@@ -67,7 +95,15 @@ function ghepMuc<T extends { id: string }>(ds: readonly T[]): (T & { muc: MucHoc
   })
 }
 
-function BangBanNhap({ ds, idTieuDe }: { ds: readonly DongBanNhapCho[]; idTieuDe: string }) {
+function BangBanNhap({
+  ds,
+  idTieuDe,
+  khiQuetLai,
+}: {
+  ds: readonly DongBanNhapCho[]
+  idTieuDe: string
+  khiQuetLai?: () => void
+}) {
   return (
     <div className={LOP_KHUNG_BANG}>
       <table aria-labelledby={idTieuDe} className={LOP_BANG}>
@@ -115,7 +151,11 @@ function BangBanNhap({ ds, idTieuDe }: { ds: readonly DongBanNhapCho[]; idTieuDe
               </td>
               <td className={`${LOP_O} text-left tabular-nums`}>{dinhDangNgay(d.ngayNhap)}</td>
               <td className={`${LOP_O} text-right`}>
-                <NutMoBai muc={d.muc} />
+                {d.canhBaoDuyet ? (
+                  <OCanhBaoDuyet canhBao={d.canhBaoDuyet} khiQuetLai={khiQuetLai} />
+                ) : (
+                  <NutMoBai muc={d.muc} />
+                )}
               </td>
             </tr>
           ))}
@@ -176,7 +216,12 @@ function DangTai() {
   )
 }
 
-export default function TabChoDuyet() {
+export default function TabChoDuyet({
+  khiQuetLai,
+}: {
+  /** Sau khi bấm "Quét lại" của một hàng (trang đưa focus về tab Nhập) */
+  khiQuetLai?: () => void
+}) {
   const id = useId()
   const q = useChoDuyet()
 
@@ -217,7 +262,7 @@ export default function TabChoDuyet() {
             }
           />
         ) : (
-          <BangBanNhap ds={banNhap} idTieuDe={idNhap} />
+          <BangBanNhap ds={banNhap} idTieuDe={idNhap} khiQuetLai={khiQuetLai} />
         )}
       </section>
 

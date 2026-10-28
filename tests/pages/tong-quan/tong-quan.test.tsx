@@ -132,6 +132,33 @@ describe('/ Tổng quan', () => {
     expect(await screen.findByText(`Đã duyệt 1 · Bản nháp 1 · Chưa có ${N - 2}`)).toBeTruthy()
   })
 
+  it('bất biến 8: banGhiNgoaiCay > 0 → banner trung tính "n bản ghi thuộc mục không còn trong cây roadmap…"; 0 / thiếu → không có; axe', async () => {
+    const cau = (n: number) =>
+      `${n} bản ghi thuộc mục không còn trong cây roadmap. Dữ liệu vẫn được giữ.`
+    sv.anhChup = anhChupTu({ [cay.mucHoc[0].id]: 'dang-hoc' }, { banGhiNgoaiCay: 3 })
+    const { container } = moTrang('/')
+    const banner = await screen.findByText(cau(3))
+    // Trung tính: không phải banner lỗi (không role alert, không chữ màu danger), không vạch trái
+    expect(banner.closest('[role="alert"]')).toBeNull()
+    expect(banner.className).not.toContain('danger')
+    // Bản ghi mồ côi không tính tiến độ
+    expect(within(vung('Tiến độ')).getByText(`0% · 0/${N} · 0 bỏ qua`)).toBeTruthy()
+    await expectNoAxeViolations(container)
+    cleanup()
+
+    sv.anhChup = anhChupTu({ [cay.mucHoc[0].id]: 'dang-hoc' }, { banGhiNgoaiCay: 0 })
+    moTrang('/')
+    await within(vung('Tiến độ')).findByText(`0% · 0/${N} · 0 bỏ qua`)
+    expect(screen.queryByText(/bản ghi thuộc mục không còn trong cây/)).toBeNull()
+    cleanup()
+
+    // Server cũ không gửi trường này: không có banner
+    sv.anhChup = anhChupTu({ [cay.mucHoc[0].id]: 'dang-hoc' })
+    moTrang('/')
+    await within(vung('Tiến độ')).findByText(`0% · 0/${N} · 0 bỏ qua`)
+    expect(screen.queryByText(/bản ghi thuộc mục không còn trong cây/)).toBeNull()
+  })
+
   it('trạng thái nội dung lỗi: card Nội dung báo lỗi + Thử lại; banner F05 vẫn hiện, không có con số độ phủ; axe', async () => {
     sv.loiNoiDung = true
     const { container } = moTrang('/')

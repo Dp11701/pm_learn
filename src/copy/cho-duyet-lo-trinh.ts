@@ -54,9 +54,14 @@ export const TEN_NHOM_LOC = {
   trangThai: 'Trạng thái',
   loai: 'Loại',
   noiDung: 'Nội dung',
+  /** Hàng của chip "Có ghi chú" */
+  ghiChu: 'Ghi chú',
   phan: 'Phần',
   linhVuc: 'Lĩnh vực',
 } as const
+
+/** Chip lọc mục có ghi chú (tên chip theo §6.3; URL co-ghi-chu=1). */
+export const CO_GHI_CHU = 'Có ghi chú'
 
 /** Chip lọc theo trạng thái nội dung (ngắn hơn chip C8 của hàng). */
 export const TEN_LOC_NOI_DUNG = {
@@ -140,6 +145,13 @@ export const XEM_NOI_DUNG = 'Xem Nội dung'
 /** Dòng độ phủ, vd. "Đã duyệt 41 · Bản nháp 9 · Chưa có 149". */
 export const dongDoPhu = (daDuyet: number, banNhap: number, chuaCo: number) =>
   `Đã duyệt ${so(daDuyet)} · Bản nháp ${so(banNhap)} · Chưa có ${so(chuaCo)}`
+
+/**
+ * Banner trung tính đầu Tổng quan khi có bản ghi thuộc mục không còn trong cây (bất biến 8; đề xuất chỉ ghi ý "n bản
+ * ghi thuộc mục không còn trong cây"), vd. "3 bản ghi thuộc mục không còn trong cây roadmap. Dữ liệu vẫn được giữ."
+ */
+export const cauBanGhiNgoaiCay = (n: number) =>
+  `${so(n)} bản ghi thuộc mục không còn trong cây roadmap. Dữ liệu vẫn được giữ.`
 
 /** Tiêu đề card tiến độ cả roadmap và khối theo phần. */
 export const TIEN_DO = 'Tiến độ'

@@ -1,6 +1,7 @@
 // Bộ lọc của Lộ trình (đề xuất 3.9, §6.3): mỗi nhóm một hàng chip bật / tắt (nút aria-pressed, bật có dấu ✓ — không
-// chỉ dựa vào màu), trong một nhóm HOẶC, giữa các nhóm VÀ (shared/domain/loc-danh-sach.ts). Ô "Sắp xếp" là <select>
-// thường; "Mở gần đây" chỉ có khi đã có lượt mở bài. Bộ lọc sống trong URL: component chỉ báo giá trị mới lên trang.
+// chỉ dựa vào màu), trong một nhóm HOẶC, giữa các nhóm VÀ (shared/domain/loc-danh-sach.ts). "Có ghi chú" (§6.3) là
+// một chip bật / tắt riêng trong hàng "Ghi chú". Ô "Sắp xếp" là <select> thường; "Mở gần đây" chỉ có khi đã có lượt
+// mở bài. Bộ lọc sống trong URL: component chỉ báo giá trị mới lên trang.
 import { useId, type ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import {
@@ -21,6 +22,7 @@ import TenMuc from '../../components/TenMuc'
 import { LOP_CHU_META } from '../../components/trang-thai/mau-trang-thai'
 import {
   BO_LOC,
+  CO_GHI_CHU,
   SAP_XEP,
   TEN_LOC_NOI_DUNG,
   TEN_NHOM_LOC,
@@ -41,6 +43,42 @@ interface GiaTriChip {
   nhan: ReactNode
 }
 
+/** Một chip lọc bật / tắt (aria-pressed; bật có dấu ✓). */
+function ChipLoc({
+  bat,
+  khiBam,
+  children,
+}: {
+  bat: boolean
+  khiBam: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={bat}
+      onClick={khiBam}
+      className={`${LOP_CHIP} ${LOP_CHU_META} ${bat ? LOP_CHIP_BAT : LOP_CHIP_TAT}`}
+    >
+      {bat && <Check size={14} strokeWidth={2.25} aria-hidden="true" className="shrink-0" />}
+      {children}
+    </button>
+  )
+}
+
+/** Một hàng lọc: tên nhóm bên trái (tên của role=group), các chip bên phải. */
+function HangLoc({ ten, children }: { ten: string; children: ReactNode }) {
+  const id = useId()
+  return (
+    <div role="group" aria-labelledby={id} className="flex items-start gap-3">
+      <span id={id} className={`w-24 shrink-0 pt-1.5 font-semibold ${LOP_CHU_META} text-muted`}>
+        {ten}
+      </span>
+      <div className="flex min-w-0 flex-wrap gap-1.5">{children}</div>
+    </div>
+  )
+}
+
 function NhomChip({
   ten,
   nhom,
@@ -54,33 +92,19 @@ function NhomChip({
   boLoc: BoLoc
   khiDoi: (b: BoLoc) => void
 }) {
-  const id = useId()
   const dangChon = boLoc[nhom] as readonly string[]
   return (
-    <div role="group" aria-labelledby={id} className="flex items-start gap-3">
-      <span id={id} className={`w-24 shrink-0 pt-1.5 font-semibold ${LOP_CHU_META} text-muted`}>
-        {ten}
-      </span>
-      <div className="flex min-w-0 flex-wrap gap-1.5">
-        {cacGiaTri.map(({ giaTri, nhan }) => {
-          const bat = dangChon.includes(giaTri)
-          return (
-            <button
-              key={giaTri}
-              type="button"
-              aria-pressed={bat}
-              onClick={() => khiDoi(doiGiaTri(boLoc, nhom, giaTri))}
-              className={`${LOP_CHIP} ${LOP_CHU_META} ${bat ? LOP_CHIP_BAT : LOP_CHIP_TAT}`}
-            >
-              {bat && (
-                <Check size={14} strokeWidth={2.25} aria-hidden="true" className="shrink-0" />
-              )}
-              {nhan}
-            </button>
-          )
-        })}
-      </div>
-    </div>
+    <HangLoc ten={ten}>
+      {cacGiaTri.map(({ giaTri, nhan }) => (
+        <ChipLoc
+          key={giaTri}
+          bat={dangChon.includes(giaTri)}
+          khiBam={() => khiDoi(doiGiaTri(boLoc, nhom, giaTri))}
+        >
+          {nhan}
+        </ChipLoc>
+      ))}
+    </HangLoc>
   )
 }
 
@@ -128,6 +152,14 @@ export default function BoLocDanhSach({
         nhom="noiDung"
         cacGiaTri={CAC_LOC_NOI_DUNG.map((v) => ({ giaTri: v, nhan: TEN_LOC_NOI_DUNG[v] }))}
       />
+      <HangLoc ten={TEN_NHOM_LOC.ghiChu}>
+        <ChipLoc
+          bat={boLoc.coGhiChu}
+          khiBam={() => khiDoiBoLoc({ ...boLoc, coGhiChu: !boLoc.coGhiChu })}
+        >
+          {CO_GHI_CHU}
+        </ChipLoc>
+      </HangLoc>
       <NhomChip
         {...chung}
         ten={TEN_NHOM_LOC.phan}

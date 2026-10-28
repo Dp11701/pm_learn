@@ -1,5 +1,6 @@
 // /lo-trinh — Lộ trình dạng danh sách (bước 2; §8.3, §6.3, đề xuất 3.3, 3.9; chỉ máy tính, bản đồ đã bỏ):
-// - Bộ lọc trong URL (shared/domain/loc-danh-sach.ts): trang-thai, loai, phan, linh-vuc, noi-dung, sap-xep. `xem`
+// - Bộ lọc trong URL (shared/domain/loc-danh-sach.ts): trang-thai, loai, phan, linh-vuc, noi-dung, co-ghi-chu=1
+//   (mục có ghi chú — coGhiChu của GET /api/state), sap-xep. `xem`
 //   được giữ nguyên nhưng không có tác dụng (danh sách là cách xem duy nhất). Đổi bộ lọc thay URL (replace, không
 //   cuộn về đầu) và bỏ ?muc=.
 // - Sắp theo cây: Phần › Lĩnh vực › Nhóm › Mục, phân số của phần / lĩnh vực / nhóm không phụ thuộc bộ lọc; A–Z,
@@ -76,7 +77,7 @@ export default function TrangLoTrinh() {
   const cay = layCay()
   const [params, datParams] = useSearchParams()
   const url = useMemo(() => docUrlDanhSach(params, cay), [params, cay])
-  const { anhChup, dangTai, loi, taiLai, trangThaiCua, canOnLaiCua } = useTrangThai()
+  const { anhChup, dangTai, loi, taiLai, trangThaiCua, canOnLaiCua, coGhiChuCua } = useTrangThai()
   const noiDungCua = useTrangThaiNoiDung()
   const loiNoiDung = useLoiTrangThaiNoiDung()
 
@@ -91,11 +92,12 @@ export default function TrangLoTrinh() {
           trangThai: trangThaiCua,
           canOnLai: canOnLaiCua,
           noiDung: noiDungCua,
+          coGhiChu: coGhiChuCua,
         }),
         sapXep,
         luotMo,
       ),
-    [cay, url.boLoc, trangThaiCua, canOnLaiCua, noiDungCua, sapXep, luotMo],
+    [cay, url.boLoc, trangThaiCua, canOnLaiCua, noiDungCua, coGhiChuCua, sapXep, luotMo],
   )
 
   // Lọc theo nội dung khi bảng trạng thái nội dung chưa tải: chờ (không báo 0 mục khớp); tải lỗi thì báo lỗi +

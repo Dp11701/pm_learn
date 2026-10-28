@@ -160,7 +160,13 @@ export default function TrangNoiDung() {
       </div>
 
       <div role="tabpanel" id={idPanel(tab)} aria-labelledby={idTab(tab)} className="min-w-0">
-        {tab === 'nhap' ? <TabNhap /> : tab === 'do-phu' ? <TabDoPhu /> : <TabChoDuyet />}
+        {tab === 'nhap' ? (
+          <TabNhap />
+        ) : tab === 'do-phu' ? (
+          <TabDoPhu />
+        ) : (
+          <TabChoDuyet khiQuetLai={() => nutTab.current.nhap?.focus()} />
+        )}
       </div>
     </KhungTrang>
   )

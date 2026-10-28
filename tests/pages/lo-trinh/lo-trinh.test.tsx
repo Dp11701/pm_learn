@@ -153,6 +153,43 @@ describe('/lo-trinh — cây và bộ lọc', () => {
     )
   })
 
+  it('"Có ghi chú" (co-ghi-chu=1): một chip bật / tắt, chỉ mục có ghi chú (coGhiChu của /api/state), VÀ với nhóm khác; "Xoá bộ lọc" tắt nó', async () => {
+    sv.anhChup = anhChupTu({ [a.id]: 'da-xong' }, { coGhiChu: [c.id, a.id] })
+    moTrang('/lo-trinh')
+    await screen.findByText(dangHien(N))
+    const coGhiChu = () => chip('Ghi chú', 'Có ghi chú')
+    expect(coGhiChu().getAttribute('aria-pressed')).toBe('false')
+
+    fireEvent.click(coGhiChu())
+    expect(duongDanHienTai()).toBe('/lo-trinh?co-ghi-chu=1')
+    expect(await screen.findByText(dangHien(2))).toBeTruthy()
+    expect(coGhiChu().getAttribute('aria-pressed')).toBe('true')
+    expect(hang(a.id)).toBeTruthy()
+    expect(hang(c.id)).toBeTruthy()
+    expect(hang(b.id)).toBeNull()
+    // VÀ với nhóm trạng thái
+    fireEvent.click(chip('Trạng thái', 'Đã xong'))
+    expect(duongDanHienTai()).toBe('/lo-trinh?trang-thai=da-xong&co-ghi-chu=1')
+    expect(await screen.findByText(dangHien(1))).toBeTruthy()
+    expect(hang(c.id)).toBeNull()
+
+    // Chỉ còn "Có ghi chú" vẫn là đang lọc: "Xoá bộ lọc" bật, bấm thì tắt cả nó
+    fireEvent.click(chip('Trạng thái', 'Đã xong'))
+    expect(await screen.findByText(dangHien(2))).toBeTruthy()
+    const xoa = screen.getByRole('button', { name: 'Xoá bộ lọc' })
+    expect(xoa.getAttribute('aria-disabled')).toBeNull()
+    fireEvent.click(xoa)
+    expect(duongDanHienTai()).toBe('/lo-trinh')
+    expect(await screen.findByText(dangHien(N))).toBeTruthy()
+    expect(coGhiChu().getAttribute('aria-pressed')).toBe('false')
+    cleanup()
+
+    // Mở thẳng bằng URL
+    moTrang('/lo-trinh?co-ghi-chu=1')
+    expect(await screen.findByText(dangHien(2))).toBeTruthy()
+    expect(coGhiChu().getAttribute('aria-pressed')).toBe('true')
+  })
+
   it('link cũ ?xem=danh-sach&muc=<slug>: cuộn tới, nổi bật, focus hàng; bộ lọc ẩn mục thì báo', async () => {
     const m = cay.mucHoc[Math.floor(N / 2)]
     moTrang(`/lo-trinh?xem=danh-sach&muc=${m.slug}`)

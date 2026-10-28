@@ -1,8 +1,9 @@
 // Bộ lọc của Lộ trình dạng danh sách (đề xuất 3.9, §6.3) — hàm thuần, dùng chung web (trang Lộ trình) và test.
 // URL: trang-thai (chua-hoc, dang-hoc, da-xong, bo-qua, can-on-lai) · loai (chu-de, tai-lieu, chung-chi) · phan ·
-// linh-vuc (slug) · noi-dung (chua-co, ban-nhap, da-duyet) · sap-xep (cay, a-z, mo-gan-day). Một nhóm nhiều giá trị
-// thì ngăn bằng dấu phẩy (nhận cả tham số lặp lại). Trong một nhóm HOẶC, giữa các nhóm VÀ. Giá trị lạ, slug không
-// có trong cây (hoặc sai loại) bị bỏ qua; ghi lại URL theo thứ tự chuẩn (thứ tự hằng số, slug theo thứ tự cây).
+// linh-vuc (slug) · noi-dung (chua-co, ban-nhap, da-duyet) · co-ghi-chu=1 (chỉ mục có ghi chú) · sap-xep (cay, a-z,
+// mo-gan-day). Một nhóm nhiều giá trị thì ngăn bằng dấu phẩy (nhận cả tham số lặp lại). Trong một nhóm HOẶC, giữa
+// các nhóm VÀ. Giá trị lạ, slug không có trong cây (hoặc sai loại) bị bỏ qua; ghi lại URL theo thứ tự chuẩn (thứ tự
+// hằng số, slug theo thứ tự cây).
 // `xem` (ban-do / danh-sach) chỉ được giữ nguyên: bản đồ đã bỏ (đề xuất mục 10), danh sách là cách xem duy nhất.
 // `muc` (mở tới một mục) không phải bộ lọc: đổi bộ lọc thì bỏ nó.
 import type { Cay, MauBai, MucHoc, Nut } from '../roadmap/types'
@@ -32,6 +33,7 @@ export const THAM_SO_LOC = {
   phan: 'phan',
   linhVuc: 'linh-vuc',
   noiDung: 'noi-dung',
+  coGhiChu: 'co-ghi-chu',
   sapXep: 'sap-xep',
   muc: 'muc',
   xem: 'xem',
@@ -45,11 +47,21 @@ export interface BoLoc {
   /** slug lĩnh vực */
   linhVuc: readonly string[]
   noiDung: readonly LocNoiDung[]
+  /** Chỉ mục có ghi chú (một chip bật / tắt, URL co-ghi-chu=1) */
+  coGhiChu: boolean
 }
 
-export type NhomLoc = keyof BoLoc
+/** Các nhóm chip nhiều giá trị (coGhiChu là một chip bật / tắt riêng). */
+export type NhomLoc = Exclude<keyof BoLoc, 'coGhiChu'>
 
-export const BO_LOC_TRONG: BoLoc = { trangThai: [], loai: [], phan: [], linhVuc: [], noiDung: [] }
+export const BO_LOC_TRONG: BoLoc = {
+  trangThai: [],
+  loai: [],
+  phan: [],
+  linhVuc: [],
+  noiDung: [],
+  coGhiChu: false,
+}
 
 export interface TrangThaiUrl {
   boLoc: BoLoc
@@ -97,6 +109,7 @@ export function docUrlDanhSach(params: URLSearchParams, cay: CayDoc): TrangThaiU
       cacLinhVuc(cay).map((n) => n.slug),
     ),
     noiDung: giuHopLe(giaTriCua(params, THAM_SO_LOC.noiDung), CAC_LOC_NOI_DUNG),
+    coGhiChu: giaTriCua(params, THAM_SO_LOC.coGhiChu).has('1'),
   }
   return {
     boLoc,
@@ -124,13 +137,15 @@ export function ghiUrlDanhSach(
     [THAM_SO_LOC.noiDung, boLoc.noiDung],
   ]
   for (const [ten, ds] of nhom) if (ds.length > 0) moi.set(ten, ds.join(','))
+  if (boLoc.coGhiChu) moi.set(THAM_SO_LOC.coGhiChu, '1')
   if (sapXep !== 'cay') moi.set(THAM_SO_LOC.sapXep, sapXep)
   return moi
 }
 
-/** Có ít nhất một nhóm đang lọc (cách sắp xếp không phải bộ lọc). */
+/** Có ít nhất một nhóm đang lọc, kể cả "Có ghi chú" (cách sắp xếp không phải bộ lọc). */
 export function dangLoc(boLoc: BoLoc): boolean {
-  return Object.values(boLoc).some((ds: readonly string[]) => ds.length > 0)
+  const { coGhiChu, ...nhom } = boLoc
+  return coGhiChu || Object.values(nhom).some((ds: readonly string[]) => ds.length > 0)
 }
 
 /** Bật / tắt một giá trị trong một nhóm; giữ thứ tự chuẩn nhờ lần đọc lại URL. */
@@ -147,6 +162,8 @@ export interface TraMuc {
   canOnLai: (id: string) => boolean
   /** Trạng thái nội dung; undefined = chưa biết (đang tải) → không khớp khi đang lọc theo nội dung */
   noiDung: (id: string) => TrangThaiNoiDung | undefined
+  /** Mục có ghi chú (GET /api/state coGhiChu) */
+  coGhiChu: (id: string) => boolean
 }
 
 /** Mục có khớp bộ lọc không: trong một nhóm HOẶC, giữa các nhóm VÀ; nhóm rỗng = không lọc. */
@@ -165,6 +182,7 @@ export function khopBoLoc(muc: MucHoc, boLoc: BoLoc, tra: TraMuc): boolean {
     const nd = tra.noiDung(muc.id)
     if (!nd || !boLoc.noiDung.includes(nd.loai)) return false
   }
+  if (boLoc.coGhiChu && !tra.coGhiChu(muc.id)) return false
   return true
 }
 
